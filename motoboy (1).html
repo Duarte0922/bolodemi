@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Bolo de Mi · Registro de Entregas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FDF4FB;
+  --surface: #FFFFFF;
+  --card: #FFFFFF;
+  --border: #EDD6E8;
+  --pink: #D9368A;
+  --pink-light: #FDEAF5;
+  --purple: #5A2D8C;
+  --purple-light: #EEE4F8;
+  --muted: #9B7AAA;
+  --green: #1F7A4F;
+  --green-bg: #E4F5EC;
+  --text: #240F40;
+  --text2: #5A4070;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:80px; }
+
+/* HEADER */
+.header {
+  background:var(--purple);
+  padding:0 20px; height:62px;
+  display:flex; align-items:center; gap:12px;
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 4px 20px rgba(90,45,140,0.25);
+}
+.logo-mark { width:38px; height:38px; background:var(--pink); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+.logo-text { font-family:'Fraunces',serif; font-size:1.2rem; color:#fff; line-height:1; }
+.logo-text em { color:#F9A8D4; font-style:italic; }
+.logo-sub { font-size:0.68rem; color:rgba(255,255,255,0.55); margin-top:1px; font-weight:600; }
+.header-date { margin-left:auto; font-size:0.75rem; color:rgba(255,255,255,0.5); text-align:right; line-height:1.4; }
+
+/* MAIN */
+.main { padding:20px 16px; max-width:520px; margin:0 auto; }
+
+/* CARD */
+.card { background:var(--card); border:1.5px solid var(--border); border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 2px 12px rgba(90,45,140,0.06); }
+.card-title { font-family:'Fraunces',serif; font-size:1rem; color:var(--purple); margin-bottom:16px; display:flex; align-items:center; gap:8px; font-weight:700; }
+
+/* STEP */
+.step-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--purple-light); border:1px solid #D4B8F0;
+  border-radius:20px; padding:5px 12px;
+  font-size:0.75rem; color:var(--purple); font-weight:700;
+  margin-bottom:14px;
+}
+
+/* INFO BOX */
+.info-box {
+  background:var(--pink-light); border:1px solid #F0B8D8;
+  border-radius:10px; padding:11px 14px;
+  font-size:0.82rem; color:var(--pink);
+  font-weight:600; margin-bottom:14px;
+}
+.origin-box {
+  background:var(--purple-light); border:1.5px solid #D4B8F0;
+  border-radius:10px; padding:12px 14px;
+  font-size:0.9rem; color:var(--purple); font-weight:700;
+  display:flex; align-items:center; gap:8px;
+}
+
+/* FORM */
+.field { margin-bottom:14px; }
+label { display:block; font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; }
+input, select {
+  width:100%; padding:12px 14px;
+  background:var(--bg); border:1.5px solid var(--border);
+  border-radius:10px; font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.95rem; color:var(--text); outline:none; transition:border-color 0.2s;
+  -webkit-appearance:none;
+}
+input:focus, select:focus { border-color:var(--purple); background:#fff; }
+select option { background:#fff; }
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+/* KM PREVIEW */
+.km-preview {
+  display:none; background:var(--surface); border:1.5px solid var(--border);
+  border-radius:10px; padding:12px 14px; margin-top:8px;
+  flex-direction:column; gap:6px;
+}
+.km-preview.show { display:flex; }
+.km-row { display:flex; justify-content:space-between; align-items:center; }
+.km-label-txt { font-size:0.78rem; color:var(--muted); font-weight:600; }
+.km-value { font-family:'Fraunces',serif; font-size:1.15rem; font-weight:900; color:var(--purple); letter-spacing:-0.01em; }
+.price-tag {
+  background:var(--pink); color:#fff;
+  padding:5px 16px; border-radius:20px;
+  font-family:'Fraunces',serif; font-size:1rem; font-weight:900;
+}
+
+/* BTNS */
+.btn {
+  width:100%; padding:14px; border:none; border-radius:12px;
+  font-family:'Plus Jakarta Sans',sans-serif; font-size:0.95rem; font-weight:800;
+  cursor:pointer; transition:all 0.2s;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn-primary { background:linear-gradient(135deg, var(--purple) 0%, #7B3DB0 100%); color:#fff; margin-top:6px; }
+.btn-primary:active { transform:scale(0.98); }
+.btn-green { background:linear-gradient(135deg, var(--green) 0%, #156B3F 100%); color:#fff; }
+.btn-sm { width:auto; padding:7px 14px; font-size:0.78rem; border-radius:8px; }
+.btn-outline { background:transparent; color:var(--muted); border:1.5px solid var(--border); }
+.btn-outline:hover { border-color:var(--pink); color:var(--pink); }
+
+/* ORDER ITEMS */
+.order-item {
+  background:var(--bg); border:1.5px solid var(--border);
+  border-radius:12px; padding:14px; margin-bottom:10px; position:relative;
+}
+.order-top { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.order-num { font-family:'Fraunces',serif; font-size:1.15rem; color:var(--purple); font-weight:900; }
+.order-plat { font-size:0.7rem; padding:3px 10px; border-radius:20px; font-weight:700; }
+.plat-ifood { background:#fee; color:#c0392b; }
+.plat-99 { background:#fef9e7; color:#b7860a; }
+.plat-particular { background:var(--green-bg); color:var(--green); }
+.order-addr { font-size:0.82rem; color:var(--text2); line-height:1.4; margin-bottom:8px; }
+.order-bottom { display:flex; justify-content:space-between; align-items:center; }
+.order-km { font-size:0.78rem; color:var(--muted); font-weight:600; }
+.order-price { font-family:'Fraunces',serif; font-size:1.1rem; font-weight:900; color:var(--green); }
+.order-del {
+  position:absolute; top:10px; right:10px;
+  background:#fee2e2; border:1px solid #fecaca; color:#dc2626;
+  width:28px; height:28px; border-radius:8px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:0.85rem;
+}
+
+/* TOTAL */
+.total-box {
+  background:linear-gradient(135deg, var(--purple) 0%, #7B3DB0 100%);
+  border-radius:16px; padding:22px; margin-top:6px;
+  box-shadow:0 4px 20px rgba(90,45,140,0.3);
+}
+.total-line { display:flex; justify-content:space-between; font-size:0.85rem; color:rgba(255,255,255,0.65); margin-bottom:8px; }
+.total-line span:last-child { color:#fff; font-weight:700; }
+.total-divider { height:1px; background:rgba(255,255,255,0.15); margin:12px 0; }
+.total-main { display:flex; justify-content:space-between; align-items:center; }
+.total-label { font-size:0.82rem; color:rgba(255,255,255,0.8); font-weight:700; }
+.total-amount { font-family:'Fraunces',serif; font-size:2.3rem; color:#fff; font-weight:900; letter-spacing:-0.02em; }
+
+/* PROFILE */
+.profile-strip {
+  background:var(--surface); border:1.5px solid var(--border);
+  border-radius:12px; padding:12px 16px;
+  display:flex; align-items:center; gap:12px; margin-bottom:16px;
+}
+.avatar {
+  width:42px; height:42px;
+  background:linear-gradient(135deg, var(--purple), var(--pink));
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',serif; font-size:1.1rem; color:#fff; font-weight:900; flex-shrink:0;
+}
+.profile-name { font-weight:800; font-size:0.95rem; color:var(--text); }
+.profile-phone { font-size:0.78rem; color:var(--muted); margin-top:2px; }
+
+/* MISC */
+.count-badge {
+  background:var(--purple); color:#fff; border-radius:50%;
+  width:20px; height:20px; font-size:0.7rem; font-weight:800;
+  display:inline-flex; align-items:center; justify-content:center; margin-left:6px;
+}
+.empty { text-align:center; padding:30px; color:var(--muted); font-size:0.85rem; }
+.empty-icon { font-size:2.5rem; margin-bottom:8px; }
+.spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.hidden { display:none !important; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-mark">🎂</div>
+  <div>
+    <div class="logo-text">Bolo de <em>Mi</em></div>
+    <div class="logo-sub">Registro de Entregas</div>
+  </div>
+  <div class="header-date" id="header-date"></div>
+</div>
+
+<div class="main">
+
+  <!-- CADASTRO -->
+  <div id="section-cadastro">
+    <div class="step-badge">📋 Passo 1 · Identificação</div>
+    <div class="card">
+      <div class="card-title">👤 Quem é você?</div>
+      <div class="field"><label>Seu nome completo</label><input type="text" id="mb-nome" placeholder="Ex: Luciano Oliveira"></div>
+      <div class="field"><label>Telefone / WhatsApp</label><input type="tel" id="mb-tel" placeholder="(31) 9 0000-0000"></div>
+      <button class="btn btn-primary" onclick="salvarCadastro()">Confirmar e Começar ➜</button>
+    </div>
+  </div>
+
+  <!-- ENTREGAS -->
+  <div id="section-entregas" class="hidden">
+
+    <div class="profile-strip">
+      <div class="avatar" id="avatar">L</div>
+      <div style="flex:1">
+        <div class="profile-name" id="perfil-nome">—</div>
+        <div class="profile-phone" id="perfil-tel">—</div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="trocarMotoboy()">Trocar</button>
+    </div>
+
+    <!-- ORIGEM -->
+    <div class="card">
+      <div class="card-title">📍 Saída (Endereço Fixo da Loja)</div>
+      <div class="info-box">⚠️ Todas as distâncias são calculadas a partir deste ponto.</div>
+      <div class="origin-box">📍 Rua Asteca, 2812A – Santa Monica, BH</div>
+    </div>
+
+    <!-- NOVO PEDIDO -->
+    <div class="step-badge">📦 Passo 2 · Adicionar Pedidos</div>
+    <div class="card">
+      <div class="card-title">➕ Novo Pedido</div>
+      <div class="row2">
+        <div class="field"><label>Nº do Pedido</label><input type="text" id="ped-codigo" placeholder="Ex: 0385"></div>
+        <div class="field">
+          <label>Plataforma</label>
+          <select id="ped-plataforma">
+            <option value="">Selecione...</option>
+            <option value="iFood">iFood</option>
+            <option value="99">99</option>
+            <option value="Particular">Particular</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Endereço de Entrega</label><input type="text" id="ped-endereco" placeholder="Rua, número, bairro, cidade..."></div>
+      <div class="field">
+        <label>Distância em KM (consulte seu GPS)</label>
+        <input type="number" id="ped-km" placeholder="Ex: 5.3" step="0.1" min="0" oninput="previewKM()">
+        <div class="km-preview" id="km-preview">
+          <div class="km-row"><span class="km-label-txt">Distância</span><span class="km-value" id="km-val">0 km</span></div>
+          <div class="km-row"><span class="km-label-txt">Valor desta entrega</span><span class="price-tag" id="price-tag">R$ 0,00</span></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-add" onclick="adicionarPedido()">➕ Adicionar Pedido</button>
+    </div>
+
+    <!-- LISTA -->
+    <div class="card">
+      <div class="card-title">📋 Pedidos do Dia <span class="count-badge" id="count-badge">0</span></div>
+      <div id="lista-pedidos"><div class="empty"><div class="empty-icon">📦</div>Nenhum pedido ainda</div></div>
+    </div>
+
+    <!-- FECHAMENTO -->
+    <div class="card">
+      <div class="card-title">💰 Fechar o Dia</div>
+      <div class="field"><label>Diária Fixa (R$)</label><input type="number" id="diaria" placeholder="Ex: 80.00" step="0.01" min="0"></div>
+      <button class="btn btn-green" id="btn-fechar" onclick="fecharDia()">🧮 Calcular e Salvar Total</button>
+      <div id="total-box" class="total-box hidden" style="margin-top:14px">
+        <div class="total-line"><span>Total em corridas</span><span id="t-corridas">R$ 0,00</span></div>
+        <div class="total-line"><span>Diária fixa</span><span id="t-diaria">R$ 0,00</span></div>
+        <div class="total-line"><span>Pedidos realizados</span><span id="t-qtd">0</span></div>
+        <div class="total-divider"></div>
+        <div class="total-main">
+          <div class="total-label">💚 TOTAL VIA PIX</div>
+          <div class="total-amount" id="t-total">R$ 0,00</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, setDoc, collection, addDoc, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD9JGS6HMTWuj17fne5hOAZ2TOh9o8tyhw",
+  authDomain: "bolo-de-mi.firebaseapp.com",
+  projectId: "bolo-de-mi",
+  storageBucket: "bolo-de-mi.firebasestorage.app",
+  messagingSenderId: "1060789628321",
+  appId: "1:1060789628321:web:fe5a8beb4a305de9772fe0"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let motoboyId = null, motoboyNome = '';
+let pedidosDia = [];
+const hoje = new Date().toISOString().split('T')[0];
+
+document.getElementById('header-date').innerHTML =
+  new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'}).replace('.','')+'<br>'+hoje;
+
+function calcPreco(km){ if(km<=3)return 3; if(km<=7)return 5; if(km<=9)return 7; if(km<=14)return 11; if(km<=18)return 18; return 20; }
+function fmtR(v){ return 'R$ '+Number(v).toFixed(2).replace('.',','); }
+
+window.previewKM = () => {
+  const km = parseFloat(document.getElementById('ped-km').value);
+  const p = document.getElementById('km-preview');
+  if(isNaN(km)||km<=0){ p.classList.remove('show'); return; }
+  document.getElementById('km-val').textContent = km.toFixed(1)+' km';
+  document.getElementById('price-tag').textContent = fmtR(calcPreco(km));
+  p.classList.add('show');
+};
+
+window.salvarCadastro = async () => {
+  const nome = document.getElementById('mb-nome').value.trim();
+  const tel = document.getElementById('mb-tel').value.trim();
+  if(!nome||!tel){ alert('Preencha seu nome e telefone!'); return; }
+  motoboyNome = nome;
+  motoboyId = nome.toLowerCase().replace(/\s+/g,'_')+'_'+tel.replace(/\D/g,'').slice(-4);
+  await setDoc(doc(db,'motoboys',motoboyId),{nome,tel,id:motoboyId},{merge:true});
+  document.getElementById('avatar').textContent = nome.charAt(0).toUpperCase();
+  document.getElementById('perfil-nome').textContent = nome;
+  document.getElementById('perfil-tel').textContent = tel;
+  document.getElementById('section-cadastro').classList.add('hidden');
+  document.getElementById('section-entregas').classList.remove('hidden');
+  await carregarPedidosDia();
+};
+
+window.trocarMotoboy = () => {
+  if(!confirm('Trocar de motoboy?')) return;
+  motoboyId=null; motoboyNome=''; pedidosDia=[];
+  document.getElementById('section-cadastro').classList.remove('hidden');
+  document.getElementById('section-entregas').classList.add('hidden');
+  document.getElementById('total-box').classList.add('hidden');
+  renderLista();
+};
+
+async function carregarPedidosDia(){
+  try {
+    const snap = await getDocs(query(collection(db,'pedidos'),where('motoboyId','==',motoboyId),where('data','==',hoje)));
+    pedidosDia=[];
+    snap.forEach(d => pedidosDia.push({...d.data(),firebaseId:d.id}));
+    pedidosDia.sort((a,b)=>a.timestamp-b.timestamp);
+    renderLista();
+  } catch(e){ console.error(e); }
+}
+
+window.adicionarPedido = async () => {
+  const codigo = document.getElementById('ped-codigo').value.trim();
+  const plataforma = document.getElementById('ped-plataforma').value;
+  const endereco = document.getElementById('ped-endereco').value.trim();
+  const km = parseFloat(document.getElementById('ped-km').value);
+  if(!codigo||!plataforma||!endereco||isNaN(km)||km<=0){ alert('Preencha todos os campos!'); return; }
+  const btn = document.getElementById('btn-add');
+  btn.innerHTML='<span class="spinner"></span> Salvando...'; btn.disabled=true;
+  const pedido = { motoboyId, motoboyNome, data:hoje, codigo, plataforma, endereco, km, valor:calcPreco(km), timestamp:Date.now() };
+  try {
+    const ref = await addDoc(collection(db,'pedidos'),pedido);
+    pedido.firebaseId=ref.id; pedidosDia.push(pedido);
+    document.getElementById('ped-codigo').value='';
+    document.getElementById('ped-plataforma').value='';
+    document.getElementById('ped-endereco').value='';
+    document.getElementById('ped-km').value='';
+    document.getElementById('km-preview').classList.remove('show');
+    renderLista();
+  } catch(e){ alert('Erro ao salvar.'); }
+  btn.innerHTML='➕ Adicionar Pedido'; btn.disabled=false;
+};
+
+window.removerPedido = async (firebaseId, idx) => {
+  if(!confirm('Remover este pedido?')) return;
+  try { await deleteDoc(doc(db,'pedidos',firebaseId)); pedidosDia.splice(idx,1); renderLista(); }
+  catch(e){ alert('Erro ao remover.'); }
+};
+
+function renderLista(){
+  const cont = document.getElementById('lista-pedidos');
+  document.getElementById('count-badge').textContent = pedidosDia.length;
+  if(pedidosDia.length===0){ cont.innerHTML=`<div class="empty"><div class="empty-icon">📦</div>Nenhum pedido ainda</div>`; return; }
+  const platClass = {iFood:'plat-ifood','99':'plat-99',Particular:'plat-particular'};
+  cont.innerHTML = pedidosDia.map((p,i)=>`
+    <div class="order-item">
+      <button class="order-del" onclick="removerPedido('${p.firebaseId}',${i})">✕</button>
+      <div class="order-top">
+        <div class="order-num">#${p.codigo}</div>
+        <div class="order-plat ${platClass[p.plataforma]||''}">${p.plataforma}</div>
+      </div>
+      <div class="order-addr">📍 ${p.endereco}</div>
+      <div class="order-bottom">
+        <span class="order-km">⬡ ${p.km} km</span>
+        <span class="order-price">${fmtR(p.valor)}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.fecharDia = async () => {
+  if(pedidosDia.length===0){ alert('Adicione pelo menos um pedido!'); return; }
+  const diaria = parseFloat(document.getElementById('diaria').value)||0;
+  const totalCorridas = pedidosDia.reduce((s,p)=>s+p.valor,0);
+  const total = totalCorridas+diaria;
+  const btn = document.getElementById('btn-fechar');
+  btn.innerHTML='<span class="spinner"></span> Salvando...'; btn.disabled=true;
+  try {
+    await setDoc(doc(db,'fechamentos',motoboyId+'_'+hoje),{
+      motoboyId, motoboyNome, data:hoje, diaria, totalCorridas, total,
+      qtdPedidos:pedidosDia.length, fechadoEm:new Date().toISOString()
+    });
+    document.getElementById('t-corridas').textContent=fmtR(totalCorridas);
+    document.getElementById('t-diaria').textContent=fmtR(diaria);
+    document.getElementById('t-qtd').textContent=pedidosDia.length+' pedidos';
+    document.getElementById('t-total').textContent=fmtR(total);
+    document.getElementById('total-box').classList.remove('hidden');
+    alert('✅ Fechamento salvo!\n'+motoboyNome+': '+fmtR(total));
+  } catch(e){ alert('Erro ao salvar fechamento.'); }
+  btn.innerHTML='🧮 Calcular e Salvar Total'; btn.disabled=false;
+};
+</script>
+</body>
+</html>

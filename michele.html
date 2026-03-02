@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bolo de Mi · Painel Michele</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F8F3EC;
+  --surface: #FFFFFF;
+  --card: #FFFFFF;
+  --border: #E8D8C4;
+  --caramel: #C8712A;
+  --caramel2: #A05520;
+  --chocolate: #3D1F0A;
+  --gold: #D4960A;
+  --cream: #FDF3E3;
+  --muted: #8A6A45;
+  --green: #2D7A52;
+  --green-bg: #E8F5EE;
+  --red: #C0392B;
+  --text: #2A1505;
+  --purple: #6B3FA0;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* HEADER */
+.header {
+  background: var(--chocolate);
+  padding: 0 28px;
+  display: flex; align-items: center; gap: 16px;
+  height: 64px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 4px 20px rgba(61,31,10,0.25);
+}
+.logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; color: #F5C842; }
+.logo span { color: #E8D0B0; font-size: 0.8rem; font-family: 'Nunito', sans-serif; display: block; font-weight: 600; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.today-date { font-size: 0.82rem; color: rgba(255,255,255,0.5); }
+.btn-share {
+  background: var(--caramel);
+  color: #fff;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: all 0.2s;
+}
+.btn-share:hover { background: var(--caramel2); transform: translateY(-1px); }
+
+/* MAIN */
+.main { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; }
+
+/* SUMMARY CARDS */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.sum-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 16px;
+  text-align: center;
+}
+.sum-icon { font-size: 1.4rem; margin-bottom: 6px; }
+.sum-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--chocolate);
+  line-height: 1;
+}
+.sum-val.green { color: var(--green); }
+.sum-label { font-size: 0.72rem; color: var(--muted); font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* FILTER */
+.filter-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap;
+}
+.filter-field { flex: 1; min-width: 160px; }
+.filter-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+  display: block;
+}
+input[type="date"], input[type="text"], select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.2s;
+}
+input:focus, select:focus { border-color: var(--caramel); background: #fff; }
+.btn-filter {
+  padding: 10px 20px;
+  background: var(--chocolate);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-filter:hover { background: #2A1205; }
+
+/* MOTOBOY CARD */
+.mb-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.mb-header {
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+.mb-header:hover { background: var(--bg); }
+.mb-avatar {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--caramel), var(--caramel2));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  color: #fff;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.mb-info { flex: 1; }
+.mb-name { font-weight: 800; font-size: 1rem; color: var(--chocolate); }
+.mb-meta { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.pix-badge {
+  background: var(--green-bg);
+  border: 1.5px solid #A7D3B4;
+  border-radius: 12px;
+  padding: 8px 16px;
+  text-align: center;
+}
+.pix-label { font-size: 0.7rem; color: var(--green); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.pix-amount { font-family: 'Syne', sans-serif; font-size: 1.3rem; color: var(--green); font-weight: 800; }
+.toggle-icon { color: var(--muted); font-size: 1rem; transition: transform 0.2s; }
+.toggle-icon.open { transform: rotate(180deg); }
+
+/* ORDERS TABLE */
+.orders-wrap { padding: 0 0 4px; }
+.orders-table { width: 100%; border-collapse: collapse; }
+.orders-table th {
+  padding: 10px 20px;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.orders-table td {
+  padding: 12px 20px;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+.orders-table tr:last-child td { border-bottom: none; }
+.orders-table tr:hover td { background: #FAFAF8; }
+.plat-badge {
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.plat-ifood { background: #fee; color: #c0392b; }
+.plat-99 { background: #fef9e7; color: #d4960a; }
+.plat-particular { background: var(--green-bg); color: var(--green); }
+.price-cell { font-weight: 800; color: var(--green); }
+.km-cell { color: var(--muted); }
+
+/* FOOTER FECHAMENTO */
+.mb-footer {
+  padding: 14px 20px;
+  background: var(--cream);
+  border-top: 1px solid var(--border);
+  display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+}
+.footer-item { font-size: 0.82rem; color: var(--muted); }
+.footer-item strong { color: var(--chocolate); }
+
+/* EMPTY / LOADING */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+.empty-icon { font-size: 3rem; margin-bottom: 12px; }
+.empty-text { font-size: 0.9rem; }
+.loading {
+  display: flex; justify-content: center; padding: 40px;
+}
+.spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--caramel);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* SHARE MODAL */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.modal {
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px;
+  max-width: 460px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.modal-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--chocolate); margin-bottom: 6px; }
+.modal-sub { font-size: 0.83rem; color: var(--muted); margin-bottom: 20px; }
+.link-box {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  color: var(--chocolate);
+  word-break: break-all;
+  margin-bottom: 14px;
+  font-family: monospace;
+}
+.modal-actions { display: flex; gap: 10px; }
+.btn-copy {
+  flex: 1;
+  padding: 11px;
+  background: var(--caramel);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.btn-copy:hover { background: var(--caramel2); }
+.btn-close-modal {
+  padding: 11px 18px;
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.hidden { display: none !important; }
+
+@media (max-width: 640px) {
+  .summary-grid { grid-template-columns: 1fr 1fr; }
+  .filter-card { flex-direction: column; }
+  .filter-field { width: 100%; }
+  .btn-filter { width: 100%; }
+  .orders-table th:nth-child(3), .orders-table td:nth-child(3) { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="logo">🎂 Bolo de Mi</div>
+    <span>Painel da Michele</span>
+  </div>
+  <div class="header-right">
+    <span class="today-date" id="today-label"></span>
+    <button class="btn-share" onclick="abrirModal()">📱 Enviar Link ao Motoboy</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- SUMMARY -->
+  <div class="summary-grid">
+    <div class="sum-card">
+      <div class="sum-icon">🛵</div>
+      <div class="sum-val" id="sum-motoboys">0</div>
+      <div class="sum-label">Motoboys</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">📦</div>
+      <div class="sum-val" id="sum-pedidos">0</div>
+      <div class="sum-label">Pedidos</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">📍</div>
+      <div class="sum-val" id="sum-km">0</div>
+      <div class="sum-label">KM Total</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">💰</div>
+      <div class="sum-val green" id="sum-total">R$ 0</div>
+      <div class="sum-label">Total Pagar</div>
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="filter-card">
+    <div class="filter-field">
+      <label class="filter-label">Data</label>
+      <input type="date" id="filtro-data">
+    </div>
+    <div class="filter-field">
+      <label class="filter-label">Motoboy</label>
+      <input type="text" id="filtro-nome" placeholder="Buscar por nome...">
+    </div>
+    <button class="btn-filter" onclick="carregar()">🔍 Filtrar</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+    <div class="loading"><div class="spinner"></div></div>
+  </div>
+
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay hidden" id="modal">
+  <div class="modal">
+    <div class="modal-title">📱 Link para o Motoboy</div>
+    <div class="modal-sub">Envie este link pelo WhatsApp. Ele abrirá o formulário de pedidos.</div>
+    <div class="link-box" id="link-box"></div>
+    <div class="modal-actions">
+      <button class="btn-copy" onclick="copiarLink()">📋 Copiar Link</button>
+      <button class="btn-copy" style="background:#25D366" onclick="enviarWhatsapp()">💬 WhatsApp</button>
+      <button class="btn-close-modal" onclick="fecharModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD9JGS6HMTWuj17fne5hOAZ2TOh9o8tyhw",
+  authDomain: "bolo-de-mi.firebaseapp.com",
+  databaseURL: "https://bolo-de-mi-default-rtdb.firebaseio.com",
+  projectId: "bolo-de-mi",
+  storageBucket: "bolo-de-mi.firebasestorage.app",
+  messagingSenderId: "1060789628321",
+  appId: "1:1060789628321:web:fe5a8beb4a305de9772fe0"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const hoje = new Date().toISOString().split('T')[0];
+document.getElementById('filtro-data').value = hoje;
+document.getElementById('today-label').textContent = new Date().toLocaleDateString('pt-BR', {
+  weekday: 'long', day: '2-digit', month: 'long'
+});
+
+function fmtR(v) { return 'R$ ' + Number(v).toFixed(2).replace('.', ','); }
+const platClass = { iFood:'plat-ifood', '99':'plat-99', Particular:'plat-particular' };
+
+// ===== CARREGAR DADOS =====
+window.carregar = async () => {
+  const data = document.getElementById('filtro-data').value || hoje;
+  const filtroNome = document.getElementById('filtro-nome').value.toLowerCase().trim();
+  const cont = document.getElementById('content');
+  cont.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+  try {
+    // Buscar pedidos do dia
+    const qPed = query(collection(db, 'pedidos'), where('data', '==', data));
+    const snapPed = await getDocs(qPed);
+
+    // Buscar fechamentos do dia
+    const qFech = query(collection(db, 'fechamentos'), where('data', '==', data));
+    const snapFech = await getDocs(qFech);
+
+    const fechamentos = {};
+    snapFech.forEach(d => { fechamentos[d.data().motoboyId] = d.data(); });
+
+    // Agrupar pedidos por motoboy
+    const grupos = {};
+    snapPed.forEach(d => {
+      const p = d.data();
+      if (filtroNome && !p.motoboyNome.toLowerCase().includes(filtroNome)) return;
+      if (!grupos[p.motoboyId]) grupos[p.motoboyId] = { nome: p.motoboyNome, pedidos: [] };
+      grupos[p.motoboyId].pedidos.push(p);
+    });
+
+    // Ordenar pedidos de cada grupo por timestamp
+    Object.values(grupos).forEach(g => g.pedidos.sort((a,b) => a.timestamp - b.timestamp));
+
+    const ids = Object.keys(grupos);
+
+    if (ids.length === 0) {
+      cont.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <div class="empty-text">Nenhum registro encontrado para ${data}.</div>
+        </div>`;
+      atualizarSummary(0,0,0,0);
+      return;
+    }
+
+    // Summary
+    let totalMotoboys = ids.length;
+    let totalPedidos = 0, totalKm = 0, totalGeral = 0;
+    ids.forEach(id => {
+      const g = grupos[id];
+      totalPedidos += g.pedidos.length;
+      g.pedidos.forEach(p => { totalKm += p.km; });
+      const fech = fechamentos[id];
+      if (fech) totalGeral += fech.total;
+      else totalGeral += g.pedidos.reduce((s,p) => s+p.valor, 0);
+    });
+    atualizarSummary(totalMotoboys, totalPedidos, totalKm.toFixed(1), totalGeral);
+
+    // Render cards
+    cont.innerHTML = ids.map(id => {
+      const g = grupos[id];
+      const fech = fechamentos[id];
+      const totalCorridas = g.pedidos.reduce((s,p) => s+p.valor, 0);
+      const diaria = fech ? fech.diaria : 0;
+      const total = fech ? fech.total : totalCorridas;
+      const inicial = g.nome.charAt(0).toUpperCase();
+
+      return `
+        <div class="mb-card">
+          <div class="mb-header" onclick="toggleCard('${id}')">
+            <div class="mb-avatar">${inicial}</div>
+            <div class="mb-info">
+              <div class="mb-name">🛵 ${g.nome}</div>
+              <div class="mb-meta">${g.pedidos.length} pedido(s) · ${data}${fech ? ' · ✅ Fechado' : ' · ⏳ Em aberto'}</div>
+            </div>
+            <div class="pix-badge">
+              <div class="pix-label">💚 PIX</div>
+              <div class="pix-amount">${fmtR(total)}</div>
+            </div>
+            <span class="toggle-icon" id="toggle-${id}">▼</span>
+          </div>
+
+          <div class="orders-wrap hidden" id="orders-${id}">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Pedido</th>
+                  <th>Plataforma</th>
+                  <th>Endereço</th>
+                  <th>KM</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${g.pedidos.map(p => `
+                  <tr>
+                    <td><strong>#${p.codigo}</strong></td>
+                    <td><span class="plat-badge ${platClass[p.plataforma]||''}">${p.plataforma}</span></td>
+                    <td>${p.endereco}</td>
+                    <td class="km-cell">${p.km} km</td>
+                    <td class="price-cell">${fmtR(p.valor)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            <div class="mb-footer">
+              <div class="footer-item">Corridas: <strong>${fmtR(totalCorridas)}</strong></div>
+              <div class="footer-item">Diária: <strong>${fmtR(diaria)}</strong></div>
+              <div class="footer-item" style="margin-left:auto;color:var(--green);font-weight:800;font-size:1rem">
+                Total: ${fmtR(total)}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+  } catch(e) {
+    cont.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">Erro ao carregar dados. Verifique sua conexão.</div></div>`;
+    console.error(e);
+  }
+};
+
+function atualizarSummary(mb, ped, km, total) {
+  document.getElementById('sum-motoboys').textContent = mb;
+  document.getElementById('sum-pedidos').textContent = ped;
+  document.getElementById('sum-km').textContent = km + ' km';
+  document.getElementById('sum-total').textContent = 'R$ ' + Number(total).toFixed(2).replace('.', ',');
+}
+
+window.toggleCard = (id) => {
+  const el = document.getElementById('orders-' + id);
+  const icon = document.getElementById('toggle-' + id);
+  el.classList.toggle('hidden');
+  icon.classList.toggle('open');
+};
+
+// ===== MODAL LINK =====
+const MOTOBOY_URL = 'https://bolodemi-motoboy.netlify.app'; // trocar após hospedar
+
+window.abrirModal = () => {
+  const url = window.location.origin + '/motoboy.html';
+  document.getElementById('link-box').textContent = url;
+  document.getElementById('modal').classList.remove('hidden');
+};
+window.fecharModal = () => document.getElementById('modal').classList.add('hidden');
+window.copiarLink = () => {
+  const txt = document.getElementById('link-box').textContent;
+  navigator.clipboard.writeText(txt).then(() => alert('✅ Link copiado!'));
+};
+window.enviarWhatsapp = () => {
+  const txt = encodeURIComponent('Olá! Aqui está o link para registrar suas entregas hoje:\n' + document.getElementById('link-box').textContent);
+  window.open('https://wa.me/?text=' + txt, '_blank');
+};
+
+// Carregar automaticamente
+carregar();
+</script>
+</body>
+</html>

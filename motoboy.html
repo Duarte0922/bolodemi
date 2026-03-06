@@ -282,16 +282,35 @@ function fmtR(v){ return 'R$ '+Number(v).toFixed(2).replace('.',','); }
 function totalAdiant(){ return adiantamentos.reduce((s,a)=>s+a.valor,0); }
 
 // ===== ADIANTAMENTOS =====
-window.adicionarAdiantamento = () => {
+window.adicionarAdiantamento = async () => {
+
   const desc = document.getElementById('adiant-desc').value.trim();
   const valor = parseFloat(document.getElementById('adiant-valor').value);
-  if(!desc){ alert('Descreva o adiantamento! Ex: Almoço, Mercado...'); return; }
-  if(isNaN(valor)||valor<=0){ alert('Informe o valor a descontar!'); return; }
-  adiantamentos.push({desc, valor});
-  document.getElementById('adiant-desc').value = '';
-  document.getElementById('adiant-valor').value = '';
-  renderAdiantamentos();
-  refreshLiveTotal();
+
+  if(!desc){
+    alert('Descreva o adiantamento!');
+    return;
+  }
+
+  if(isNaN(valor) || valor <= 0){
+    alert('Informe o valor!');
+    return;
+  }
+
+  const pedido = {
+    tipo: "adiantamento",
+    descricao: desc,
+    valor: -valor,
+    data: hoje,
+    motoboyId: motoboyId
+  };
+
+  await addDoc(collection(db,"pedidos"), pedido);
+
+  document.getElementById('adiant-desc').value="";
+  document.getElementById('adiant-valor').value="";
+
+  carregarPedidosDia();
 };
 
 function renderAdiantamentos() {
@@ -420,26 +439,59 @@ window.removerPedido = async (firebaseId, idx) => {
 };
 
 function renderLista(){
-  const cont = document.getElementById('lista-pedidos');
-  document.getElementById('count-badge').textContent = pedidosDia.length;
-  if(pedidosDia.length===0){ cont.innerHTML=`<div class="empty"><div class="empty-icon">📦</div>Nenhum pedido ainda</div>`; return; }
-  const platClass = {iFood:'plat-ifood','99':'plat-99',Particular:'plat-particular'};
-  cont.innerHTML = pedidosDia.map((p,i)=>`
-    <div class="order-item">
-      <button class="order-del" onclick="removerPedido('${p.firebaseId}',${i})">✕</button>
-      <div class="order-top">
-        <div class="order-num">#${p.codigo}</div>
-        <div class="order-plat ${platClass[p.plataforma]||''}">${p.plataforma}</div>
+
+  const lista = document.getElementById("lista-pedidos");
+
+  if(pedidosDia.length === 0){
+    lista.innerHTML = '<div class="empty">Nenhum pedido</div>';
+    return;
+  }
+
+  lista.innerHTML = pedidosDia.map((p,i)=>{
+
+    if(p.tipo === "adiantamento"){
+
+      return `
+      <div class="order-item" style="background:#fff3cd">
+        
+        <div class="order-top">
+          <span class="order-num">🛒 ADIANTAMENTO</span>
+        </div>
+
+        <div class="order-addr">${p.descricao}</div>
+
+        <div class="order-bottom">
+          <span class="order-km">Desconto</span>
+          <span class="order-price" style="color:red">
+            - ${fmtR(Math.abs(p.valor))}
+          </span>
+        </div>
+
       </div>
-      <div class="order-addr">📍 ${p.endereco}</div>
+      `;
+    }
+
+    return `
+    <div class="order-item">
+
+      <div class="order-top">
+        <span class="order-num">#${p.codigo}</span>
+        <span class="order-plat">${p.plataforma}</span>
+      </div>
+
+      <div class="order-addr">${p.endereco}</div>
+
       <div class="order-bottom">
-        <span class="order-km">⬡ ${p.km} km</span>
+        <span class="order-km">${p.km} km</span>
         <span class="order-price">${fmtR(p.valor)}</span>
       </div>
-    </div>
-  `).join('');
-}
 
+    </div>
+    `;
+
+  }).join("");
+
+}
 window.fecharDia = async () => {
   if(pedidosDia.length===0){ alert('Adicione pelo menos um pedido!'); return; }
   const totalCorridas = pedidosDia.reduce((s,p)=>s+p.valor,0);

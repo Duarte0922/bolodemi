@@ -344,9 +344,27 @@ window.removerAdiantamento = (i) => {
 
 // ===== LIVE TOTAL =====
 function refreshLiveTotal() {
-  const corridas = pedidosDia.reduce((s,p)=>s+p.valor,0);
-  const descontos = totalAdiant();
-  const total = Math.max(0, corridas - descontos);
+
+  const total = pedidosDia.reduce((s,p)=>s+p.valor,0);
+
+  const box = document.getElementById('live-total-box');
+
+  if(pedidosDia.length > 0){
+
+    box.classList.remove('hidden');
+
+    document.getElementById('live-total-val').textContent = fmtR(total);
+
+    document.getElementById('lt-sub').textContent =
+      pedidosDia.length + ' registros';
+
+  } else {
+
+    box.classList.add('hidden');
+
+  }
+
+}
   const box = document.getElementById('live-total-box');
 
   if(pedidosDia.length > 0 || descontos > 0){

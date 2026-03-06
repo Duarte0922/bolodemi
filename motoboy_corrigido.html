@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Bolo de Mi · Registro de Entregas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --bg: #FDF4FB; --surface: #FFFFFF; --card: #FFFFFF;
+  --border: #EDD6E8; --pink: #D9368A; --pink-light: #FDEAF5;
+  --purple: #5A2D8C; --purple-light: #EEE4F8; --muted: #9B7AAA;
+  --green: #1F7A4F; --green-bg: #E4F5EC; --text: #240F40; --text2: #5A4070;
+  --red: #C0392B; --red-bg: #FEE2E2; --amber: #b45309; --amber-bg: #fef3c7;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:80px; }
+
+.header { background:var(--purple); padding:0 20px; height:62px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:100; box-shadow:0 4px 20px rgba(90,45,140,0.25); }
+.logo-mark { width:38px; height:38px; background:var(--pink); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+.logo-text { font-family:'Fraunces',serif; font-size:1.2rem; color:#fff; line-height:1; }
+.logo-text em { color:#F9A8D4; font-style:italic; }
+.logo-sub { font-size:0.68rem; color:rgba(255,255,255,0.55); margin-top:1px; font-weight:600; }
+.header-date { margin-left:auto; font-size:0.75rem; color:rgba(255,255,255,0.5); text-align:right; line-height:1.4; }
+
+.main { padding:20px 16px; max-width:520px; margin:0 auto; }
+.card { background:var(--card); border:1.5px solid var(--border); border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 2px 12px rgba(90,45,140,0.06); }
+.card-title { font-family:'Fraunces',serif; font-size:1rem; color:var(--purple); margin-bottom:16px; display:flex; align-items:center; gap:8px; font-weight:700; }
+.step-badge { display:inline-flex; align-items:center; gap:6px; background:var(--purple-light); border:1px solid #D4B8F0; border-radius:20px; padding:5px 12px; font-size:0.75rem; color:var(--purple); font-weight:700; margin-bottom:14px; }
+.info-box { background:var(--pink-light); border:1px solid #F0B8D8; border-radius:10px; padding:11px 14px; font-size:0.82rem; color:var(--pink); font-weight:600; margin-bottom:14px; }
+.origin-box { background:var(--purple-light); border:1.5px solid #D4B8F0; border-radius:10px; padding:12px 14px; font-size:0.9rem; color:var(--purple); font-weight:700; display:flex; align-items:center; gap:8px; }
+
+.field { margin-bottom:14px; }
+label { display:block; font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; }
+input, select { width:100%; padding:12px 14px; background:var(--bg); border:1.5px solid var(--border); border-radius:10px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.95rem; color:var(--text); outline:none; transition:border-color 0.2s; -webkit-appearance:none; }
+input:focus, select:focus { border-color:var(--purple); background:#fff; }
+select option { background:#fff; }
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+/* ADIANTAMENTOS */
+.adiant-input-row { display:grid; grid-template-columns:1fr auto auto; gap:8px; align-items:center; margin-bottom:10px; }
+.adiant-input-row input[type="text"] { font-size:0.9rem; padding:10px 12px; }
+.adiant-input-row input[type="number"] { font-size:0.9rem; padding:10px 12px; max-width:110px; }
+.adiant-label-hint { font-size:0.7rem; color:var(--muted); margin-bottom:8px; font-weight:600; }
+
+.btn-add-adiant { background:var(--amber-bg); border:1.5px solid #fcd34d; color:var(--amber); border-radius:10px; padding:10px 14px; font-size:0.85rem; font-weight:800; cursor:pointer; white-space:nowrap; font-family:'Plus Jakarta Sans',sans-serif; transition:all 0.2s; }
+.btn-add-adiant:active { transform:scale(0.96); }
+
+.btn-remove-adiant { background:var(--red-bg); border:1.5px solid #fecaca; color:var(--red); border-radius:10px; width:36px; height:42px; font-size:1.1rem; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'Plus Jakarta Sans',sans-serif; }
+
+.adiant-list { margin-top:4px; }
+.adiant-item { display:flex; justify-content:space-between; align-items:center; background:var(--amber-bg); border:1.5px solid #fcd34d; border-radius:10px; padding:10px 14px; margin-bottom:8px; }
+.adiant-item-desc { font-size:0.88rem; font-weight:700; color:var(--amber); }
+.adiant-item-val { font-family:'Fraunces',serif; font-size:1.1rem; font-weight:900; color:var(--red); }
+.adiant-item-del { background:var(--red-bg); border:1px solid #fecaca; color:var(--red); border-radius:8px; width:28px; height:28px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.85rem; flex-shrink:0; margin-left:10px; }
+
+.adiant-total-box { background:linear-gradient(135deg,#b45309,#d97706); border-radius:12px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+.atb-label { font-size:0.72rem; color:rgba(255,255,255,0.8); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; }
+.atb-val { font-family:'Fraunces',serif; font-size:1.4rem; font-weight:900; color:#fff; }
+
+/* KM PREVIEW */
+.km-preview { display:none; background:var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:12px 14px; margin-top:8px; flex-direction:column; gap:6px; }
+.km-preview.show { display:flex; }
+.km-row { display:flex; justify-content:space-between; align-items:center; }
+.km-label-txt { font-size:0.78rem; color:var(--muted); font-weight:600; }
+.km-value { font-family:'Fraunces',serif; font-size:1.15rem; font-weight:900; color:var(--purple); }
+.price-tag { background:var(--pink); color:#fff; padding:5px 16px; border-radius:20px; font-family:'Fraunces',serif; font-size:1rem; font-weight:900; }
+
+/* BTNS */
+.btn { width:100%; padding:14px; border:none; border-radius:12px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.95rem; font-weight:800; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn-primary { background:linear-gradient(135deg, var(--purple) 0%, #7B3DB0 100%); color:#fff; margin-top:6px; }
+.btn-primary:active { transform:scale(0.98); }
+.btn-green { background:linear-gradient(135deg, var(--green) 0%, #156B3F 100%); color:#fff; }
+.btn-pdf { background:linear-gradient(135deg, #b45309 0%, #d97706 100%); color:#fff; margin-top:10px; }
+.btn-sm { width:auto; padding:7px 14px; font-size:0.78rem; border-radius:8px; }
+.btn-outline { background:transparent; color:var(--muted); border:1.5px solid var(--border); }
+
+/* LIVE TOTAL */
+.live-total { background:var(--purple-light); border:1.5px solid #D4B8F0; border-radius:12px; padding:14px 16px; margin-top:14px; display:flex; align-items:center; justify-content:space-between; }
+.lt-left .lt-label { font-size:0.72rem; font-weight:700; color:var(--purple); text-transform:uppercase; letter-spacing:0.04em; }
+.lt-left .lt-sub { font-size:0.72rem; color:var(--muted); margin-top:3px; }
+.lt-val { font-family:'Fraunces',serif; font-size:1.6rem; color:var(--purple); font-weight:900; }
+
+/* ORDERS */
+.order-item { background:var(--bg); border:1.5px solid var(--border); border-radius:12px; padding:14px; margin-bottom:10px; position:relative; }
+.order-top { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.order-num { font-family:'Fraunces',serif; font-size:1.15rem; color:var(--purple); font-weight:900; }
+.order-plat { font-size:0.7rem; padding:3px 10px; border-radius:20px; font-weight:700; }
+.plat-ifood { background:#fee; color:#c0392b; }
+.plat-99 { background:#fef9e7; color:#b7860a; }
+.plat-particular { background:var(--green-bg); color:var(--green); }
+.order-addr { font-size:0.82rem; color:var(--text2); line-height:1.4; margin-bottom:8px; }
+.order-bottom { display:flex; justify-content:space-between; align-items:center; }
+.order-km { font-size:0.78rem; color:var(--muted); font-weight:600; }
+.order-price { font-family:'Fraunces',serif; font-size:1.1rem; font-weight:900; color:var(--green); }
+.order-del { position:absolute; top:10px; right:10px; background:#fee2e2; border:1px solid #fecaca; color:#dc2626; width:28px; height:28px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.85rem; }
+
+/* TOTAL FINAL */
+.total-box { background:linear-gradient(135deg, var(--purple) 0%, #7B3DB0 100%); border-radius:16px; padding:22px; margin-top:6px; box-shadow:0 4px 20px rgba(90,45,140,0.3); }
+.total-line { display:flex; justify-content:space-between; font-size:0.85rem; color:rgba(255,255,255,0.65); margin-bottom:8px; }
+.total-line span:last-child { color:#fff; font-weight:700; }
+.total-line.desconto span:last-child { color:#FCA5A5 !important; }
+.total-divider { height:1px; background:rgba(255,255,255,0.15); margin:12px 0; }
+.total-main { display:flex; justify-content:space-between; align-items:center; }
+.total-label { font-size:0.82rem; color:rgba(255,255,255,0.8); font-weight:700; }
+.total-amount { font-family:'Fraunces',serif; font-size:2.3rem; color:#fff; font-weight:900; letter-spacing:-0.02em; }
+
+.profile-strip { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+.avatar { width:42px; height:42px; background:linear-gradient(135deg, var(--purple), var(--pink)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-size:1.1rem; color:#fff; font-weight:900; flex-shrink:0; }
+.profile-name { font-weight:800; font-size:0.95rem; color:var(--text); }
+.profile-phone { font-size:0.78rem; color:var(--muted); margin-top:2px; }
+.count-badge { background:var(--purple); color:#fff; border-radius:50%; width:20px; height:20px; font-size:0.7rem; font-weight:800; display:inline-flex; align-items:center; justify-content:center; margin-left:6px; }
+.empty { text-align:center; padding:30px; color:var(--muted); font-size:0.85rem; }
+.empty-icon { font-size:2.5rem; margin-bottom:8px; }
+.spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.hidden { display:none !important; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-mark">🎂</div>
+  <div>
+    <div class="logo-text">Bolo de <em>Mi</em></div>
+    <div class="logo-sub">Registro de Entregas</div>
+  </div>
+  <div class="header-date" id="header-date"></div>
+</div>
+
+<div class="main">
+
+  <!-- CADASTRO -->
+  <div id="section-cadastro">
+    <div class="step-badge">📋 Passo 1 · Identificação</div>
+    <div class="card">
+      <div class="card-title">👤 Quem é você?</div>
+      <div class="field"><label>Seu nome completo</label><input type="text" id="mb-nome" placeholder="Ex: Luciano Oliveira"></div>
+      <div class="field"><label>Telefone / WhatsApp</label><input type="tel" id="mb-tel" placeholder="(31) 9 0000-0000"></div>
+      <button class="btn btn-primary" onclick="salvarCadastro()">Confirmar e Começar ➜</button>
+    </div>
+  </div>
+
+  <!-- ENTREGAS -->
+  <div id="section-entregas" class="hidden">
+
+    <div class="profile-strip">
+      <div class="avatar" id="avatar">L</div>
+      <div style="flex:1">
+        <div class="profile-name" id="perfil-nome">—</div>
+        <div class="profile-phone" id="perfil-tel">—</div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="trocarMotoboy()">Trocar</button>
+    </div>
+
+    <!-- ORIGEM -->
+    <div class="card">
+      <div class="card-title">📍 Saída (Endereço Fixo da Loja)</div>
+      <div class="info-box">⚠️ Todas as distâncias são calculadas a partir deste ponto.</div>
+      <div class="origin-box">📍 Rua Asteca, 2812A – Santa Monica, BH</div>
+    </div>
+
+    <!-- ADIANTAMENTOS -->
+    <div class="step-badge">🛒 Passo 1 · Adiantamentos / Compras</div>
+    <div class="card">
+      <div class="card-title">🛒 Adiantamentos e Compras</div>
+      <div class="adiant-label-hint">Adicione tudo que deve ser descontado do seu pagamento (almoço, compras, etc.)</div>
+
+      <!-- Campos para novo adiantamento -->
+      <div class="adiant-input-row">
+        <input type="text" id="adiant-desc" placeholder="Ex: Almoço, Mercado...">
+        <input type="number" id="adiant-valor" placeholder="R$ 0,00" step="0.01" min="0">
+        <button class="btn-remove-adiant" onclick="adicionarAdiantamento()" style="background:var(--amber-bg);border-color:#fcd34d;color:var(--amber);font-size:1.3rem;">＋</button>
+      </div>
+
+      <!-- Lista de adiantamentos -->
+      <div class="adiant-list" id="adiant-list"></div>
+
+      <!-- Total dos adiantamentos -->
+      <div id="adiant-total-box" class="adiant-total-box hidden">
+        <div>
+          <div class="atb-label">Total a descontar</div>
+          <div class="atb-val" id="adiant-total-val">R$ 0,00</div>
+        </div>
+        <span style="font-size:1.8rem">🛒</span>
+      </div>
+    </div>
+
+    <!-- PEDIDOS -->
+    <div class="step-badge">📦 Passo 2 · Adicionar Pedidos</div>
+    <div class="card">
+      <div class="card-title">➕ Novo Pedido</div>
+      <div class="row2">
+        <div class="field"><label>Nº do Pedido</label><input type="text" id="ped-codigo" placeholder="Ex: 0385"></div>
+        <div class="field">
+          <label>Plataforma</label>
+          <select id="ped-plataforma">
+            <option value="">Selecione...</option>
+            <option value="iFood">iFood</option>
+            <option value="99">99</option>
+            <option value="Particular">Particular</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Endereço de Entrega</label><input type="text" id="ped-endereco" placeholder="Rua, número, bairro, cidade..."></div>
+      <div class="field">
+        <label>Distância em KM (consulte seu GPS)</label>
+        <input type="number" id="ped-km" placeholder="Ex: 5.3" step="0.1" min="0" oninput="previewKM()">
+        <div class="km-preview" id="km-preview">
+          <div class="km-row"><span class="km-label-txt">Distância</span><span class="km-value" id="km-val">0 km</span></div>
+          <div class="km-row"><span class="km-label-txt">Valor desta entrega</span><span class="price-tag" id="price-tag">R$ 0,00</span></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-add" onclick="adicionarPedido()">➕ Adicionar Pedido</button>
+    </div>
+
+    <!-- LISTA DE PEDIDOS -->
+    <div class="card">
+      <div class="card-title">📋 Pedidos do Dia <span class="count-badge" id="count-badge">0</span></div>
+      <div id="lista-pedidos"><div class="empty"><div class="empty-icon">📦</div>Nenhum pedido ainda</div></div>
+
+      <!-- TOTAL AO VIVO -->
+      <div id="live-total-box" class="live-total hidden">
+        <div class="lt-left">
+          <div class="lt-label">Subtotal Atual</div>
+          <div class="lt-sub" id="lt-sub">corridas − adiantamentos</div>
+        </div>
+        <div class="lt-val" id="live-total-val">R$ 0,00</div>
+      </div>
+    </div>
+
+    <!-- FECHAMENTO -->
+    <div class="card">
+      <div class="card-title">💰 Fechar o Dia</div>
+      <button class="btn btn-green" id="btn-fechar" onclick="fecharDia()">🧮 Calcular e Salvar Total</button>
+
+      <div id="total-box" class="total-box hidden" style="margin-top:14px">
+        <div class="total-line"><span>Total em corridas</span><span id="t-corridas">R$ 0,00</span></div>
+        <div id="t-adiant-lines"></div>
+        <div class="total-line"><span>Pedidos realizados</span><span id="t-qtd">0</span></div>
+        <div class="total-divider"></div>
+        <div class="total-main">
+          <div class="total-label">💚 TOTAL VIA PIX</div>
+          <div class="total-amount" id="t-total">R$ 0,00</div>
+        </div>
+      </div>
+
+      <button class="btn btn-pdf hidden" id="btn-pdf" onclick="gerarPDF()">
+        📄 Baixar Comprovante em PDF
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, setDoc, collection, addDoc, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD9JGS6HMTWuj17fne5hOAZ2TOh9o8tyhw",
+  authDomain: "bolo-de-mi.firebaseapp.com",
+  projectId: "bolo-de-mi",
+  storageBucket: "bolo-de-mi.firebasestorage.app",
+  messagingSenderId: "1060789628321",
+  appId: "1:1060789628321:web:fe5a8beb4a305de9772fe0"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let motoboyId = null, motoboyNome = '', motoboyTel = '';
+let pedidosDia = [];
+let adiantamentos = []; // { desc, valor }
+const hoje = new Date().toLocaleDateString('en-CA');
+
+document.getElementById('header-date').innerHTML =
+  new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'}).replace('.','')+'<br>'+hoje;
+
+function calcPreco(km){ if(km<=3)return 3; if(km<=7)return 5; if(km<=9)return 7; if(km<=14)return 11; if(km<=18)return 18; return 20; }
+function fmtR(v){ return 'R$ '+Number(v).toFixed(2).replace('.',','); }
+function totalAdiant(){ return adiantamentos.reduce((s,a)=>s+a.valor,0); }
+
+// ===== ADIANTAMENTOS =====
+window.adicionarAdiantamento = () => {
+  const desc = document.getElementById('adiant-desc').value.trim();
+  const valor = parseFloat(document.getElementById('adiant-valor').value);
+  if(!desc){ alert('Descreva o adiantamento! Ex: Almoço, Mercado...'); return; }
+  if(isNaN(valor)||valor<=0){ alert('Informe o valor a descontar!'); return; }
+  adiantamentos.push({desc, valor});
+  document.getElementById('adiant-desc').value = '';
+  document.getElementById('adiant-valor').value = '';
+  renderAdiantamentos();
+  refreshLiveTotal();
+};
+
+function renderAdiantamentos() {
+  const lista = document.getElementById('adiant-list');
+  const totalBox = document.getElementById('adiant-total-box');
+  if(adiantamentos.length === 0){
+    lista.innerHTML = '';
+    totalBox.classList.add('hidden');
+    return;
+  }
+  lista.innerHTML = adiantamentos.map((a,i) => `
+    <div class="adiant-item">
+      <div>
+        <div class="adiant-item-desc">🛒 ${a.desc}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="adiant-item-val">− ${fmtR(a.valor)}</div>
+        <button class="adiant-item-del" onclick="removerAdiantamento(${i})">✕</button>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('adiant-total-val').textContent = fmtR(totalAdiant());
+  totalBox.classList.remove('hidden');
+}
+
+window.removerAdiantamento = (i) => {
+  adiantamentos.splice(i,1);
+  renderAdiantamentos();
+  refreshLiveTotal();
+};
+
+// ===== LIVE TOTAL =====
+function refreshLiveTotal() {
+  const corridas = pedidosDia.reduce((s,p)=>s+p.valor,0);
+  const descontos = totalAdiant();
+  const total = Math.max(0, corridas - descontos);
+  const box = document.getElementById('live-total-box');
+
+  if(pedidosDia.length > 0 || descontos > 0){
+    box.classList.remove('hidden');
+    document.getElementById('live-total-val').textContent = fmtR(total);
+    let sub = pedidosDia.length + ' corrida(s) = ' + fmtR(corridas);
+    if(descontos > 0) sub += '  −  descontos ' + fmtR(descontos);
+    document.getElementById('lt-sub').textContent = sub;
+  } else {
+    box.classList.add('hidden');
+  }
+}
+
+window.previewKM = () => {
+  const km = parseFloat(document.getElementById('ped-km').value);
+  const p = document.getElementById('km-preview');
+  if(isNaN(km)||km<=0){ p.classList.remove('show'); return; }
+  document.getElementById('km-val').textContent = km.toFixed(1)+' km';
+  document.getElementById('price-tag').textContent = fmtR(calcPreco(km));
+  p.classList.add('show');
+};
+
+window.salvarCadastro = async () => {
+  const nome = document.getElementById('mb-nome').value.trim();
+  const tel = document.getElementById('mb-tel').value.trim();
+  if(!nome||!tel){ alert('Preencha seu nome e telefone!'); return; }
+  motoboyNome = nome; motoboyTel = tel;
+  motoboyId = nome.toLowerCase().replace(/\s+/g,'_')+'_'+tel.replace(/\D/g,'').slice(-4);
+  await setDoc(doc(db,'motoboys',motoboyId),{nome,tel,id:motoboyId},{merge:true});
+  document.getElementById('avatar').textContent = nome.charAt(0).toUpperCase();
+  document.getElementById('perfil-nome').textContent = nome;
+  document.getElementById('perfil-tel').textContent = tel;
+  document.getElementById('section-cadastro').classList.add('hidden');
+  document.getElementById('section-entregas').classList.remove('hidden');
+  await carregarPedidosDia();
+};
+
+window.trocarMotoboy = () => {
+  if(!confirm('Trocar de motoboy?')) return;
+  motoboyId=null; motoboyNome=''; motoboyTel=''; pedidosDia=[]; adiantamentos=[];
+  document.getElementById('section-cadastro').classList.remove('hidden');
+  document.getElementById('section-entregas').classList.add('hidden');
+  document.getElementById('total-box').classList.add('hidden');
+  document.getElementById('btn-pdf').classList.add('hidden');
+  renderLista(); renderAdiantamentos();
+};
+
+async function carregarPedidosDia(){
+  try {
+    const snap = await getDocs(query(collection(db,'pedidos'),where('motoboyId','==',motoboyId),where('data','==',hoje)));
+    pedidosDia=[];
+    snap.forEach(d => pedidosDia.push({...d.data(),firebaseId:d.id}));
+    pedidosDia.sort((a,b)=>a.timestamp-b.timestamp);
+    renderLista();
+    refreshLiveTotal();
+  } catch(e){ console.error(e); }
+}
+
+window.adicionarPedido = async () => {
+  const codigo = document.getElementById('ped-codigo').value.trim();
+  const plataforma = document.getElementById('ped-plataforma').value;
+  const endereco = document.getElementById('ped-endereco').value.trim();
+  const km = parseFloat(document.getElementById('ped-km').value);
+  if(!codigo||!plataforma||!endereco||isNaN(km)||km<=0){ alert('Preencha todos os campos!'); return; }
+  const btn = document.getElementById('btn-add');
+  btn.innerHTML='<span class="spinner"></span> Salvando...'; btn.disabled=true;
+  const pedido = { motoboyId, motoboyNome, data:hoje, codigo, plataforma, endereco, km, valor:calcPreco(km), timestamp:Date.now() };
+  try {
+    const ref = await addDoc(collection(db,'pedidos'),pedido);
+    pedido.firebaseId=ref.id; pedidosDia.push(pedido);
+    document.getElementById('ped-codigo').value='';
+    document.getElementById('ped-plataforma').value='';
+    document.getElementById('ped-endereco').value='';
+    document.getElementById('ped-km').value='';
+    document.getElementById('km-preview').classList.remove('show');
+    renderLista();
+    refreshLiveTotal();
+  } catch(e){ alert('Erro ao salvar.'); }
+  btn.innerHTML='➕ Adicionar Pedido'; btn.disabled=false;
+};
+
+window.removerPedido = async (firebaseId, idx) => {
+  if(!confirm('Remover este pedido?')) return;
+  try {
+    await deleteDoc(doc(db,'pedidos',firebaseId));
+    pedidosDia.splice(idx,1);
+    renderLista();
+    refreshLiveTotal();
+  } catch(e){ alert('Erro ao remover.'); }
+};
+
+function renderLista(){
+  const cont = document.getElementById('lista-pedidos');
+  document.getElementById('count-badge').textContent = pedidosDia.length;
+  if(pedidosDia.length===0){ cont.innerHTML=`<div class="empty"><div class="empty-icon">📦</div>Nenhum pedido ainda</div>`; return; }
+  const platClass = {iFood:'plat-ifood','99':'plat-99',Particular:'plat-particular'};
+  cont.innerHTML = pedidosDia.map((p,i)=>{
+
+  if(p.tipo === "adiantamento"){
+    return `
+    <div class="order-item" style="background:#fff3cd">
+      <button class="order-del" onclick="removerPedido('${p.firebaseId}',${i})">✕</button>
+      <div class="order-top">
+        <div class="order-num">🛒 ADIANTAMENTO</div>
+        <div class="order-plat">DESCONTO</div>
+      </div>
+      <div class="order-addr">💳 ${p.descricao}</div>
+      <div class="order-bottom">
+        <span class="order-km">Desconto</span>
+        <span class="order-price" style="color:red">- ${fmtR(Math.abs(p.valor))}</span>
+      </div>
+    </div>
+    `;
+  }
+
+  return `
+    <div class="order-item">
+      <button class="order-del" onclick="removerPedido('${p.firebaseId}',${i})">✕</button>
+      <div class="order-top">
+        <div class="order-num">#${p.codigo}</div>
+        <div class="order-plat ${platClass[p.plataforma]||''}">${p.plataforma}</div>
+      </div>
+      <div class="order-addr">📍 ${p.endereco}</div>
+      <div class="order-bottom">
+        <span class="order-km">⬡ ${p.km} km</span>
+        <span class="order-price">${fmtR(p.valor)}</span>
+      </div>
+    </div>
+  `;
+}).join('');
+}
+
+window.fecharDia = async () => {
+  if(pedidosDia.length===0){ alert('Adicione pelo menos um pedido!'); return; }
+  const total = pedidosDia.reduce((s,p)=>s+p.valor,0);
+  const btn = document.getElementById('btn-fechar');
+  btn.innerHTML='<span class="spinner"></span> Salvando...'; btn.disabled=true;
+  try {
+    await setDoc(doc(db,'fechamentos',motoboyId+'_'+hoje),{
+      motoboyId, motoboyNome, data:hoje,
+      adiantamentos: adiantamentos,
+      totalDescontos: descontos,
+      totalCorridas, total,
+      qtdPedidos:pedidosDia.length,
+      fechadoEm:new Date().toISOString()
+    });
+    // Sincroniza com painel da Michele
+    await setDoc(doc(db,'pagamentos',motoboyId+'_'+hoje),{
+      motoboyId, data:hoje, status:'pendente',
+      adiantamentos: adiantamentos,
+      totalDescontos: descontos
+    }, {merge:true});
+
+    // Monta linhas de adiantamento no resumo
+    document.getElementById('t-corridas').textContent = fmtR(totalCorridas);
+    document.getElementById('t-qtd').textContent = pedidosDia.length+' pedidos';
+    document.getElementById('t-total').textContent = fmtR(total);
+
+    let adiantLines = '';
+    adiantamentos.forEach(a => {
+      adiantLines += `<div class="total-line desconto"><span>− ${a.desc}</span><span>- ${fmtR(a.valor)}</span></div>`;
+    });
+    document.getElementById('t-adiant-lines').innerHTML = adiantLines;
+
+    document.getElementById('total-box').classList.remove('hidden');
+    document.getElementById('btn-pdf').classList.remove('hidden');
+    document.getElementById('live-total-box').classList.add('hidden');
+    alert('✅ Dia fechado!\n' + motoboyNome + ': ' + fmtR(total));
+  } catch(e){ alert('Erro ao salvar fechamento.'); }
+  btn.innerHTML='🧮 Recalcular Total'; btn.disabled=false;
+};
+
+// ===== PDF =====
+window.gerarPDF = () => {
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+    const W = 210, M = 16;
+    let y = 0;
+
+    const corridas = pedidosDia.reduce((s,p)=>s+p.valor,0);
+    const descontos = totalAdiant();
+    const total = Math.max(0, corridas - descontos);
+    const dataFmt = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const horaFmt = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+
+    // HEADER
+    pdf.setFillColor(90,45,140);
+    pdf.rect(0,0,W,42,'F');
+    pdf.setFillColor(217,54,138);
+    pdf.rect(0,36,W,6,'F');
+    pdf.setFont('helvetica','bold');
+    pdf.setFontSize(22); pdf.setTextColor(255,255,255);
+    pdf.text('Bolo de Mi', M, 17);
+    pdf.setFont('helvetica','normal');
+    pdf.setFontSize(9); pdf.setTextColor(220,200,240);
+    pdf.text('Comprovante de Pagamento — Motoboy', M, 26);
+    pdf.setTextColor(249,168,212);
+    pdf.setFontSize(8);
+    pdf.text(dataFmt + '  |  ' + horaFmt, W-M, 17, {align:'right'});
+    y = 54;
+
+    // MOTOBOY BOX
+    pdf.setFillColor(238,228,248);
+    pdf.roundedRect(M, y, W-M*2, 24, 3, 3, 'F');
+    pdf.setDrawColor(180,140,220); pdf.setLineWidth(0.4);
+    pdf.roundedRect(M, y, W-M*2, 24, 3, 3, 'S');
+    pdf.setFont('helvetica','bold'); pdf.setFontSize(13); pdf.setTextColor(90,45,140);
+    pdf.text(motoboyNome, M+8, y+10);
+    pdf.setFont('helvetica','normal'); pdf.setFontSize(8.5); pdf.setTextColor(120,80,160);
+    pdf.text('Data: ' + dataFmt + '     Pedidos: ' + pedidosDia.length, M+8, y+18);
+    y += 32;
+
+    // TABELA PEDIDOS
+    pdf.setFont('helvetica','bold'); pdf.setFontSize(9); pdf.setTextColor(90,45,140);
+    pdf.text('PEDIDOS REALIZADOS', M, y);
+    y += 5;
+
+    pdf.setFillColor(90,45,140);
+    pdf.rect(M, y, W-M*2, 8, 'F');
+    pdf.setTextColor(255,255,255); pdf.setFont('helvetica','bold'); pdf.setFontSize(7.5);
+    const cols = [M+3, M+18, M+44, M+126, W-M-3];
+    pdf.text('Nº', cols[0], y+5.5);
+    pdf.text('Plat.', cols[1], y+5.5);
+    pdf.text('Endereço', cols[2], y+5.5);
+    pdf.text('KM', cols[3], y+5.5);
+    pdf.text('Valor', cols[4], y+5.5, {align:'right'});
+    y += 8;
+
+    pedidosDia.forEach((p,i) => {
+      if(y > 258){ pdf.addPage(); y = 20; }
+      pdf.setFillColor(i%2===0?253:255, i%2===0?244:255, i%2===0?251:255);
+      pdf.rect(M, y, W-M*2, 8, 'F');
+      pdf.setTextColor(36,15,64); pdf.setFont('helvetica','bold'); pdf.setFontSize(7.5);
+      pdf.text('#'+p.codigo, cols[0], y+5.5);
+      pdf.setFont('helvetica','normal');
+      pdf.text(p.plataforma, cols[1], y+5.5);
+      const end = p.endereco.length>44 ? p.endereco.substring(0,42)+'...' : p.endereco;
+      pdf.text(end, cols[2], y+5.5);
+      pdf.text(p.km+'km', cols[3], y+5.5);
+      pdf.setFont('helvetica','bold'); pdf.setTextColor(31,122,79);
+      pdf.text(fmtR(p.valor), cols[4], y+5.5, {align:'right'});
+      pdf.setDrawColor(237,214,232); pdf.setLineWidth(0.3);
+      pdf.line(M, y+8, W-M, y+8);
+      y += 8;
+    });
+    y += 10;
+
+    // RESUMO
+    if(y > 215){ pdf.addPage(); y = 20; }
+    const extraLinhas = adiantamentos.length;
+    const rH = 30 + extraLinhas * 10 + 16;
+    pdf.setFillColor(245,238,255);
+    pdf.roundedRect(M, y, W-M*2, rH, 3, 3, 'F');
+    pdf.setDrawColor(180,140,220);
+    pdf.roundedRect(M, y, W-M*2, rH, 3, 3, 'S');
+
+    let ry = y+10;
+
+    // Corridas
+    pdf.setFont('helvetica','normal'); pdf.setFontSize(9); pdf.setTextColor(120,80,160);
+    pdf.text('Total em corridas (' + pedidosDia.length + ' pedidos)', M+6, ry);
+    pdf.setFont('helvetica','bold'); pdf.setTextColor(31,122,79);
+    pdf.text(fmtR(corridas), W-M-6, ry, {align:'right'});
+    ry += 10;
+
+    // Cada adiantamento
+    adiantamentos.forEach(a => {
+      pdf.setFont('helvetica','normal'); pdf.setTextColor(120,80,160);
+      pdf.text('− ' + a.desc, M+6, ry);
+      pdf.setFont('helvetica','bold'); pdf.setTextColor(192,57,43);
+      pdf.text('- ' + fmtR(a.valor), W-M-6, ry, {align:'right'});
+      ry += 10;
+    });
+
+    // Separador
+    pdf.setDrawColor(200,170,230); pdf.setLineWidth(0.4);
+    pdf.line(M+6, ry-2, W-M-6, ry-2);
+    ry += 4;
+
+    // Total
+    pdf.setFillColor(90,45,140);
+    pdf.roundedRect(M+3, ry-2, W-M*2-6, 14, 2, 2, 'F');
+    pdf.setFont('helvetica','bold'); pdf.setFontSize(10); pdf.setTextColor(255,255,255);
+    pdf.text('TOTAL VIA PIX', M+8, ry+7);
+    pdf.setFontSize(13);
+    pdf.text(fmtR(total), W-M-8, ry+8, {align:'right'});
+
+    // RODAPÉ
+    pdf.setDrawColor(237,214,232); pdf.setLineWidth(0.5);
+    pdf.line(M, 283, W-M, 283);
+    pdf.setFont('helvetica','normal'); pdf.setFontSize(7.5); pdf.setTextColor(155,122,170);
+    pdf.text('Bolo de Mi  ·  Rua Asteca, 2812A – Santa Monica, Belo Horizonte', W/2, 288, {align:'center'});
+    pdf.text('Gerado em ' + dataFmt + ' às ' + horaFmt, W/2, 293, {align:'center'});
+
+    pdf.save('BoloMi_' + motoboyNome.replace(/\s+/g,'_') + '_' + hoje + '.pdf');
+  } catch(e){
+    console.error(e);
+    alert('Erro ao gerar PDF: ' + e.message);
+  }
+};
+</script>
+</body>
+</html>

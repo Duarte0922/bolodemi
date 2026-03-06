@@ -446,7 +446,8 @@ body {
       </div>
       <div class="form-group">
         <label class="form-label">Plataforma</label>
-        <select id="plataforma" class="form-select">
+        <select id="plataforma" class="form-select" onchange="calcularValor()">
+          <option value="">Selecione...</option>
           <option value="iFood">iFood</option>
           <option value="99">99Food</option>
           <option value="Particular">Particular</option>
@@ -458,16 +459,16 @@ body {
       </div>
       <div class="form-group">
         <label class="form-label">KM Rodados</label>
-        <input type="number" id="km" class="form-input" placeholder="0.0" step="0.1" oninput="calcularValorPorKm()">
+        <input type="number" id="km" class="form-input" placeholder="0.0" step="0.1" oninput="calcularValor()">
       </div>
       <div class="form-group">
         <label class="form-label">Valor da Corrida (R$)</label>
-        <input type="number" id="valor" class="form-input" placeholder="0.00" step="0.01" readonly>
+        <input type="number" id="valor" class="form-input" placeholder="0.00" step="0.01" readonly style="background: #f0f0f0;">
       </div>
       <button class="btn-primary" onclick="adicionarPedido()">➕ Adicionar Pedido</button>
     </div>
 
-    <!-- 🔥 NOVO: Card de Adiantamento -->
+    <!-- 🔥 NOVO CARD ADIANTAMENTO -->
     <div class="form-card">
       <div class="form-title">💰 Adiantamento / Compra</div>
       <div class="form-group">
@@ -524,7 +525,39 @@ const db = firebase.firestore();
 
 let pedidos = [];
 let motoboyInfo = null;
-const VALOR_POR_KM = 8.5;
+
+// 🔥 TABELA DE PREÇOS DO SEU ARQUIVO ORIGINAL
+const tabelaPrecos = {
+  "iFood": [
+    { ate: 2, valor: 7 },
+    { ate: 4, valor: 9 },
+    { ate: 6, valor: 11 },
+    { ate: 8, valor: 13 },
+    { ate: 10, valor: 15 },
+    { ate: 12, valor: 17 },
+    { ate: 14, valor: 19 },
+    { ate: 16, valor: 21 },
+    { ate: 18, valor: 23 },
+    { ate: 20, valor: 25 },
+    { ate: 999, valor: 27 }
+  ],
+  "99": [
+    { ate: 2, valor: 7 },
+    { ate: 4, valor: 9 },
+    { ate: 6, valor: 11 },
+    { ate: 8, valor: 13 },
+    { ate: 10, valor: 15 },
+    { ate: 12, valor: 17 },
+    { ate: 14, valor: 19 },
+    { ate: 16, valor: 21 },
+    { ate: 18, valor: 23 },
+    { ate: 20, valor: 25 },
+    { ate: 999, valor: 27 }
+  ],
+  "Particular": [
+    { ate: 999, valorPorKm: 10 }
+  ]
+};
 
 function verificarLogin() {
   const savedNome = localStorage.getItem('motoboy_nome');
@@ -560,9 +593,30 @@ function fazerLogin() {
   document.getElementById('modal-login').classList.add('hidden');
 }
 
-function calcularValorPorKm() {
+// 🔥 FUNÇÃO DE CÁLCULO DO SEU ARQUIVO ORIGINAL
+function calcularValor() {
+  const plataforma = document.getElementById('plataforma').value;
   const km = parseFloat(document.getElementById('km').value) || 0;
-  const valor = km * VALOR_POR_KM;
+  
+  if (!plataforma || km <= 0) {
+    document.getElementById('valor').value = '';
+    return;
+  }
+
+  const tabela = tabelaPrecos[plataforma];
+  let valor = 0;
+
+  if (plataforma === "Particular") {
+    valor = km * tabela[0].valorPorKm;
+  } else {
+    for (let faixa of tabela) {
+      if (km <= faixa.ate) {
+        valor = faixa.valor;
+        break;
+      }
+    }
+  }
+
   document.getElementById('valor').value = valor.toFixed(2);
 }
 
@@ -573,7 +627,7 @@ function adicionarPedido() {
   const km = parseFloat(document.getElementById('km').value) || 0;
   const valor = parseFloat(document.getElementById('valor').value) || 0;
 
-  if (!codigo || !endereco || valor <= 0) {
+  if (!codigo || !plataforma || !endereco || valor <= 0) {
     alert('⚠️ Preencha todos os campos obrigatórios!');
     return;
   }
@@ -596,7 +650,7 @@ function adicionarPedido() {
   limparFormPedido();
 }
 
-// 🔥 NOVA FUNÇÃO
+// 🔥 NOVA FUNÇÃO ADIANTAMENTO
 function adicionarAdiantamento() {
   const valor = parseFloat(document.getElementById('adiant-valor').value) || 0;
   const descricao = document.getElementById('adiant-desc').value.trim() || 'Adiantamento/Compra';
@@ -626,6 +680,7 @@ function adicionarAdiantamento() {
 
 function limparFormPedido() {
   document.getElementById('codigo').value = '';
+  document.getElementById('plataforma').value = '';
   document.getElementById('endereco').value = '';
   document.getElementById('km').value = '';
   document.getElementById('valor').value = '';

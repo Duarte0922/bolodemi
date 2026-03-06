@@ -8,348 +8,63 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root {
-  --bg: #FDF4FB;
-  --surface: #FFFFFF;
-  --border: #EDD6E8;
-  --pink: #D9368A;
-  --pink-light: #FDEAF5;
-  --purple: #5A2D8C;
-  --purple-light: #EEE4F8;
-  --muted: #9B7AAA;
-  --green: #1F7A4F;
-  --green-bg: #E4F5EC;
-  --text: #240F40;
-  --red: #C0392B;
-  --red-bg: #FEE2E2;
+  --bg: #FDF4FB; --surface: #FFFFFF; --border: #EDD6E8;
+  --pink: #D9368A; --pink-light: #FDEAF5;
+  --purple: #5A2D8C; --purple-light: #EEE4F8;
+  --muted: #9B7AAA; --green: #1F7A4F; --green-bg: #E4F5EC;
+  --text: #240F40; --red: #C0392B; --red-bg: #FEE2E2;
   --amber: #f59e0b;
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 80px; }
 
-body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  padding-bottom: 80px;
-}
+.header { background: linear-gradient(135deg, var(--purple), #7c3aed); padding: 0 20px; height: 62px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(90,45,140,0.3); }
+.logo-mark { width: 40px; height: 40px; background: var(--pink); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+.logo-text { font-family: 'Fraunces', serif; font-size: 1.15rem; color: #fff; line-height: 1; }
+.logo-text em { color: #F9A8D4; font-style: italic; }
+.logo-sub { font-size: 0.7rem; color: rgba(255,255,255,0.6); margin-top: 2px; font-weight: 600; }
+.main { max-width: 600px; margin: 0 auto; padding: 20px; }
 
-.header {
-  background: linear-gradient(135deg, var(--purple), #7c3aed);
-  padding: 0 20px;
-  height: 62px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 4px 20px rgba(90, 45, 140, 0.3);
-}
+.welcome-card { background: linear-gradient(135deg, var(--purple-light), var(--pink-light)); border: 1.5px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; text-align: center; }
+.welcome-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.welcome-title { font-family: 'Fraunces', serif; font-size: 1.3rem; color: var(--purple); margin-bottom: 4px; }
+.welcome-sub { font-size: 0.85rem; color: var(--muted); }
 
-.logo-mark {
-  width: 40px;
-  height: 40px;
-  background: var(--pink);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-}
+.form-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+.form-title { font-family: 'Fraunces', serif; font-size: 1.1rem; color: var(--purple); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; display: block; }
+.form-input, .form-select { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
+.form-input:focus, .form-select:focus { border-color: var(--purple); background: #fff; }
 
-.logo-text {
-  font-family: 'Fraunces', serif;
-  font-size: 1.15rem;
-  color: #fff;
-  line-height: 1;
-}
+.btn-primary { width: 100%; padding: 14px; background: var(--green); color: #fff; border: none; border-radius: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+.btn-primary:hover { background: #186040; transform: translateY(-1px); }
 
-.logo-text em {
-  color: #F9A8D4;
-  font-style: italic;
-}
+.btn-amber { width: 100%; padding: 14px; background: var(--amber); color: #fff; border: none; border-radius: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+.btn-amber:hover { background: #d97706; transform: translateY(-1px); }
 
-.logo-sub {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 2px;
-  font-weight: 600;
-}
+.pedidos-list { margin-top: 20px; }
+.pedido-item { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+.pedido-item.adiantamento { background: #fff9e6; border-color: var(--amber); }
+.pedido-info { flex: 1; }
+.pedido-codigo { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 900; color: var(--purple); margin-bottom: 4px; }
+.pedido-item.adiantamento .pedido-codigo { color: var(--amber); }
+.pedido-meta { font-size: 0.8rem; color: var(--muted); }
+.pedido-valor { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 900; color: var(--green); text-align: right; }
+.pedido-item.adiantamento .pedido-valor { color: var(--red); }
+.btn-delete { background: var(--red-bg); color: var(--red); border: 1px solid #fecaca; border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; margin-left: 10px; }
 
-.main {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-}
+.total-card { background: linear-gradient(135deg, var(--green), #2d9d64); border-radius: 16px; padding: 20px; text-align: center; color: #fff; margin-top: 20px; }
+.total-label { font-size: 0.85rem; opacity: 0.9; margin-bottom: 6px; }
+.total-valor { font-family: 'Fraunces', serif; font-size: 2.5rem; font-weight: 900; }
+.btn-finalizar { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--purple), #7c3aed); color: #fff; border: none; border-radius: 14px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 800; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 20px rgba(90,45,140,0.4); }
+.hidden { display: none !important; }
 
-.welcome-card {
-  background: linear-gradient(135deg, var(--purple-light), var(--pink-light));
-  border: 1.5px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.welcome-icon {
-  font-size: 2.5rem;
-  margin-bottom: 8px;
-}
-
-.welcome-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.3rem;
-  color: var(--purple);
-  margin-bottom: 4px;
-}
-
-.welcome-sub {
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.form-card {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.form-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.1rem;
-  color: var(--purple);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.form-input,
-.form-select {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.95rem;
-  color: var(--text);
-  background: var(--bg);
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.form-input:focus,
-.form-select:focus {
-  border-color: var(--purple);
-  background: #fff;
-}
-
-.btn-primary {
-  width: 100%;
-  padding: 14px;
-  background: var(--green);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1rem;
-  font-weight: 800;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s;
-}
-
-.btn-primary:hover {
-  background: #186040;
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  width: 100%;
-  padding: 14px;
-  background: var(--amber);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1rem;
-  font-weight: 800;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s;
-  margin-top: 10px;
-}
-
-.btn-secondary:hover {
-  background: #d97706;
-  transform: translateY(-1px);
-}
-
-.pedidos-list {
-  margin-top: 20px;
-}
-
-.pedido-item {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.pedido-item.adiantamento {
-  background: #fff9e6;
-  border-color: var(--amber);
-}
-
-.pedido-info {
-  flex: 1;
-}
-
-.pedido-codigo {
-  font-family: 'Fraunces', serif;
-  font-size: 1.1rem;
-  font-weight: 900;
-  color: var(--purple);
-  margin-bottom: 4px;
-}
-
-.pedido-item.adiantamento .pedido-codigo {
-  color: var(--amber);
-}
-
-.pedido-meta {
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-.pedido-valor {
-  font-family: 'Fraunces', serif;
-  font-size: 1.2rem;
-  font-weight: 900;
-  color: var(--green);
-  text-align: right;
-}
-
-.pedido-item.adiantamento .pedido-valor {
-  color: var(--red);
-}
-
-.btn-delete {
-  background: var(--red-bg);
-  color: var(--red);
-  border: 1px solid #fecaca;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
-.total-card {
-  background: linear-gradient(135deg, var(--green), #2d9d64);
-  border-radius: 16px;
-  padding: 20px;
-  text-align: center;
-  color: #fff;
-  margin-top: 20px;
-}
-
-.total-label {
-  font-size: 0.85rem;
-  opacity: 0.9;
-  margin-bottom: 6px;
-}
-
-.total-valor {
-  font-family: 'Fraunces', serif;
-  font-size: 2.5rem;
-  font-weight: 900;
-}
-
-.btn-finalizar {
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, var(--purple), #7c3aed);
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 800;
-  cursor: pointer;
-  margin-top: 20px;
-  box-shadow: 0 4px 20px rgba(90, 45, 140, 0.4);
-}
-
-.hidden {
-  display: none !important;
-}
-
-.success-card {
-  background: var(--green-bg);
-  border: 2px solid var(--green);
-  border-radius: 16px;
-  padding: 30px 20px;
-  text-align: center;
-}
-
-.success-icon {
-  font-size: 4rem;
-  margin-bottom: 12px;
-}
-
-.success-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.5rem;
-  color: var(--green);
-  margin-bottom: 8px;
-}
-
-.success-sub {
-  font-size: 0.95rem;
-  color: var(--muted);
-  margin-bottom: 20px;
-}
-
-.btn-novo {
-  padding: 14px 24px;
-  background: var(--green);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-}
+.success-card { background: var(--green-bg); border: 2px solid var(--green); border-radius: 16px; padding: 30px 20px; text-align: center; }
+.success-icon { font-size: 4rem; margin-bottom: 12px; }
+.success-title { font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--green); margin-bottom: 8px; }
+.success-sub { font-size: 0.95rem; color: var(--muted); margin-bottom: 20px; }
+.btn-novo { padding: 14px 24px; background: var(--green); color: #fff; border: none; border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -372,12 +87,10 @@ body {
 
     <div class="form-card">
       <div class="form-title">📋 Adicionar Pedido</div>
-      
       <div class="form-group">
         <label class="form-label">Código do Pedido</label>
         <input type="text" id="codigo" class="form-input" placeholder="Ex: 1234">
       </div>
-
       <div class="form-group">
         <label class="form-label">Plataforma</label>
         <select id="plataforma" class="form-select">
@@ -386,40 +99,33 @@ body {
           <option value="Particular">Particular</option>
         </select>
       </div>
-
       <div class="form-group">
         <label class="form-label">Endereço de Entrega</label>
         <input type="text" id="endereco" class="form-input" placeholder="Rua, número, bairro">
       </div>
-
       <div class="form-group">
         <label class="form-label">KM Rodados</label>
         <input type="number" id="km" class="form-input" placeholder="0.0" step="0.1">
       </div>
-
       <div class="form-group">
         <label class="form-label">Valor da Corrida (R$)</label>
         <input type="number" id="valor" class="form-input" placeholder="0.00" step="0.01">
       </div>
-
       <button class="btn-primary" onclick="adicionarPedido()">➕ Adicionar Pedido</button>
     </div>
 
-    <!-- NOVO: Seção de Adiantamento/Compra -->
+    <!-- 🔥 NOVO: Card de Adiantamento -->
     <div class="form-card">
       <div class="form-title">💰 Adiantamento / Compra</div>
-      
       <div class="form-group">
         <label class="form-label">Valor do Adiantamento/Compra (R$)</label>
-        <input type="number" id="adiantamento-valor" class="form-input" placeholder="0.00" step="0.01">
+        <input type="number" id="adiant-valor" class="form-input" placeholder="0.00" step="0.01">
       </div>
-
       <div class="form-group">
         <label class="form-label">Descrição (opcional)</label>
-        <input type="text" id="adiantamento-desc" class="form-input" placeholder="Ex: Gasolina, Marmita, etc.">
+        <input type="text" id="adiant-desc" class="form-input" placeholder="Ex: Gasolina, Almoço">
       </div>
-
-      <button class="btn-secondary" onclick="adicionarAdiantamento()">➕ Adicionar Adiantamento</button>
+      <button class="btn-amber" onclick="adicionarAdiantamento()">➕ Adicionar Adiantamento</button>
     </div>
 
     <div class="form-card">
@@ -435,9 +141,7 @@ body {
       <div class="total-valor" id="total-valor">R$ 0,00</div>
     </div>
 
-    <button class="btn-finalizar hidden" id="btn-finalizar" onclick="finalizarDia()">
-      ✅ Finalizar e Enviar
-    </button>
+    <button class="btn-finalizar hidden" id="btn-finalizar" onclick="finalizarDia()">✅ Finalizar e Enviar</button>
   </div>
 
   <div id="success-section" class="hidden">
@@ -450,12 +154,10 @@ body {
   </div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-// Firebase Init
 const firebaseConfig = {
   apiKey: "AIzaSyD9JGS6HMTWuj17fne5hOAZ2TOh9o8tyhw",
   authDomain: "bolo-de-mi.firebaseapp.com",
@@ -467,11 +169,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Estado
 let pedidos = [];
 let motoboyInfo = null;
 
-// Obter parâmetros da URL
 const urlParams = new URLSearchParams(window.location.search);
 const motoboyId = urlParams.get('id') || prompt('Digite seu ID de motoboy:');
 const motoboyNome = urlParams.get('nome') || prompt('Digite seu nome:');
@@ -482,7 +182,6 @@ if (!motoboyId || !motoboyNome) {
 
 motoboyInfo = { id: motoboyId, nome: motoboyNome };
 
-// Adicionar Pedido
 function adicionarPedido() {
   const codigo = document.getElementById('codigo').value.trim();
   const plataforma = document.getElementById('plataforma').value;
@@ -510,16 +209,16 @@ function adicionarPedido() {
 
   pedidos.push(pedido);
   atualizarLista();
-  limparFormulario();
+  limparFormPedido();
 }
 
 // 🔥 NOVA FUNÇÃO: Adicionar Adiantamento
 function adicionarAdiantamento() {
-  const valor = parseFloat(document.getElementById('adiantamento-valor').value) || 0;
-  const descricao = document.getElementById('adiantamento-desc').value.trim() || 'Adiantamento/Compra';
+  const valor = parseFloat(document.getElementById('adiant-valor').value) || 0;
+  const descricao = document.getElementById('adiant-desc').value.trim() || 'Adiantamento/Compra';
 
   if (valor <= 0) {
-    alert('⚠️ Informe um valor válido para o adiantamento!');
+    alert('⚠️ Informe um valor válido!');
     return;
   }
 
@@ -529,7 +228,7 @@ function adicionarAdiantamento() {
     plataforma: '💰 Adiantamento',
     endereco: descricao,
     km: 0,
-    valor: -valor, // VALOR NEGATIVO para descontar
+    valor: -valor, // NEGATIVO para descontar
     motoboyId: motoboyInfo.id,
     motoboyNome: motoboyInfo.nome,
     data: new Date().toLocaleDateString('en-CA'),
@@ -538,17 +237,19 @@ function adicionarAdiantamento() {
 
   pedidos.push(adiantamento);
   atualizarLista();
-  
-  // Limpar campos de adiantamento
-  document.getElementById('adiantamento-valor').value = '';
-  document.getElementById('adiantamento-desc').value = '';
+  limparFormAdiantamento();
 }
 
-function limparFormulario() {
+function limparFormPedido() {
   document.getElementById('codigo').value = '';
   document.getElementById('endereco').value = '';
   document.getElementById('km').value = '';
   document.getElementById('valor').value = '';
+}
+
+function limparFormAdiantamento() {
+  document.getElementById('adiant-valor').value = '';
+  document.getElementById('adiant-desc').value = '';
 }
 
 function atualizarLista() {
@@ -574,19 +275,19 @@ function atualizarLista() {
 
   pedidos.forEach((p, index) => {
     const isAdiantamento = p.tipo === 'adiantamento';
-    const valorFormatado = Math.abs(p.valor).toFixed(2).replace('.', ',');
+    const valorAbs = Math.abs(p.valor).toFixed(2).replace('.', ',');
     const sinal = p.valor < 0 ? '- R$' : 'R$';
     
     html += `
       <div class="pedido-item ${isAdiantamento ? 'adiantamento' : ''}">
         <div class="pedido-info">
-          <div class="pedido-codigo">${isAdiantamento ? '💰' : '#'}${p.codigo}</div>
+          <div class="pedido-codigo">${isAdiantamento ? '💰 ' : '#'}${p.codigo}</div>
           <div class="pedido-meta">
             ${p.plataforma} · ${p.endereco} ${!isAdiantamento ? `· ${p.km} km` : ''}
           </div>
         </div>
         <div style="display: flex; align-items: center; gap: 10px;">
-          <div class="pedido-valor">${sinal} ${valorFormatado}</div>
+          <div class="pedido-valor">${sinal} ${valorAbs}</div>
           <button class="btn-delete" onclick="removerPedido(${index})">🗑️</button>
         </div>
       </div>
@@ -596,8 +297,7 @@ function atualizarLista() {
   });
 
   lista.innerHTML = html;
-  document.getElementById('total-valor').textContent = 
-    'R$ ' + total.toFixed(2).replace('.', ',');
+  document.getElementById('total-valor').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
 }
 
 function removerPedido(index) {
@@ -609,7 +309,7 @@ function removerPedido(index) {
 
 async function finalizarDia() {
   if (pedidos.length === 0) {
-    alert('⚠️ Adicione pelo menos um pedido!');
+    alert('⚠️ Adicione pelo menos um item!');
     return;
   }
 
@@ -618,15 +318,13 @@ async function finalizarDia() {
   }
 
   try {
-    // Enviar cada pedido/adiantamento para o Firebase
     for (const pedido of pedidos) {
       await db.collection('pedidos').add(pedido);
     }
-
     document.getElementById('form-section').classList.add('hidden');
     document.getElementById('success-section').classList.remove('hidden');
   } catch (error) {
-    alert('❌ Erro ao enviar: ' + error.message);
+    alert('❌ Erro: ' + error.message);
   }
 }
 
@@ -637,6 +335,5 @@ function novoDia() {
   atualizarLista();
 }
 </script>
-
 </body>
 </html>

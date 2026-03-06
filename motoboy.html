@@ -8,70 +8,400 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root {
-  --bg: #FDF4FB; --surface: #FFFFFF; --border: #EDD6E8;
-  --pink: #D9368A; --pink-light: #FDEAF5;
-  --purple: #5A2D8C; --purple-light: #EEE4F8;
-  --muted: #9B7AAA; --green: #1F7A4F; --green-bg: #E4F5EC;
-  --text: #240F40; --red: #C0392B; --red-bg: #FEE2E2;
+  --bg: #FDF4FB;
+  --surface: #FFFFFF;
+  --border: #EDD6E8;
+  --pink: #D9368A;
+  --pink-light: #FDEAF5;
+  --purple: #5A2D8C;
+  --purple-light: #EEE4F8;
+  --muted: #9B7AAA;
+  --green: #1F7A4F;
+  --green-bg: #E4F5EC;
+  --text: #240F40;
+  --red: #C0392B;
+  --red-bg: #FEE2E2;
   --amber: #f59e0b;
 }
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 80px; }
 
-.header { background: linear-gradient(135deg, var(--purple), #7c3aed); padding: 0 20px; height: 62px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(90,45,140,0.3); }
-.logo-mark { width: 40px; height: 40px; background: var(--pink); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-.logo-text { font-family: 'Fraunces', serif; font-size: 1.15rem; color: #fff; line-height: 1; }
-.logo-text em { color: #F9A8D4; font-style: italic; }
-.logo-sub { font-size: 0.7rem; color: rgba(255,255,255,0.6); margin-top: 2px; font-weight: 600; }
-.main { max-width: 600px; margin: 0 auto; padding: 20px; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-.welcome-card { background: linear-gradient(135deg, var(--purple-light), var(--pink-light)); border: 1.5px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; text-align: center; }
-.welcome-icon { font-size: 2.5rem; margin-bottom: 8px; }
-.welcome-title { font-family: 'Fraunces', serif; font-size: 1.3rem; color: var(--purple); margin-bottom: 4px; }
-.welcome-sub { font-size: 0.85rem; color: var(--muted); }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
 
-.form-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-.form-title { font-family: 'Fraunces', serif; font-size: 1.1rem; color: var(--purple); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-.form-group { margin-bottom: 16px; }
-.form-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; display: block; }
-.form-input, .form-select { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
-.form-input:focus, .form-select:focus { border-color: var(--purple); background: #fff; }
+.header {
+  background: linear-gradient(135deg, var(--purple), #7c3aed);
+  padding: 0 20px;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(90, 45, 140, 0.3);
+}
 
-.btn-primary { width: 100%; padding: 14px; background: var(--green); color: #fff; border: none; border-radius: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
-.btn-primary:hover { background: #186040; transform: translateY(-1px); }
+.logo-mark {
+  width: 40px;
+  height: 40px;
+  background: var(--pink);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
 
-.btn-amber { width: 100%; padding: 14px; background: var(--amber); color: #fff; border: none; border-radius: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
-.btn-amber:hover { background: #d97706; transform: translateY(-1px); }
+.logo-text {
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  color: #fff;
+  line-height: 1;
+}
 
-.pedidos-list { margin-top: 20px; }
-.pedido-item { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-.pedido-item.adiantamento { background: #fff9e6; border-color: var(--amber); }
-.pedido-info { flex: 1; }
-.pedido-codigo { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 900; color: var(--purple); margin-bottom: 4px; }
-.pedido-item.adiantamento .pedido-codigo { color: var(--amber); }
-.pedido-meta { font-size: 0.8rem; color: var(--muted); }
-.pedido-valor { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 900; color: var(--green); text-align: right; }
-.pedido-item.adiantamento .pedido-valor { color: var(--red); }
-.btn-delete { background: var(--red-bg); color: var(--red); border: 1px solid #fecaca; border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; margin-left: 10px; }
+.logo-text em {
+  color: #F9A8D4;
+  font-style: italic;
+}
 
-.total-card { background: linear-gradient(135deg, var(--green), #2d9d64); border-radius: 16px; padding: 20px; text-align: center; color: #fff; margin-top: 20px; }
-.total-label { font-size: 0.85rem; opacity: 0.9; margin-bottom: 6px; }
-.total-valor { font-family: 'Fraunces', serif; font-size: 2.5rem; font-weight: 900; }
-.btn-finalizar { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--purple), #7c3aed); color: #fff; border: none; border-radius: 14px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 800; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 20px rgba(90,45,140,0.4); }
-.hidden { display: none !important; }
+.logo-sub {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 2px;
+  font-weight: 600;
+}
 
-.success-card { background: var(--green-bg); border: 2px solid var(--green); border-radius: 16px; padding: 30px 20px; text-align: center; }
-.success-icon { font-size: 4rem; margin-bottom: 12px; }
-.success-title { font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--green); margin-bottom: 8px; }
-.success-sub { font-size: 0.95rem; color: var(--muted); margin-bottom: 20px; }
-.btn-novo { padding: 14px 24px; background: var(--green); color: #fff; border: none; border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
+.main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
-/* Modal de Login */
-.modal-overlay { position: fixed; inset: 0; background: rgba(42,16,64,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-.modal-login { background: #fff; border-radius: 18px; padding: 30px; max-width: 400px; width: 100%; box-shadow: 0 20px 60px rgba(90,45,140,0.3); }
-.modal-login-title { font-family: 'Fraunces', serif; font-size: 1.4rem; color: var(--purple); text-align: center; margin-bottom: 8px; }
-.modal-login-sub { font-size: 0.9rem; color: var(--muted); text-align: center; margin-bottom: 24px; }
-.btn-login { width: 100%; padding: 14px; background: var(--purple); color: #fff; border: none; border-radius: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 20px; }
+.welcome-card {
+  background: linear-gradient(135deg, var(--purple-light), var(--pink-light));
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.welcome-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.welcome-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.3rem;
+  color: var(--purple);
+  margin-bottom: 4px;
+}
+
+.welcome-sub {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.form-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.form-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  color: var(--purple);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: var(--purple);
+  background: #fff;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #186040;
+  transform: translateY(-1px);
+}
+
+.btn-amber {
+  width: 100%;
+  padding: 14px;
+  background: var(--amber);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-amber:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+.pedidos-list {
+  margin-top: 20px;
+}
+
+.pedido-item {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pedido-item.adiantamento {
+  background: #fff9e6;
+  border-color: var(--amber);
+}
+
+.pedido-info {
+  flex: 1;
+}
+
+.pedido-codigo {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--purple);
+  margin-bottom: 4px;
+}
+
+.pedido-item.adiantamento .pedido-codigo {
+  color: var(--amber);
+}
+
+.pedido-meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.pedido-valor {
+  font-family: 'Fraunces', serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--green);
+  text-align: right;
+}
+
+.pedido-item.adiantamento .pedido-valor {
+  color: var(--red);
+}
+
+.btn-delete {
+  background: var(--red-bg);
+  color: var(--red);
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.total-card {
+  background: linear-gradient(135deg, var(--green), #2d9d64);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  color: #fff;
+  margin-top: 20px;
+}
+
+.total-label {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-bottom: 6px;
+}
+
+.total-valor {
+  font-family: 'Fraunces', serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+}
+
+.btn-finalizar {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--purple), #7c3aed);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 4px 20px rgba(90, 45, 140, 0.4);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.success-card {
+  background: var(--green-bg);
+  border: 2px solid var(--green);
+  border-radius: 16px;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 4rem;
+  margin-bottom: 12px;
+}
+
+.success-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+
+.success-sub {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.btn-novo {
+  padding: 14px 24px;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(42, 16, 64, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-login {
+  background: #fff;
+  border-radius: 18px;
+  padding: 30px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(90, 45, 140, 0.3);
+}
+
+.modal-login-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.4rem;
+  color: var(--purple);
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.modal-login-sub {
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: var(--purple);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 20px;
+}
 </style>
 </head>
 <body>
@@ -84,7 +414,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
   </div>
 </div>
 
-<!-- 🔥 MODAL DE LOGIN -->
 <div class="modal-overlay" id="modal-login">
   <div class="modal-login">
     <div class="modal-login-title">🛵 Identifique-se</div>
@@ -94,8 +423,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
       <input type="text" id="login-nome" class="form-input" placeholder="Seu nome">
     </div>
     <div class="form-group">
-      <label class="form-label">Telefone</label>
-      <input type="tel" id="login-tel" class="form-input" placeholder="(31) 99999-9999">
+      <label class="form-label">Senha (6 dígitos)</label>
+      <input type="password" id="login-senha" class="form-input" placeholder="••••••" maxlength="6">
     </div>
     <button class="btn-login" onclick="fazerLogin()">✅ Entrar</button>
   </div>
@@ -129,15 +458,16 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
       </div>
       <div class="form-group">
         <label class="form-label">KM Rodados</label>
-        <input type="number" id="km" class="form-input" placeholder="0.0" step="0.1">
+        <input type="number" id="km" class="form-input" placeholder="0.0" step="0.1" oninput="calcularValorPorKm()">
       </div>
       <div class="form-group">
         <label class="form-label">Valor da Corrida (R$)</label>
-        <input type="number" id="valor" class="form-input" placeholder="0.00" step="0.01">
+        <input type="number" id="valor" class="form-input" placeholder="0.00" step="0.01" readonly>
       </div>
       <button class="btn-primary" onclick="adicionarPedido()">➕ Adicionar Pedido</button>
     </div>
 
+    <!-- 🔥 NOVO: Card de Adiantamento -->
     <div class="form-card">
       <div class="form-title">💰 Adiantamento / Compra</div>
       <div class="form-group">
@@ -194,15 +524,15 @@ const db = firebase.firestore();
 
 let pedidos = [];
 let motoboyInfo = null;
+const VALOR_POR_KM = 8.5;
 
-// 🔥 VERIFICAR SE JÁ TEM LOGIN SALVO
 function verificarLogin() {
   const savedNome = localStorage.getItem('motoboy_nome');
-  const savedTel = localStorage.getItem('motoboy_tel');
+  const savedSenha = localStorage.getItem('motoboy_senha');
   const savedId = localStorage.getItem('motoboy_id');
 
-  if (savedNome && savedTel && savedId) {
-    motoboyInfo = { id: savedId, nome: savedNome, tel: savedTel };
+  if (savedNome && savedSenha && savedId) {
+    motoboyInfo = { id: savedId, nome: savedNome };
     document.getElementById('nome-motoboy').textContent = savedNome;
     document.getElementById('modal-login').classList.add('hidden');
   } else {
@@ -210,26 +540,30 @@ function verificarLogin() {
   }
 }
 
-// 🔥 FAZER LOGIN E SALVAR NO LOCALSTORAGE
 function fazerLogin() {
   const nome = document.getElementById('login-nome').value.trim();
-  const tel = document.getElementById('login-tel').value.trim();
+  const senha = document.getElementById('login-senha').value.trim();
 
-  if (!nome || !tel) {
-    alert('⚠️ Preencha nome e telefone!');
+  if (!nome || !senha || senha.length !== 6) {
+    alert('⚠️ Preencha nome e senha de 6 dígitos!');
     return;
   }
 
-  const id = 'MB_' + Date.now();
+  const id = 'MB_' + senha;
   
-  // Salvar no localStorage
   localStorage.setItem('motoboy_nome', nome);
-  localStorage.setItem('motoboy_tel', tel);
+  localStorage.setItem('motoboy_senha', senha);
   localStorage.setItem('motoboy_id', id);
 
-  motoboyInfo = { id, nome, tel };
+  motoboyInfo = { id, nome };
   document.getElementById('nome-motoboy').textContent = nome;
   document.getElementById('modal-login').classList.add('hidden');
+}
+
+function calcularValorPorKm() {
+  const km = parseFloat(document.getElementById('km').value) || 0;
+  const valor = km * VALOR_POR_KM;
+  document.getElementById('valor').value = valor.toFixed(2);
 }
 
 function adicionarPedido() {
@@ -262,6 +596,7 @@ function adicionarPedido() {
   limparFormPedido();
 }
 
+// 🔥 NOVA FUNÇÃO
 function adicionarAdiantamento() {
   const valor = parseFloat(document.getElementById('adiant-valor').value) || 0;
   const descricao = document.getElementById('adiant-desc').value.trim() || 'Adiantamento/Compra';
@@ -384,7 +719,6 @@ function novoDia() {
   atualizarLista();
 }
 
-// 🔥 INICIAR VERIFICAÇÃO
 verificarLogin();
 </script>
 </body>

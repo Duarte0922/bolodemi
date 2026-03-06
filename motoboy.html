@@ -254,18 +254,6 @@ body {
   color: var(--red);
 }
 
-.btn-delete {
-  background: var(--red-bg);
-  color: var(--red);
-  border: 1px solid #fecaca;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
 .total-card {
   background: linear-gradient(135deg, var(--green), #2d9d64);
   border-radius: 16px;
@@ -287,61 +275,8 @@ body {
   font-weight: 900;
 }
 
-.btn-finalizar {
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, var(--purple), #7c3aed);
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 800;
-  cursor: pointer;
-  margin-top: 20px;
-  box-shadow: 0 4px 20px rgba(90, 45, 140, 0.4);
-}
-
 .hidden {
   display: none !important;
-}
-
-.success-card {
-  background: var(--green-bg);
-  border: 2px solid var(--green);
-  border-radius: 16px;
-  padding: 30px 20px;
-  text-align: center;
-}
-
-.success-icon {
-  font-size: 4rem;
-  margin-bottom: 12px;
-}
-
-.success-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.5rem;
-  color: var(--green);
-  margin-bottom: 8px;
-}
-
-.success-sub {
-  font-size: 0.95rem;
-  color: var(--muted);
-  margin-bottom: 20px;
-}
-
-.btn-novo {
-  padding: 14px 24px;
-  background: var(--green);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
 }
 
 .modal-overlay {
@@ -421,79 +356,66 @@ body {
 </div>
 
 <div class="main">
-  <div id="form-section">
-    <div class="welcome-card">
-      <div class="welcome-icon">🛵</div>
-      <div class="welcome-title">Olá, <span id="nome-motoboy">Motoboy</span>!</div>
-      <div class="welcome-sub">Registre suas entregas do dia</div>
-    </div>
-
-    <div class="form-card">
-      <div class="form-title">📋 Adicionar Pedido</div>
-      <div class="form-group">
-        <label class="form-label">Código do Pedido</label>
-        <input type="text" id="codigo" class="form-input" placeholder="Ex: 1234">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Plataforma</label>
-        <select id="plataforma" class="form-select">
-          <option value="">Selecione...</option>
-          <option value="iFood">iFood</option>
-          <option value="99">99Food</option>
-          <option value="Particular">Particular</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Endereço de Entrega</label>
-        <input type="text" id="endereco" class="form-input" placeholder="Rua, número, bairro">
-      </div>
-      <div class="form-group">
-        <label class="form-label">KM Rodados</label>
-        <input type="number" id="km" class="form-input" placeholder="0.0" step="0.1" oninput="calcularValor()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Valor da Corrida (R$)</label>
-        <input type="number" id="valor" class="form-input" placeholder="0.00" step="0.01" readonly style="background: #f0f0f0;">
-      </div>
-      <button class="btn-primary" onclick="adicionarPedido()">➕ Adicionar Pedido</button>
-    </div>
-
-    <div class="form-card">
-      <div class="form-title">💰 Adiantamento / Compra</div>
-      <div class="form-group">
-        <label class="form-label">Valor (R$)</label>
-        <input type="number" id="adiant-valor" class="form-input" placeholder="0.00" step="0.01">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Descrição</label>
-        <input type="text" id="adiant-desc" class="form-input" placeholder="Ex: Gasolina, Almoço">
-      </div>
-      <button class="btn-secondary" onclick="adicionarAdiantamento()">➕ Adicionar</button>
-    </div>
-
-    <div class="form-card">
-      <div class="form-title">📦 Seus Pedidos de Hoje</div>
-      <div id="pedidos-list" class="pedidos-list"></div>
-      <div id="empty-state" style="text-align: center; color: var(--muted); padding: 20px;">
-        Nenhum pedido adicionado ainda
-      </div>
-    </div>
-
-    <div class="total-card hidden" id="total-card">
-      <div class="total-label">💰 Total do Dia</div>
-      <div class="total-valor" id="total-valor">R$ 0,00</div>
-    </div>
-
-    <button class="btn-finalizar hidden" id="btn-finalizar" onclick="finalizarDia()">✅ Finalizar e Enviar</button>
+  <div class="welcome-card">
+    <div class="welcome-icon">🛵</div>
+    <div class="welcome-title">Olá, <span id="nome-motoboy">Motoboy</span>!</div>
+    <div class="welcome-sub">Registre suas entregas do dia</div>
   </div>
 
-  <div id="success-section" class="hidden">
-    <div class="success-card">
-      <div class="success-icon">🎉</div>
-      <div class="success-title">Entregas Enviadas!</div>
-      <div class="success-sub">Suas entregas foram registradas com sucesso.</div>
-      <button class="btn-novo" onclick="novoDia()">➕ Novo Registro</button>
+  <div class="form-card">
+    <div class="form-title">📋 Adicionar Pedido</div>
+    <div class="form-group">
+      <label class="form-label">Código do Pedido</label>
+      <input type="text" id="codigo" class="form-input" placeholder="Ex: 1234">
     </div>
+    <div class="form-group">
+      <label class="form-label">Plataforma</label>
+      <select id="plataforma" class="form-select">
+        <option value="">Selecione...</option>
+        <option value="iFood">iFood</option>
+        <option value="99">99Food</option>
+        <option value="Particular">Particular</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Endereço de Entrega</label>
+      <input type="text" id="endereco" class="form-input" placeholder="Rua, número, bairro">
+    </div>
+    <div class="form-group">
+      <label class="form-label">KM Rodados</label>
+      <input type="number" id="km" class="form-input" placeholder="0.0" step="0.1" oninput="calcularValor()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Valor da Corrida (R$)</label>
+      <input type="number" id="valor" class="form-input" placeholder="0.00" step="0.01" readonly style="background: #f0f0f0;">
+    </div>
+    <button class="btn-primary" onclick="adicionarPedido()">➕ Adicionar Pedido</button>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">💰 Adiantamento / Compra</div>
+    <div class="form-group">
+      <label class="form-label">Valor (R$)</label>
+      <input type="number" id="adiant-valor" class="form-input" placeholder="0.00" step="0.01">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descrição</label>
+      <input type="text" id="adiant-desc" class="form-input" placeholder="Ex: Gasolina, Almoço">
+    </div>
+    <button class="btn-secondary" onclick="adicionarAdiantamento()">➕ Adicionar</button>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">📦 Pedidos de Hoje</div>
+    <div id="pedidos-list" class="pedidos-list"></div>
+    <div id="empty-state" style="text-align: center; color: var(--muted); padding: 20px;">
+      Nenhum pedido adicionado ainda
+    </div>
+  </div>
+
+  <div class="total-card hidden" id="total-card">
+    <div class="total-label">💰 Total do Dia</div>
+    <div class="total-valor" id="total-valor">R$ 0,00</div>
   </div>
 </div>
 
@@ -533,6 +455,7 @@ function verificarLogin() {
     motoboyInfo = { id: savedId, nome: savedNome, tel: savedTel };
     document.getElementById('nome-motoboy').textContent = savedNome;
     document.getElementById('modal-login').classList.add('hidden');
+    carregarPedidosDeHoje();
   } else {
     document.getElementById('modal-login').classList.remove('hidden');
   }
@@ -556,6 +479,7 @@ function fazerLogin() {
   motoboyInfo = { id, nome, tel };
   document.getElementById('nome-motoboy').textContent = nome;
   document.getElementById('modal-login').classList.add('hidden');
+  carregarPedidosDeHoje();
 }
 
 function calcularValor() {
@@ -577,7 +501,8 @@ function calcularValor() {
   document.getElementById('valor').value = valor.toFixed(2);
 }
 
-function adicionarPedido() {
+// 🔥 ADICIONAR PEDIDO - VAI DIRETO PRO FIREBASE!
+async function adicionarPedido() {
   const codigo = document.getElementById('codigo').value.trim();
   const plataforma = document.getElementById('plataforma').value;
   const endereco = document.getElementById('endereco').value.trim();
@@ -601,12 +526,18 @@ function adicionarPedido() {
     timestamp: new Date().toISOString()
   };
 
-  pedidos.push(pedido);
-  atualizarLista();
-  limparFormPedido();
+  try {
+    await db.collection('pedidos').add(pedido);
+    alert('✅ Pedido registrado!');
+    limparFormPedido();
+    carregarPedidosDeHoje();
+  } catch (error) {
+    alert('❌ Erro: ' + error.message);
+  }
 }
 
-function adicionarAdiantamento() {
+// 🔥 ADICIONAR ADIANTAMENTO - VAI DIRETO PRO FIREBASE COMO PEDIDO!
+async function adicionarAdiantamento() {
   const valor = parseFloat(document.getElementById('adiant-valor').value) || 0;
   const descricao = document.getElementById('adiant-desc').value.trim();
 
@@ -625,16 +556,38 @@ function adicionarAdiantamento() {
     plataforma: 'Adiantamento',
     endereco: descricao,
     km: 0,
-    valor: -valor,
+    valor: -valor,  // NEGATIVO
     motoboyId: motoboyInfo.id,
     motoboyNome: motoboyInfo.nome,
     data: new Date().toLocaleDateString('en-CA'),
     timestamp: new Date().toISOString()
   };
 
-  pedidos.push(adiantamento);
-  atualizarLista();
-  limparFormAdiantamento();
+  try {
+    await db.collection('pedidos').add(adiantamento);
+    alert('✅ Adiantamento registrado!');
+    limparFormAdiantamento();
+    carregarPedidosDeHoje();
+  } catch (error) {
+    alert('❌ Erro: ' + error.message);
+  }
+}
+
+// 🔥 CARREGAR PEDIDOS DE HOJE DO FIREBASE
+function carregarPedidosDeHoje() {
+  const hoje = new Date().toLocaleDateString('en-CA');
+  
+  db.collection('pedidos')
+    .where('motoboyId', '==', motoboyInfo.id)
+    .where('data', '==', hoje)
+    .orderBy('timestamp', 'desc')
+    .onSnapshot(function(snapshot) {
+      pedidos = [];
+      snapshot.forEach(function(doc) {
+        pedidos.push({ id: doc.id, ...doc.data() });
+      });
+      atualizarLista();
+    });
 }
 
 function limparFormPedido() {
@@ -654,24 +607,21 @@ function atualizarLista() {
   const lista = document.getElementById('pedidos-list');
   const emptyState = document.getElementById('empty-state');
   const totalCard = document.getElementById('total-card');
-  const btnFinalizar = document.getElementById('btn-finalizar');
 
   if (pedidos.length === 0) {
     emptyState.classList.remove('hidden');
     lista.innerHTML = '';
     totalCard.classList.add('hidden');
-    btnFinalizar.classList.add('hidden');
     return;
   }
 
   emptyState.classList.add('hidden');
   totalCard.classList.remove('hidden');
-  btnFinalizar.classList.remove('hidden');
 
   let html = '';
   let total = 0;
 
-  pedidos.forEach((p, index) => {
+  pedidos.forEach((p) => {
     const valorAbs = Math.abs(p.valor).toFixed(2).replace('.', ',');
     const sinal = p.valor < 0 ? '- R$' : 'R$';
     const negativo = p.valor < 0 ? 'negativo' : '';
@@ -684,10 +634,7 @@ function atualizarLista() {
             ${p.plataforma} · ${p.endereco}${p.km > 0 ? ` · ${p.km} km` : ''}
           </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div class="pedido-valor ${negativo}">${sinal} ${valorAbs}</div>
-          <button class="btn-delete" onclick="removerPedido(${index})">🗑️</button>
-        </div>
+        <div class="pedido-valor ${negativo}">${sinal} ${valorAbs}</div>
       </div>
     `;
     
@@ -696,41 +643,6 @@ function atualizarLista() {
 
   lista.innerHTML = html;
   document.getElementById('total-valor').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
-}
-
-function removerPedido(index) {
-  if (confirm('❌ Remover este item?')) {
-    pedidos.splice(index, 1);
-    atualizarLista();
-  }
-}
-
-async function finalizarDia() {
-  if (pedidos.length === 0) {
-    alert('⚠️ Adicione pelo menos um item!');
-    return;
-  }
-
-  if (!confirm(`✅ Enviar ${pedidos.length} item(ns)?`)) {
-    return;
-  }
-
-  try {
-    for (const pedido of pedidos) {
-      await db.collection('pedidos').add(pedido);
-    }
-    document.getElementById('form-section').classList.add('hidden');
-    document.getElementById('success-section').classList.remove('hidden');
-  } catch (error) {
-    alert('❌ Erro: ' + error.message);
-  }
-}
-
-function novoDia() {
-  pedidos = [];
-  document.getElementById('form-section').classList.remove('hidden');
-  document.getElementById('success-section').classList.add('hidden');
-  atualizarLista();
 }
 
 verificarLogin();

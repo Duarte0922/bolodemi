@@ -429,7 +429,6 @@ body {
     <button class="btn-primary" onclick="adicionarPedido()">➕ Adicionar Pedido</button>
   </div>
 
-  <!-- 🔥 NOVO: DIÁRIA -->
   <div class="form-card">
     <div class="form-title">💵 Diária do Dia</div>
     <div class="form-group">
@@ -495,34 +494,16 @@ const tabelaPrecos = [
   { ate: 999, valor: 20 }
 ];
 
-// 🔥 FERIADOS NACIONAIS FIXOS (2025-2026)
 const feriadosFixos = [
-  '2025-01-01', // Ano Novo
-  '2025-04-21', // Tiradentes
-  '2025-05-01', // Dia do Trabalho
-  '2025-09-07', // Independência
-  '2025-10-12', // N. Sra. Aparecida
-  '2025-11-02', // Finados
-  '2025-11-15', // Proclamação República
-  '2025-12-25', // Natal
-  '2026-01-01',
-  '2026-04-21',
-  '2026-05-01',
-  '2026-09-07',
-  '2026-10-12',
-  '2026-11-02',
-  '2026-11-15',
-  '2026-12-25'
+  '2025-01-01', '2025-04-21', '2025-05-01', '2025-09-07', '2025-10-12', 
+  '2025-11-02', '2025-11-15', '2025-12-25',
+  '2026-01-01', '2026-04-21', '2026-05-01', '2026-09-07', '2026-10-12',
+  '2026-11-02', '2026-11-15', '2026-12-25'
 ];
 
-// 🔥 FERIADOS VARIÁVEIS (atualizar anualmente)
 const feriadosMoveis = [
-  '2025-03-04', // Carnaval
-  '2025-04-18', // Sexta-feira Santa
-  '2025-06-19', // Corpus Christi
-  '2026-02-17', // Carnaval 2026
-  '2026-04-03', // Sexta-feira Santa 2026
-  '2026-06-04'  // Corpus Christi 2026
+  '2025-03-04', '2025-04-18', '2025-06-19',
+  '2026-02-17', '2026-04-03', '2026-06-04'
 ];
 
 function ehFeriado(data) {
@@ -532,14 +513,14 @@ function ehFeriado(data) {
 function ehFimDeSemana(data) {
   const d = new Date(data + 'T12:00:00');
   const dia = d.getDay();
-  return dia === 0 || dia === 6; // 0=domingo, 6=sábado
+  return dia === 0 || dia === 6;
 }
 
 function calcularDiariaSugerida(data) {
   if (ehFeriado(data) || ehFimDeSemana(data)) {
-    return 95.00; // Feriado, sábado ou domingo
+    return 95.00;
   }
-  return 80.00; // Terça a sexta
+  return 80.00;
 }
 
 function atualizarSugestaoDiaria() {
@@ -642,12 +623,10 @@ async function adicionarPedido() {
   }
 }
 
-// 🔥 NOVA FUNÇÃO: Adicionar Diária
 async function adicionarDiaria() {
   const dataSel = document.getElementById('data-selecionada').value;
   let valorDiaria = parseFloat(document.getElementById('diaria-valor').value);
   
-  // Se não preencheu, usa o valor sugerido
   if (!valorDiaria || valorDiaria <= 0) {
     valorDiaria = calcularDiariaSugerida(dataSel);
   }
@@ -709,6 +688,7 @@ async function adicionarAdiantamento() {
   }
 }
 
+// 🔥 CORRIGIDO: Removido .orderBy para funcionar sem índice
 function carregarPedidosDaData() {
   const dataSel = document.getElementById('data-selecionada').value;
   atualizarSugestaoDiaria();
@@ -716,12 +696,13 @@ function carregarPedidosDaData() {
   db.collection('pedidos')
     .where('motoboyId', '==', motoboyInfo.id)
     .where('data', '==', dataSel)
-    .orderBy('timestamp', 'desc')
     .onSnapshot(function(snapshot) {
       pedidos = [];
       snapshot.forEach(function(doc) {
         pedidos.push({ id: doc.id, ...doc.data() });
       });
+      // Ordena no código mesmo
+      pedidos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       atualizarLista();
     });
 }

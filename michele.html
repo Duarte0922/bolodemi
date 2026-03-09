@@ -768,30 +768,39 @@ function carregar() {
       var g    = grupos[id];
       var pgto = pgtosDia[id]||{status:'pendente',diaria:0,adiantamento:0};
       var status        = pgto.status;
-      var diariaJaSalva = pgto.status==='pago' ? (pgto.diaria||0) : diariaFiltro;
       var adiantJaSalvo = pgto.adiantamento||0;
 
-      // Separa tipos: corridas reais excluem DIARIA- e ADI- lancados pelo motoboy
+      // Corridas reais (exclui Diaria e Adiantamento lancados pelo motoboy)
       var corridas = g.pedidos
-        .filter(function(p){ return p.plataforma !== 'Diaria' && p.plataforma !== 'Adiantamento'; })
+        .filter(function(p){ return p.plataforma !== 'Diária' && p.plataforma !== 'Adiantamento'; })
         .reduce(function(s,p){ return s+p.valor; },0);
 
-      // Adiantamentos lancados pelo motoboy (valor negativo no Firebase)
+      // Diária lançada pelo motoboy como pedido (plataforma === 'Diária')
+      var diariaMotoboy = g.pedidos
+        .filter(function(p){ return p.plataforma === 'Diária'; })
+        .reduce(function(s,p){ return s+p.valor; },0);
+
+      // Se o motoboy já lançou a diária, usa ela; senão usa o filtro (ou o valor salvo no pagamento)
+      var diariaJaSalva = diariaMotoboy > 0
+        ? diariaMotoboy
+        : (pgto.status==='pago' ? (pgto.diaria||0) : diariaFiltro);
+
+      // Adiantamentos lançados pelo motoboy (valor negativo no Firebase)
       var adiantMotoboy = g.pedidos
         .filter(function(p){ return p.plataforma === 'Adiantamento'; })
         .reduce(function(s,p){ return s+p.valor; },0);
 
       var totalDia   = corridas + diariaJaSalva;
       var anterior   = dividas[id]||0;
-      // adiantMotoboy ja e negativo, adiantJaSalvo e o desconto salvo no pagamento
+      // adiantMotoboy ja é negativo, adiantJaSalvo é o desconto salvo no pagamento
       var totalFinal = Math.max(0, totalDia + anterior + adiantMotoboy - adiantJaSalvo);
       var tel        = telMap[id]||'';
-      var qtdCorridas = g.pedidos.filter(function(p){ return p.plataforma !== 'Diaria' && p.plataforma !== 'Adiantamento'; }).length;
+      var qtdCorridas = g.pedidos.filter(function(p){ return p.plataforma !== 'Diária' && p.plataforma !== 'Adiantamento'; }).length;
       tPed += qtdCorridas; tGeral += totalDia;
 
       // PDF: passa apenas corridas reais (sem DIARIA- e ADI-)
       var pedsSerial = JSON.stringify(g.pedidos
-        .filter(function(p){ return p.plataforma !== 'Diaria' && p.plataforma !== 'Adiantamento'; })
+        .filter(function(p){ return p.plataforma !== 'Diária' && p.plataforma !== 'Adiantamento'; })
         .map(function(p){ return {codigo:p.codigo,plataforma:p.plataforma,endereco:p.endereco,km:p.km,valor:p.valor}; })
       ).replace(/'/g,"\\'");
 

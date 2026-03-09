@@ -770,16 +770,30 @@ function carregar() {
       var status        = pgto.status;
       var diariaJaSalva = pgto.status==='pago' ? (pgto.diaria||0) : diariaFiltro;
       var adiantJaSalvo = pgto.adiantamento||0;
-      var corridas      = g.pedidos.reduce(function(s,p){ return s+p.valor; },0);
-      var totalDia      = corridas + diariaJaSalva;
-      var anterior      = dividas[id]||0;
-      var totalFinal    = Math.max(0, totalDia + anterior - adiantJaSalvo);
-      var tel           = telMap[id]||'';
-      tPed += g.pedidos.length; tGeral += totalDia;
 
-      var pedsSerial = JSON.stringify(g.pedidos.map(function(p){
-        return {codigo:p.codigo,plataforma:p.plataforma,endereco:p.endereco,km:p.km,valor:p.valor};
-      })).replace(/'/g,"\\'");
+      // Separa tipos: corridas reais excluem DIARIA- e ADI- lancados pelo motoboy
+      var corridas = g.pedidos
+        .filter(function(p){ return p.plataforma !== 'Diaria' && p.plataforma !== 'Adiantamento'; })
+        .reduce(function(s,p){ return s+p.valor; },0);
+
+      // Adiantamentos lancados pelo motoboy (valor negativo no Firebase)
+      var adiantMotoboy = g.pedidos
+        .filter(function(p){ return p.plataforma === 'Adiantamento'; })
+        .reduce(function(s,p){ return s+p.valor; },0);
+
+      var totalDia   = corridas + diariaJaSalva;
+      var anterior   = dividas[id]||0;
+      // adiantMotoboy ja e negativo, adiantJaSalvo e o desconto salvo no pagamento
+      var totalFinal = Math.max(0, totalDia + anterior + adiantMotoboy - adiantJaSalvo);
+      var tel        = telMap[id]||'';
+      var qtdCorridas = g.pedidos.filter(function(p){ return p.plataforma !== 'Diaria' && p.plataforma !== 'Adiantamento'; }).length;
+      tPed += qtdCorridas; tGeral += totalDia;
+
+      // PDF: passa apenas corridas reais (sem DIARIA- e ADI-)
+      var pedsSerial = JSON.stringify(g.pedidos
+        .filter(function(p){ return p.plataforma !== 'Diaria' && p.plataforma !== 'Adiantamento'; })
+        .map(function(p){ return {codigo:p.codigo,plataforma:p.plataforma,endereco:p.endereco,km:p.km,valor:p.valor}; })
+      ).replace(/'/g,"\\'");
 
       html += '<div class="mb-card">';
       html += '<div class="mb-header">';

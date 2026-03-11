@@ -7,382 +7,123 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #FDF4FB;
-  --surface: #FFFFFF;
-  --border: #EDD6E8;
-  --pink: #D9368A;
-  --pink-light: #FDEAF5;
-  --purple: #5A2D8C;
-  --purple-light: #EEE4F8;
-  --muted: #9B7AAA;
-  --green: #1F7A4F;
-  --green-bg: #E4F5EC;
-  --text: #240F40;
-  --red: #C0392B;
-  --red-bg: #FEE2E2;
-  --blue: #2563eb;
+  --bg:#FDF4FB; --surface:#FFFFFF; --border:#EDD6E8;
+  --pink:#D9368A; --pink-light:#FDEAF5;
+  --purple:#5A2D8C; --purple-light:#EEE4F8;
+  --muted:#9B7AAA; --green:#1F7A4F; --green-bg:#E4F5EC;
+  --text:#240F40; --red:#C0392B; --red-bg:#FEE2E2; --blue:#2563eb;
 }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px;}
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* HEADER */
+.header{background:linear-gradient(135deg,var(--purple),#7c3aed);padding:0 20px;height:62px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(90,45,140,0.3);}
+.logo-mark{width:40px;height:40px;background:var(--pink);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+.logo-text{font-family:'Fraunces',serif;font-size:1.15rem;color:#fff;line-height:1;}
+.logo-text em{color:#F9A8D4;font-style:italic;}
+.logo-sub{font-size:0.7rem;color:rgba(255,255,255,0.6);margin-top:2px;font-weight:600;}
 
-body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  padding-bottom: 80px;
-}
+/* MAIN */
+.main{max-width:600px;margin:0 auto;padding:20px;}
 
-.header {
-  background: linear-gradient(135deg, var(--purple), #7c3aed);
-  padding: 0 20px;
-  height: 62px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 4px 20px rgba(90, 45, 140, 0.3);
-}
+/* WELCOME */
+.welcome-card{background:linear-gradient(135deg,var(--purple-light),var(--pink-light));border:1.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;text-align:center;}
+.welcome-icon{font-size:2.5rem;margin-bottom:8px;}
+.welcome-title{font-family:'Fraunces',serif;font-size:1.3rem;color:var(--purple);margin-bottom:4px;}
+.welcome-sub{font-size:0.85rem;color:var(--muted);}
 
-.logo-mark {
-  width: 40px;
-  height: 40px;
-  background: var(--pink);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-}
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:6px;}
+.tab-btn{flex:1;padding:10px 16px;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.2s;background:transparent;color:var(--muted);}
+.tab-btn.active{background:var(--purple);color:#fff;box-shadow:0 2px 10px rgba(90,45,140,0.3);}
+.tab-btn:hover:not(.active){background:var(--purple-light);color:var(--purple);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
 
-.logo-text {
-  font-family: 'Fraunces', serif;
-  font-size: 1.15rem;
-  color: #fff;
-  line-height: 1;
-}
+/* FORM */
+.form-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;}
+.form-title{font-family:'Fraunces',serif;font-size:1.1rem;color:var(--purple);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;display:block;}
+.form-hint{font-size:0.75rem;color:var(--blue);margin-top:4px;font-weight:600;display:flex;align-items:center;gap:4px;}
+.form-input,.form-select{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;color:var(--text);background:var(--bg);outline:none;transition:border-color 0.2s;}
+.form-input:focus,.form-select:focus{border-color:var(--purple);background:#fff;}
 
-.logo-text em {
-  color: #F9A8D4;
-  font-style: italic;
-}
+/* BOTÕES */
+.btn-primary{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;}
+.btn-primary:hover{background:#186040;transform:translateY(-1px);}
+.btn-secondary{width:100%;padding:14px;background:#f59e0b;color:#fff;border:none;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;}
+.btn-secondary:hover{background:#d97706;transform:translateY(-1px);}
 
-.logo-sub {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 2px;
-  font-weight: 600;
-}
+/* LISTA HOJE */
+.pedidos-list{margin-top:20px;}
+.pedido-item{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.pedido-info{flex:1;}
+.pedido-codigo{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:900;color:var(--purple);margin-bottom:4px;}
+.pedido-meta{font-size:0.8rem;color:var(--muted);}
+.pedido-valor{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:900;color:var(--green);text-align:right;}
+.pedido-valor.negativo{color:var(--red);}
 
-.main {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-}
+/* TOTAL */
+.total-card{background:linear-gradient(135deg,var(--green),#2d9d64);border-radius:16px;padding:20px;text-align:center;color:#fff;margin-top:20px;}
+.total-label{font-size:0.85rem;opacity:0.9;margin-bottom:6px;}
+.total-valor{font-family:'Fraunces',serif;font-size:2.5rem;font-weight:900;}
 
-.welcome-card {
-  background: linear-gradient(135deg, var(--purple-light), var(--pink-light));
-  border: 1.5px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
-  text-align: center;
-}
+/* DIÁRIA INFO */
+.diaria-auto-info{background:#eff6ff;border:1.5px solid #3b82f6;border-radius:10px;padding:12px;margin-top:12px;font-size:0.85rem;color:#1e40af;text-align:center;font-weight:600;}
 
-.welcome-icon {
-  font-size: 2.5rem;
-  margin-bottom: 8px;
-}
+/* HISTÓRICO */
+.hist-list{display:flex;flex-direction:column;gap:12px;}
+.hist-item{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;}
+.hist-item:hover{border-color:var(--purple);transform:translateY(-2px);box-shadow:0 4px 14px rgba(90,45,140,0.12);}
+.hist-data{text-align:center;min-width:52px;}
+.hist-dia-num{font-family:'Fraunces',serif;font-size:2rem;font-weight:900;color:var(--purple);line-height:1;}
+.hist-mes{font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;}
+.hist-sep{width:1px;background:var(--border);align-self:stretch;}
+.hist-info{flex:1;}
+.hist-dia-nome{font-size:0.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;}
+.hist-pedidos-txt{font-size:0.9rem;font-weight:700;color:var(--text);margin-top:2px;}
+.hist-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.hist-val{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:var(--green);}
+.hist-val.negativo{color:var(--red);}
+.hist-km{font-size:0.78rem;color:var(--muted);margin-top:2px;}
+.hist-diaria{font-size:0.78rem;color:var(--muted);margin-top:1px;}
+.badge-status{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:800;margin-top:6px;letter-spacing:0.03em;}
+.badge-fechado{background:#d1fae5;color:#065f46;}
+.badge-parcial{background:#fef9c3;color:#92400e;}
+.badge-aberto{background:#fee2e2;color:#991b1b;}
 
-.welcome-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.3rem;
-  color: var(--purple);
-  margin-bottom: 4px;
-}
+/* MODAL DIA */
+.modal-overlay{position:fixed;inset:0;background:rgba(42,16,64,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px;}
+.modal-dia{background:#fff;border-radius:18px;padding:24px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(90,45,140,0.3);}
+.modal-dia-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.modal-dia-title{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--purple);font-weight:700;}
+.btn-fechar-modal{background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:8px;padding:6px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;}
+.modal-pedido-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);margin-bottom:8px;background:var(--bg);}
+.modal-pedido-codigo{font-family:'Fraunces',serif;font-weight:900;color:var(--purple);font-size:1rem;}
+.modal-pedido-meta{font-size:0.78rem;color:var(--muted);margin-top:2px;}
+.modal-pedido-valor{font-family:'Fraunces',serif;font-weight:900;color:var(--green);font-size:1rem;white-space:nowrap;}
+.modal-pedido-valor.negativo{color:var(--red);}
+.modal-total-box{background:linear-gradient(135deg,var(--green),#2d9d64);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:14px;}
+.modal-total-box span:first-child{font-size:0.85rem;color:rgba(255,255,255,0.85);font-weight:700;}
+.modal-total-box span:last-child{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:#fff;}
+.btn-pdf-hist{width:100%;margin-top:12px;padding:13px;background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;border:none;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;}
+.btn-pdf-hist:hover{background:#a93226;transform:translateY(-1px);}
 
-.welcome-sub {
-  font-size: 0.85rem;
-  color: var(--muted);
-}
+/* MODAL LOGIN */
+.modal-login{background:#fff;border-radius:18px;padding:30px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(90,45,140,0.3);}
+.modal-login-title{font-family:'Fraunces',serif;font-size:1.4rem;color:var(--purple);text-align:center;margin-bottom:8px;}
+.modal-login-sub{font-size:0.9rem;color:var(--muted);text-align:center;margin-bottom:24px;}
+.btn-login{width:100%;padding:14px;background:var(--purple);color:#fff;border:none;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;margin-top:20px;}
 
-.date-selector {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
+/* EMPTY / LOADING */
+.empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
+.empty-icon{font-size:3rem;margin-bottom:12px;}
+.loading{display:flex;justify-content:center;padding:40px;}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--purple);border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-.date-selector label {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--muted);
-}
-
-.date-selector input {
-  flex: 1;
-  padding: 10px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-
-.form-card {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.form-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.1rem;
-  color: var(--purple);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.form-hint {
-  font-size: 0.75rem;
-  color: var(--blue);
-  margin-top: 4px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.form-input,
-.form-select {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.95rem;
-  color: var(--text);
-  background: var(--bg);
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.form-input:focus,
-.form-select:focus {
-  border-color: var(--purple);
-  background: #fff;
-}
-
-.btn-primary {
-  width: 100%;
-  padding: 14px;
-  background: var(--green);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1rem;
-  font-weight: 800;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s;
-}
-
-.btn-primary:hover {
-  background: #186040;
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  width: 100%;
-  padding: 14px;
-  background: #f59e0b;
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1rem;
-  font-weight: 800;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s;
-}
-
-.btn-secondary:hover {
-  background: #d97706;
-  transform: translateY(-1px);
-}
-
-.pedidos-list {
-  margin-top: 20px;
-}
-
-.pedido-item {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.pedido-info {
-  flex: 1;
-}
-
-.pedido-codigo {
-  font-family: 'Fraunces', serif;
-  font-size: 1.1rem;
-  font-weight: 900;
-  color: var(--purple);
-  margin-bottom: 4px;
-}
-
-.pedido-meta {
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-.pedido-valor {
-  font-family: 'Fraunces', serif;
-  font-size: 1.2rem;
-  font-weight: 900;
-  color: var(--green);
-  text-align: right;
-}
-
-.pedido-valor.negativo {
-  color: var(--red);
-}
-
-.btn-del{background:none;border:none;cursor:pointer;font-size:1.1rem;padding:4px 6px;border-radius:6px;color:#c0392b;opacity:0.5;transition:all 0.15s;}
-.btn-del:hover{background:#fee2e2;opacity:1;}
-.acoes-hoje{display:flex;gap:10px;margin-top:16px;}
-.btn-acao{flex:1;padding:13px;border:none;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.9rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all 0.2s;}
-.btn-acao-pdf{background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;}
-.btn-acao-pdf:hover{background:#a93226;transform:translateY(-1px);}
-.btn-acao-wpp{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;}
-.btn-acao-wpp:hover{background:#1aab55;transform:translateY(-1px);}
-
-.total-card {
-  background: linear-gradient(135deg, var(--green), #2d9d64);
-  border-radius: 16px;
-  padding: 20px;
-  text-align: center;
-  color: #fff;
-  margin-top: 20px;
-}
-
-.total-label {
-  font-size: 0.85rem;
-  opacity: 0.9;
-  margin-bottom: 6px;
-}
-
-.total-valor {
-  font-family: 'Fraunces', serif;
-  font-size: 2.5rem;
-  font-weight: 900;
-}
-
-.hidden {
-  display: none !important;
-}
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(42, 16, 64, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-}
-
-.modal-login {
-  background: #fff;
-  border-radius: 18px;
-  padding: 30px;
-  max-width: 400px;
-  width: 100%;
-  box-shadow: 0 20px 60px rgba(90, 45, 140, 0.3);
-}
-
-.modal-login-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.4rem;
-  color: var(--purple);
-  text-align: center;
-  margin-bottom: 8px;
-}
-
-.modal-login-sub {
-  font-size: 0.9rem;
-  color: var(--muted);
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.btn-login {
-  width: 100%;
-  padding: 14px;
-  background: var(--purple);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1rem;
-  font-weight: 800;
-  cursor: pointer;
-  margin-top: 20px;
-}
-
-.diaria-auto-info {
-  background: #eff6ff;
-  border: 1.5px solid #3b82f6;
-  border-radius: 10px;
-  padding: 12px;
-  margin-top: 12px;
-  font-size: 0.85rem;
-  color: #1e40af;
-  text-align: center;
-  font-weight: 600;
-}
+.hidden{display:none !important;}
 </style>
 </head>
 <body>
@@ -395,6 +136,7 @@ body {
   </div>
 </div>
 
+<!-- MODAL LOGIN -->
 <div class="modal-overlay" id="modal-login">
   <div class="modal-login">
     <div class="modal-login-title">🛵 Identifique-se</div>
@@ -411,6 +153,22 @@ body {
   </div>
 </div>
 
+<!-- MODAL DETALHE DO DIA -->
+<div class="modal-overlay hidden" id="modal-dia">
+  <div class="modal-dia">
+    <div class="modal-dia-header">
+      <div class="modal-dia-title" id="modal-dia-title">📦 Pedidos</div>
+      <button class="btn-fechar-modal" onclick="fecharModalDia()">✕ Fechar</button>
+    </div>
+    <div id="modal-dia-lista"></div>
+    <div class="modal-total-box">
+      <span>💰 Total do dia</span>
+      <span id="modal-dia-total">R$ 0,00</span>
+    </div>
+    <button class="btn-pdf-hist" onclick="gerarPDFHistorico()">📄 Gerar PDF do Dia</button>
+  </div>
+</div>
+
 <div class="main">
   <div class="welcome-card">
     <div class="welcome-icon">🛵</div>
@@ -418,84 +176,91 @@ body {
     <div class="welcome-sub">Registre suas entregas</div>
   </div>
 
-  <div class="date-selector">
-    <label>📅 Data:</label>
-    <input type="date" id="data-selecionada" onchange="carregarPedidosDaData()">
+  <!-- ABAS -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-btn-hoje" onclick="mudarAba('hoje')">🛵 Hoje</button>
+    <button class="tab-btn" id="tab-btn-historico" onclick="mudarAba('historico')">📚 Histórico</button>
   </div>
 
-  <div class="form-card">
-    <div class="form-title">📋 Adicionar Pedido</div>
-    <div class="form-group">
-      <label class="form-label">Código do Pedido</label>
-      <input type="text" id="codigo" class="form-input" placeholder="Ex: 1234">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Plataforma</label>
-      <select id="plataforma" class="form-select">
-        <option value="">Selecione...</option>
-        <option value="iFood">iFood</option>
-        <option value="99">99Food</option>
-        <option value="Particular">Particular</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Endereço de Entrega</label>
-      <input type="text" id="endereco" class="form-input" placeholder="Rua, número, bairro">
-    </div>
-    <div class="form-group">
-      <label class="form-label">KM Rodados</label>
-      <input type="number" id="km" class="form-input" placeholder="0.0" step="0.1" oninput="calcularValor()">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Valor da Corrida (R$)</label>
-      <input type="number" id="valor" class="form-input" placeholder="0.00" step="0.01" readonly style="background: #f0f0f0;">
-    </div>
-    <button class="btn-primary" onclick="adicionarPedido()">➕ Adicionar Pedido</button>
-  </div>
+  <!-- ABA HOJE -->
+  <div class="tab-content active" id="tab-hoje">
 
-  <div class="form-card">
-    <div class="form-title">💵 Diária do Dia</div>
-    <div id="diaria-info-auto" class="diaria-auto-info"></div>
-    <div class="form-group">
-      <label class="form-label">Valor da Diária (R$) - Opcional</label>
-      <input type="number" id="diaria-valor" class="form-input" placeholder="Deixe vazio para usar automático" step="0.01">
-      <div class="form-hint">
-        <span>💡 Se deixar vazio, usa o valor automático acima</span>
+    <div class="form-card">
+      <div class="form-title">📋 Adicionar Pedido</div>
+      <div class="form-group">
+        <label class="form-label">Código do Pedido</label>
+        <input type="text" id="codigo" class="form-input" placeholder="Ex: 1234">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Plataforma</label>
+        <select id="plataforma" class="form-select">
+          <option value="">Selecione...</option>
+          <option value="iFood">iFood</option>
+          <option value="99">99Food</option>
+          <option value="Particular">Particular</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Endereço de Entrega</label>
+        <input type="text" id="endereco" class="form-input" placeholder="Rua, número, bairro">
+      </div>
+      <div class="form-group">
+        <label class="form-label">KM Rodados</label>
+        <input type="number" id="km" class="form-input" placeholder="0.0" step="0.1" oninput="calcularValor()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Valor da Corrida (R$)</label>
+        <input type="number" id="valor" class="form-input" placeholder="0.00" step="0.01" readonly style="background:#f0f0f0;">
+      </div>
+      <button class="btn-primary" onclick="adicionarPedido()">➕ Adicionar Pedido</button>
+    </div>
+
+    <div class="form-card">
+      <div class="form-title">💵 Diária do Dia</div>
+      <div id="diaria-info-auto" class="diaria-auto-info"></div>
+      <div class="form-group">
+        <label class="form-label">Valor da Diária (R$) - Opcional</label>
+        <input type="number" id="diaria-valor" class="form-input" placeholder="Deixe vazio para usar automático" step="0.01">
+        <div class="form-hint"><span>💡 Se deixar vazio, usa o valor automático acima</span></div>
+      </div>
+      <button class="btn-primary" onclick="adicionarDiaria()">➕ Adicionar Diária</button>
+    </div>
+
+    <div class="form-card">
+      <div class="form-title">💰 Adiantamento / Compra</div>
+      <div class="form-group">
+        <label class="form-label">Valor (R$)</label>
+        <input type="number" id="adiant-valor" class="form-input" placeholder="0.00" step="0.01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descrição</label>
+        <input type="text" id="adiant-desc" class="form-input" placeholder="Ex: Gasolina, Almoço">
+      </div>
+      <button class="btn-secondary" onclick="adicionarAdiantamento()">➕ Adicionar</button>
+    </div>
+
+    <div class="form-card">
+      <div class="form-title">📦 Pedidos de Hoje</div>
+      <div id="pedidos-list" class="pedidos-list"></div>
+      <div id="empty-state" style="text-align:center;color:var(--muted);padding:20px;">
+        Nenhum pedido hoje
       </div>
     </div>
-    <button class="btn-primary" onclick="adicionarDiaria()">➕ Adicionar Diária</button>
-  </div>
 
-  <div class="form-card">
-    <div class="form-title">💰 Adiantamento / Compra</div>
-    <div class="form-group">
-      <label class="form-label">Valor (R$)</label>
-      <input type="number" id="adiant-valor" class="form-input" placeholder="0.00" step="0.01">
+    <div class="total-card hidden" id="total-card">
+      <div class="total-label">💰 Total de Hoje</div>
+      <div class="total-valor" id="total-valor">R$ 0,00</div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Descrição</label>
-      <input type="text" id="adiant-desc" class="form-input" placeholder="Ex: Gasolina, Almoço">
-    </div>
-    <button class="btn-secondary" onclick="adicionarAdiantamento()">➕ Adicionar</button>
-  </div>
 
-  <div class="form-card">
-    <div class="form-title">📦 Pedidos do Dia</div>
-    <div id="pedidos-list" class="pedidos-list"></div>
-    <div id="empty-state" style="text-align: center; color: var(--muted); padding: 20px;">
-      Nenhum pedido nesta data
+  </div><!-- /tab-hoje -->
+
+  <!-- ABA HISTÓRICO -->
+  <div class="tab-content" id="tab-historico">
+    <div id="hist-lista">
+      <div class="loading"><div class="spinner"></div></div>
     </div>
   </div>
 
-  <div class="total-card hidden" id="total-card">
-    <div class="total-label">💰 Total</div>
-    <div class="total-valor" id="total-valor">R$ 0,00</div>
-  </div>
-
-  <div class="acoes-hoje hidden" id="acoes-hoje">
-    <button class="btn-acao btn-acao-pdf" onclick="gerarPDFHoje()">📄 Salvar PDF</button>
-    <button class="btn-acao btn-acao-wpp" onclick="enviarWhatsAppHoje()">📲 Enviar WhatsApp</button>
-  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -515,342 +280,383 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-let pedidos = [];
+let pedidos     = [];
 let motoboyInfo = null;
-let dataAtual = new Date().toLocaleDateString('en-CA');
+let _diaModal   = null;
+const dataAtual = new Date().toLocaleDateString('en-CA');
 
 const tabelaPrecos = [
-  { ate: 3, valor: 3 },
-  { ate: 7, valor: 5 },
-  { ate: 9, valor: 7 },
-  { ate: 14, valor: 11 },
-  { ate: 18, valor: 18 },
-  { ate: 999, valor: 20 }
+  {ate:3,valor:3},{ate:7,valor:5},{ate:9,valor:7},
+  {ate:14,valor:11},{ate:18,valor:18},{ate:999,valor:20}
 ];
 
 const feriadosNacionais = {
-  '2025-01-01': 'Ano Novo', '2025-03-04': 'Carnaval', '2025-04-18': 'Sexta-feira Santa',
-  '2025-04-21': 'Tiradentes', '2025-05-01': 'Dia do Trabalho', '2025-06-19': 'Corpus Christi',
-  '2025-09-07': 'Independência', '2025-10-12': 'N. Sra. Aparecida', '2025-11-02': 'Finados',
-  '2025-11-15': 'Proclamação da República', '2025-11-20': 'Consciência Negra', '2025-12-25': 'Natal',
-  '2026-01-01': 'Ano Novo', '2026-02-17': 'Carnaval', '2026-04-03': 'Sexta-feira Santa',
-  '2026-04-21': 'Tiradentes', '2026-05-01': 'Dia do Trabalho', '2026-06-04': 'Corpus Christi',
-  '2026-09-07': 'Independência', '2026-10-12': 'N. Sra. Aparecida', '2026-11-02': 'Finados',
-  '2026-11-15': 'Proclamação da República', '2026-11-20': 'Consciência Negra', '2026-12-25': 'Natal'
+  '2025-01-01':'Ano Novo','2025-03-04':'Carnaval','2025-04-18':'Sexta-feira Santa',
+  '2025-04-21':'Tiradentes','2025-05-01':'Dia do Trabalho','2025-06-19':'Corpus Christi',
+  '2025-09-07':'Independência','2025-10-12':'N. Sra. Aparecida','2025-11-02':'Finados',
+  '2025-11-15':'Proclamação da República','2025-11-20':'Consciência Negra','2025-12-25':'Natal',
+  '2026-01-01':'Ano Novo','2026-02-17':'Carnaval','2026-04-03':'Sexta-feira Santa',
+  '2026-04-21':'Tiradentes','2026-05-01':'Dia do Trabalho','2026-06-04':'Corpus Christi',
+  '2026-09-07':'Independência','2026-10-12':'N. Sra. Aparecida','2026-11-02':'Finados',
+  '2026-11-15':'Proclamação da República','2026-11-20':'Consciência Negra','2026-12-25':'Natal'
 };
 
-function ehFeriado(data) {
-  return feriadosNacionais.hasOwnProperty(data);
+function ehFeriado(d)    { return feriadosNacionais.hasOwnProperty(d); }
+function ehFimDeSemana(d){ var dw=new Date(d+'T12:00:00').getDay(); return dw===0||dw===6; }
+function getDiaSemana(d) { return new Date(d+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long'}); }
+function getDiaNum(d)    { return new Date(d+'T12:00:00').getDate(); }
+function getMesNome(d)   { return new Date(d+'T12:00:00').toLocaleDateString('pt-BR',{month:'short'}); }
+function fmtData(d)      { return new Date(d+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'}); }
+function fmtR(v)         { return 'R$ '+Number(v).toFixed(2).replace('.',','); }
+function calcularDiariaAuto(d){ return (ehFeriado(d)||ehFimDeSemana(d)) ? 95.00 : 80.00; }
+
+// ── ABAS ──
+function mudarAba(aba) {
+  document.getElementById('tab-btn-hoje').classList.toggle('active', aba==='hoje');
+  document.getElementById('tab-btn-historico').classList.toggle('active', aba==='historico');
+  document.getElementById('tab-hoje').classList.toggle('active', aba==='hoje');
+  document.getElementById('tab-historico').classList.toggle('active', aba==='historico');
+  if (aba === 'historico') carregarHistorico();
 }
 
-function ehFimDeSemana(data) {
-  const d = new Date(data + 'T12:00:00');
-  const dia = d.getDay();
-  return dia === 0 || dia === 6;
-}
-
-function getDiaSemana(data) {
-  const d = new Date(data + 'T12:00:00');
-  const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-  return dias[d.getDay()];
-}
-
-function calcularDiariaAutomatica(data) {
-  if (ehFeriado(data) || ehFimDeSemana(data)) {
-    return 95.00;
-  }
-  return 80.00;
-}
-
+// ── DIÁRIA INFO ──
 function atualizarInfoDiaria() {
-  const dataSel = document.getElementById('data-selecionada').value;
-  const valorAuto = calcularDiariaAutomatica(dataSel);
-  const diaSemana = getDiaSemana(dataSel);
-  const nomeFeriado = feriadosNacionais[dataSel];
-  
-  let texto = '';
+  var valorAuto   = calcularDiariaAuto(dataAtual);
+  var diaSemana   = getDiaSemana(dataAtual);
+  var nomeFeriado = feriadosNacionais[dataAtual];
+  var texto;
   if (nomeFeriado) {
-    texto = `📅 ${nomeFeriado} • Diária automática: R$ ${valorAuto.toFixed(2)}`;
-  } else if (ehFimDeSemana(dataSel)) {
-    texto = `📅 ${diaSemana} (Fim de Semana) • Diária automática: R$ ${valorAuto.toFixed(2)}`;
+    texto = '📅 ' + nomeFeriado + ' • Diária automática: R$ ' + valorAuto.toFixed(2);
+  } else if (ehFimDeSemana(dataAtual)) {
+    texto = '📅 ' + diaSemana + ' (Fim de Semana) • Diária automática: R$ ' + valorAuto.toFixed(2);
   } else {
-    texto = `📅 ${diaSemana} (Terça-Sexta) • Diária automática: R$ ${valorAuto.toFixed(2)}`;
+    texto = '📅 ' + diaSemana + ' • Diária automática: R$ ' + valorAuto.toFixed(2);
   }
-  
   document.getElementById('diaria-info-auto').textContent = texto;
 }
 
-function verificarLogin() {
-  const savedNome = localStorage.getItem('motoboy_nome');
-  const savedTel = localStorage.getItem('motoboy_tel');
-  const savedId = localStorage.getItem('motoboy_id');
+// ── SALVAR MOTOBOY ──
+async function salvarMotoboyFirebase(id, nome, tel) {
+  try {
+    await db.collection('motoboys').doc(id).set(
+      { id, nome, tel, atualizadoEm: new Date().toISOString() },
+      { merge: true }
+    );
+  } catch(e) { console.warn('Erro ao salvar motoboy:', e.message); }
+}
 
+// ── LOGIN ──
+function verificarLogin() {
+  var savedNome = localStorage.getItem('motoboy_nome');
+  var savedTel  = localStorage.getItem('motoboy_tel');
+  var savedId   = localStorage.getItem('motoboy_id');
   if (savedNome && savedTel && savedId) {
     motoboyInfo = { id: savedId, nome: savedNome, tel: savedTel };
     document.getElementById('nome-motoboy').textContent = savedNome;
     document.getElementById('modal-login').classList.add('hidden');
-    document.getElementById('data-selecionada').value = dataAtual;
+    salvarMotoboyFirebase(savedId, savedNome, savedTel);
     atualizarInfoDiaria();
-    carregarPedidosDaData();
+    carregarPedidosHoje();
   } else {
     document.getElementById('modal-login').classList.remove('hidden');
   }
 }
 
-function fazerLogin() {
-  const nome = document.getElementById('login-nome').value.trim();
-  const tel = document.getElementById('login-tel').value.trim();
-
-  if (!nome || !tel) {
-    alert('⚠️ Preencha nome e telefone!');
-    return;
-  }
-
-  const id = 'MB_' + tel.replace(/\D/g, '');
-  
+async function fazerLogin() {
+  var nome = document.getElementById('login-nome').value.trim();
+  var tel  = document.getElementById('login-tel').value.trim();
+  if (!nome || !tel) { alert('⚠️ Preencha nome e telefone!'); return; }
+  var id = 'MB_' + tel.replace(/\D/g,'');
   localStorage.setItem('motoboy_nome', nome);
-  localStorage.setItem('motoboy_tel', tel);
-  localStorage.setItem('motoboy_id', id);
-
+  localStorage.setItem('motoboy_tel',  tel);
+  localStorage.setItem('motoboy_id',   id);
   motoboyInfo = { id, nome, tel };
   document.getElementById('nome-motoboy').textContent = nome;
   document.getElementById('modal-login').classList.add('hidden');
-  document.getElementById('data-selecionada').value = dataAtual;
+  await salvarMotoboyFirebase(id, nome, tel);
   atualizarInfoDiaria();
-  carregarPedidosDaData();
+  carregarPedidosHoje();
 }
 
+// ── CALCULAR VALOR ──
 function calcularValor() {
-  const km = parseFloat(document.getElementById('km').value) || 0;
-  
-  if (km <= 0) {
-    document.getElementById('valor').value = '';
-    return;
+  var km = parseFloat(document.getElementById('km').value) || 0;
+  if (km <= 0) { document.getElementById('valor').value = ''; return; }
+  var valor = 0;
+  for (var i=0; i<tabelaPrecos.length; i++) {
+    if (km <= tabelaPrecos[i].ate) { valor = tabelaPrecos[i].valor; break; }
   }
-
-  let valor = 0;
-  for (let faixa of tabelaPrecos) {
-    if (km <= faixa.ate) {
-      valor = faixa.valor;
-      break;
-    }
-  }
-
   document.getElementById('valor').value = valor.toFixed(2);
 }
 
+// ── ADICIONAR PEDIDO ──
 async function adicionarPedido() {
-  const codigo = document.getElementById('codigo').value.trim();
-  const plataforma = document.getElementById('plataforma').value;
-  const endereco = document.getElementById('endereco').value.trim();
-  const km = parseFloat(document.getElementById('km').value) || 0;
-  const valor = parseFloat(document.getElementById('valor').value) || 0;
-  const dataSel = document.getElementById('data-selecionada').value;
-
-  if (!codigo || !plataforma || !endereco || valor <= 0) {
-    alert('⚠️ Preencha todos os campos obrigatórios!');
-    return;
-  }
-
-  const pedido = {
-    codigo,
-    plataforma,
-    endereco,
-    km,
-    valor,
-    motoboyId: motoboyInfo.id,
-    motoboyNome: motoboyInfo.nome,
-    data: dataSel,
-    timestamp: new Date().toISOString()
-  };
-
+  var codigo    = document.getElementById('codigo').value.trim();
+  var plataforma = document.getElementById('plataforma').value;
+  var endereco  = document.getElementById('endereco').value.trim();
+  var km        = parseFloat(document.getElementById('km').value) || 0;
+  var valor     = parseFloat(document.getElementById('valor').value) || 0;
+  if (!codigo || !plataforma || !endereco || valor <= 0) { alert('⚠️ Preencha todos os campos!'); return; }
   try {
-    await db.collection('pedidos').add(pedido);
+    await db.collection('pedidos').add({
+      codigo, plataforma, endereco, km, valor,
+      motoboyId: motoboyInfo.id, motoboyNome: motoboyInfo.nome, motoboyTel: motoboyInfo.tel,
+      data: dataAtual, timestamp: new Date().toISOString()
+    });
     alert('✅ Pedido registrado!');
     limparFormPedido();
-  } catch (error) {
-    alert('❌ Erro: ' + error.message);
-  }
+  } catch(e) { alert('❌ Erro: '+e.message); }
 }
 
+// ── ADICIONAR DIÁRIA ──
 async function adicionarDiaria() {
-  const dataSel = document.getElementById('data-selecionada').value;
-  let valorDiaria = parseFloat(document.getElementById('diaria-valor').value);
-  
-  if (!valorDiaria || valorDiaria <= 0) {
-    valorDiaria = calcularDiariaAutomatica(dataSel);
-  }
-
-  const diaSemana = getDiaSemana(dataSel);
-  const nomeFeriado = feriadosNacionais[dataSel];
-  let descricao = `Diária - ${diaSemana}`;
-  if (nomeFeriado) {
-    descricao += ` (${nomeFeriado})`;
-  }
-
-  const diaria = {
-    codigo: 'DIARIA-' + Date.now(),
-    plataforma: 'Diária',
-    endereco: descricao,
-    km: 0,
-    valor: valorDiaria,
-    motoboyId: motoboyInfo.id,
-    motoboyNome: motoboyInfo.nome,
-    data: dataSel,
-    timestamp: new Date().toISOString()
-  };
-
+  var valorDiaria = parseFloat(document.getElementById('diaria-valor').value);
+  if (!valorDiaria || valorDiaria <= 0) valorDiaria = calcularDiariaAuto(dataAtual);
+  var diaSemana   = getDiaSemana(dataAtual);
+  var nomeFeriado = feriadosNacionais[dataAtual];
+  var descricao   = 'Diária - ' + diaSemana;
+  if (nomeFeriado) descricao += ' (' + nomeFeriado + ')';
   try {
-    await db.collection('pedidos').add(diaria);
-    alert('✅ Diária registrada: R$ ' + valorDiaria.toFixed(2));
+    await db.collection('pedidos').add({
+      codigo: 'DIARIA-'+Date.now(), plataforma: 'Diária', endereco: descricao,
+      km: 0, valor: valorDiaria,
+      motoboyId: motoboyInfo.id, motoboyNome: motoboyInfo.nome, motoboyTel: motoboyInfo.tel,
+      data: dataAtual, timestamp: new Date().toISOString()
+    });
+    alert('✅ Diária registrada: R$ '+valorDiaria.toFixed(2));
     document.getElementById('diaria-valor').value = '';
-  } catch (error) {
-    alert('❌ Erro: ' + error.message);
-  }
+  } catch(e) { alert('❌ Erro: '+e.message); }
 }
 
+// ── ADICIONAR ADIANTAMENTO ──
 async function adicionarAdiantamento() {
-  const valor = parseFloat(document.getElementById('adiant-valor').value) || 0;
-  const descricao = document.getElementById('adiant-desc').value.trim();
-  const dataSel = document.getElementById('data-selecionada').value;
-
-  if (valor <= 0) {
-    alert('⚠️ Informe um valor válido!');
-    return;
-  }
-
-  if (!descricao) {
-    alert('⚠️ Informe a descrição!');
-    return;
-  }
-
-  const adiantamento = {
-    codigo: 'ADI-' + Date.now(),
-    plataforma: 'Adiantamento',
-    endereco: descricao,
-    km: 0,
-    valor: -valor,
-    motoboyId: motoboyInfo.id,
-    motoboyNome: motoboyInfo.nome,
-    data: dataSel,
-    timestamp: new Date().toISOString()
-  };
-
+  var valor    = parseFloat(document.getElementById('adiant-valor').value) || 0;
+  var descricao = document.getElementById('adiant-desc').value.trim();
+  if (valor <= 0)  { alert('⚠️ Informe um valor válido!'); return; }
+  if (!descricao)  { alert('⚠️ Informe a descrição!'); return; }
   try {
-    await db.collection('pedidos').add(adiantamento);
+    await db.collection('pedidos').add({
+      codigo: 'ADI-'+Date.now(), plataforma: 'Adiantamento', endereco: descricao,
+      km: 0, valor: -valor,
+      motoboyId: motoboyInfo.id, motoboyNome: motoboyInfo.nome, motoboyTel: motoboyInfo.tel,
+      data: dataAtual, timestamp: new Date().toISOString()
+    });
     alert('✅ Adiantamento registrado!');
     limparFormAdiantamento();
-  } catch (error) {
-    alert('❌ Erro: ' + error.message);
-  }
+  } catch(e) { alert('❌ Erro: '+e.message); }
 }
 
-function carregarPedidosDaData() {
-  const dataSel = document.getElementById('data-selecionada').value;
-  atualizarInfoDiaria();
-  
+// ── CARREGAR HOJE (realtime) ──
+function carregarPedidosHoje() {
   db.collection('pedidos')
-    .where('motoboyId', '==', motoboyInfo.id)
-    .where('data', '==', dataSel)
+    .where('motoboyId','==', motoboyInfo.id)
+    .where('data','==', dataAtual)
     .onSnapshot(function(snapshot) {
       pedidos = [];
-      snapshot.forEach(function(doc) {
-        pedidos.push({ id: doc.id, ...doc.data() });
-      });
-      pedidos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      atualizarLista();
+      snapshot.forEach(function(doc){ pedidos.push({ id: doc.id, ...doc.data() }); });
+      pedidos.sort(function(a,b){ return new Date(b.timestamp)-new Date(a.timestamp); });
+      atualizarListaHoje();
     });
 }
 
-function limparFormPedido() {
-  document.getElementById('codigo').value = '';
-  document.getElementById('plataforma').value = '';
-  document.getElementById('endereco').value = '';
-  document.getElementById('km').value = '';
-  document.getElementById('valor').value = '';
-}
-
-function limparFormAdiantamento() {
-  document.getElementById('adiant-valor').value = '';
-  document.getElementById('adiant-desc').value = '';
-}
-
-function atualizarLista() {
-  const lista = document.getElementById('pedidos-list');
-  const emptyState = document.getElementById('empty-state');
-  const totalCard = document.getElementById('total-card');
-  const acoesHoje = document.getElementById('acoes-hoje');
-
+function atualizarListaHoje() {
+  var lista      = document.getElementById('pedidos-list');
+  var emptyState = document.getElementById('empty-state');
+  var totalCard  = document.getElementById('total-card');
   if (pedidos.length === 0) {
-    emptyState.classList.remove('hidden');
-    lista.innerHTML = '';
-    totalCard.classList.add('hidden');
-    acoesHoje.classList.add('hidden');
-    return;
+    emptyState.classList.remove('hidden'); lista.innerHTML = ''; totalCard.classList.add('hidden'); return;
   }
+  emptyState.classList.add('hidden'); totalCard.classList.remove('hidden');
+  var html = '', total = 0;
+  pedidos.forEach(function(p) {
+    var valorAbs = Math.abs(p.valor).toFixed(2).replace('.',',');
+    var sinal    = p.valor < 0 ? '- R$' : 'R$';
+    var neg      = p.valor < 0 ? 'negativo' : '';
+    html += '<div class="pedido-item">' +
+      '<div class="pedido-info">' +
+        '<div class="pedido-codigo">#'+p.codigo+'</div>' +
+        '<div class="pedido-meta">'+p.plataforma+' · '+p.endereco+(p.km>0?' · '+p.km+' km':'')+'</div>' +
+      '</div>' +
+      '<div class="pedido-valor '+neg+'">'+sinal+' '+valorAbs+'</div>' +
+    '</div>';
+    total += p.valor;
+  });
+  lista.innerHTML = html;
+  document.getElementById('total-valor').textContent = fmtR(total);
+}
 
-  emptyState.classList.add('hidden');
-  totalCard.classList.remove('hidden');
-  acoesHoje.classList.remove('hidden');
+// ── HISTÓRICO ──
+function carregarHistorico() {
+  var cont = document.getElementById('hist-lista');
+  cont.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
 
-  let html = '';
-  let total = 0;
+  // Busca pedidos por ID — e também por nome como fallback para pedidos antigos
+  var queryId   = db.collection('pedidos').where('motoboyId','==', motoboyInfo.id).get();
+  var queryNome = db.collection('pedidos').where('motoboyNome','==', motoboyInfo.nome).get();
 
-  pedidos.forEach((p) => {
-    const valorAbs = Math.abs(p.valor).toFixed(2).replace('.', ',');
-    const sinal = p.valor < 0 ? '- R$' : 'R$';
-    const negativo = p.valor < 0 ? 'negativo' : '';
-    
-    html += `
-      <div class="pedido-item">
-        <div class="pedido-info">
-          <div class="pedido-codigo">#${p.codigo}</div>
-          <div class="pedido-meta">
-            ${p.plataforma} · ${p.endereco}${p.km > 0 ? ` · ${p.km} km` : ''}
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div class="pedido-valor ${negativo}">${sinal} ${valorAbs}</div>
-          <button class="btn-del" onclick="deletarPedido('${p.id}')" title="Excluir">🗑️</button>
-        </div>
-      </div>
-    `;
-    
+  Promise.all([queryId, queryNome])
+    .then(function(results) {
+      // Unifica os dois resultados sem duplicatas (usando doc ID como chave)
+      var todosMap = {};
+      results.forEach(function(snap) {
+        snap.forEach(function(doc) {
+          todosMap[doc.id] = doc.data();
+        });
+      });
+
+      // Agrupa por data (excluindo hoje)
+      var diasMap = {};
+      Object.values(todosMap).forEach(function(p) {
+        if (p.data === dataAtual) return;
+        if (!diasMap[p.data]) diasMap[p.data] = [];
+        diasMap[p.data].push(p);
+      });
+
+      var dias = Object.keys(diasMap).sort(function(a,b){ return b.localeCompare(a); });
+
+      if (dias.length === 0) {
+        cont.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div>Nenhum histórico ainda.</div>';
+        return;
+      }
+
+      // Busca pagamentos individualmente por documento (sem range query)
+      var buscasPagto = dias.map(function(d) {
+        return db.collection('pagamentos').doc(motoboyInfo.id + '_' + d).get()
+          .catch(function(){ return null; });
+      });
+
+      Promise.all(buscasPagto).then(function(pagtoSnaps) {
+        var pagtoMap = {};
+        pagtoSnaps.forEach(function(snap, i) {
+          if (snap && snap.exists) pagtoMap[dias[i]] = snap.data();
+        });
+
+        renderHistorico(dias, diasMap, pagtoMap, cont);
+
+      }).catch(function() {
+        renderHistorico(dias, diasMap, {}, cont);
+      });
+
+    }).catch(function(e){
+      cont.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div>Erro ao carregar histórico.<br><small>'+e.message+'</small></div>';
+      console.error(e);
+    });
+}
+
+// ── RENDERIZAR HISTÓRICO ──
+function renderHistorico(dias, diasMap, pagtoMap, cont) {
+  var html = '<div class="hist-list">';
+  dias.forEach(function(d) {
+    var lista    = diasMap[d];
+    var corridas = lista.filter(function(p){ return p.plataforma !== 'Diária' && p.plataforma !== 'Adiantamento'; });
+    var qtd      = corridas.length;
+    var kmTotal  = corridas.reduce(function(s,p){ return s + (Number(p.km)||0); }, 0);
+
+    var diariaLancada = lista.filter(function(p){ return p.plataforma === 'Diária'; })
+                             .reduce(function(s,p){ return s + p.valor; }, 0);
+    var diariaExibir  = diariaLancada > 0 ? diariaLancada : calcularDiariaAuto(d);
+
+    var total = lista.reduce(function(s,p){ return s + p.valor; }, 0);
+    var neg   = total < 0 ? 'negativo' : '';
+
+    var pagto = pagtoMap[d];
+    var badge, cardStyle;
+    if (pagto && pagto.status === 'pago') {
+      badge     = '<span class="badge-status badge-fechado">✅ FECHADO</span>';
+      cardStyle = ' style="background:#f0fdf4;border-color:#86efac;"';
+    } else if (pagto && pagto.status === 'parcial') {
+      badge     = '<span class="badge-status badge-parcial">⚠️ PARCIAL</span>';
+      cardStyle = '';
+    } else {
+      badge     = '<span class="badge-status badge-aberto">🚨 ABERTO</span>';
+      cardStyle = '';
+    }
+
+    html +=
+      '<div class="hist-item" onclick="abrirDia(\''+d+'\')\"'+cardStyle+'>'+
+        '<div class="hist-data">'+
+          '<div class="hist-dia-num">'+getDiaNum(d)+'</div>'+
+          '<div class="hist-mes">'+getMesNome(d)+'</div>'+
+        '</div>'+
+        '<div class="hist-sep"></div>'+
+        '<div class="hist-info">'+
+          '<div class="hist-dia-nome">'+getDiaSemana(d).toUpperCase()+'</div>'+
+          '<div class="hist-pedidos-txt">'+qtd+' pedido'+(qtd!==1?'s':'')+' · '+kmTotal.toFixed(1)+' km</div>'+
+          '<div class="hist-diaria">📋 Diária: '+fmtR(diariaExibir)+'</div>'+
+        '</div>'+
+        '<div class="hist-right">'+
+          '<div class="hist-val '+neg+'">'+fmtR(total)+'</div>'+
+          badge+
+        '</div>'+
+      '</div>';
+  });
+  html += '</div>';
+  cont.innerHTML = html;
+  window._diasMap = diasMap;
+}
+
+
+function abrirDia(data) {
+  if (!window._diasMap || !window._diasMap[data]) return;
+  var lista = window._diasMap[data].slice().sort(function(a,b){
+    return new Date(b.timestamp)-new Date(a.timestamp);
+  });
+  _diaModal = { data, lista };
+
+  document.getElementById('modal-dia-title').textContent = '📦 ' + fmtData(data) + ' — ' + getDiaSemana(data);
+
+  var html = '', total = 0;
+  lista.forEach(function(p) {
+    var valorAbs = Math.abs(p.valor).toFixed(2).replace('.',',');
+    var sinal    = p.valor < 0 ? '- R$' : 'R$';
+    var neg      = p.valor < 0 ? 'negativo' : '';
+    html +=
+      '<div class="modal-pedido-item">'+
+        '<div>'+
+          '<div class="modal-pedido-codigo">#'+p.codigo+'</div>'+
+          '<div class="modal-pedido-meta">'+p.plataforma+' · '+p.endereco+(p.km>0?' · '+p.km+' km':'')+'</div>'+
+        '</div>'+
+        '<div class="modal-pedido-valor '+neg+'">'+sinal+' '+valorAbs+'</div>'+
+      '</div>';
     total += p.valor;
   });
 
-  lista.innerHTML = html;
-  document.getElementById('total-valor').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
+  document.getElementById('modal-dia-lista').innerHTML = html || '<p style="color:var(--muted);text-align:center;padding:20px;">Nenhum pedido.</p>';
+  document.getElementById('modal-dia-total').textContent = fmtR(total);
+  document.getElementById('modal-dia').classList.remove('hidden');
 }
 
-async function deletarPedido(id) {
-  if (!confirm('🗑️ Excluir este pedido?')) return;
-  try {
-    await db.collection('pedidos').doc(id).delete();
-  } catch(e) { alert('❌ Erro ao excluir: ' + e.message); }
+function fecharModalDia() {
+  document.getElementById('modal-dia').classList.add('hidden');
+  _diaModal = null;
 }
 
-function gerarPDFHoje() {
+// ── GERAR PDF DO HISTÓRICO ──
+function gerarPDFHistorico() {
+  if (!_diaModal) return;
   if (!window.jspdf || !window.jspdf.jsPDF) { alert('PDF não carregou, recarregue a página.'); return; }
-  if (!pedidos || pedidos.length === 0) { alert('Nenhum pedido hoje.'); return; }
 
-  const data    = dataAtual;
-  const lista   = pedidos;
-  const dataFmt = new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-  const jsPDF   = window.jspdf.jsPDF;
-  const pdf     = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  const W=210, purple=[90,45,140], pink=[217,54,138], green=[31,122,79], red=[192,57,43], gray=[100,80,130], white=[255,255,255];
+  var data    = _diaModal.data;
+  var lista   = _diaModal.lista;
+  var dataFmt = new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
 
-  const corridas      = lista.filter(p => p.plataforma !== 'Diária' && p.plataforma !== 'Adiantamento');
-  const diarias       = lista.filter(p => p.plataforma === 'Diária');
-  const adiantamentos = lista.filter(p => p.plataforma === 'Adiantamento');
-  const totalCorridas = corridas.reduce((s,p) => s+p.valor, 0);
-  const totalDiarias  = diarias.reduce((s,p) => s+p.valor, 0);
-  const totalAdiant   = adiantamentos.reduce((s,p) => s+p.valor, 0);
-  const totalGeral    = lista.reduce((s,p) => s+p.valor, 0);
+  var jsPDF  = window.jspdf.jsPDF;
+  var pdf    = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W      = 210;
+  var purple = [90,45,140], pink=[217,54,138], green=[31,122,79], red=[192,57,43], gray=[100,80,130], white=[255,255,255], orange=[180,100,0];
 
-  // Cabeçalho
-  pdf.setFillColor(...purple); pdf.rect(0,0,W,40,'F');
+  // ── Separar tipos
+  var corridas      = lista.filter(function(p){ return p.plataforma !== 'Diária' && p.plataforma !== 'Adiantamento'; });
+  var diarias       = lista.filter(function(p){ return p.plataforma === 'Diária'; });
+  var adiantamentos = lista.filter(function(p){ return p.plataforma === 'Adiantamento'; });
+
+  var totalCorridas   = corridas.reduce(function(s,p){ return s+p.valor; }, 0);
+  var totalDiarias    = diarias.reduce(function(s,p){ return s+p.valor; }, 0);
+  var totalAdiant     = adiantamentos.reduce(function(s,p){ return s+p.valor; }, 0);
+  var totalGeral      = lista.reduce(function(s,p){ return s+p.valor; }, 0);
+
+  // ── CABEÇALHO
+  pdf.setFillColor(purple[0],purple[1],purple[2]); pdf.rect(0,0,W,40,'F');
   pdf.setFontSize(22); pdf.setFont('helvetica','bold'); pdf.setTextColor(255,255,255);
   pdf.text('Bolo de Mi',14,17);
   pdf.setFontSize(10); pdf.setFont('helvetica','normal'); pdf.setTextColor(249,168,212);
@@ -858,101 +664,154 @@ function gerarPDFHoje() {
   pdf.setFontSize(8.5); pdf.setTextColor(210,190,230);
   pdf.text('Rua Asteca, 2812A - Santa Monica, Belo Horizonte - MG',14,33);
   pdf.setFontSize(8.5); pdf.setTextColor(255,255,255);
-  pdf.text(dataFmt,W-14,26,{align:'right'});
+  pdf.text(dataFmt, W-14, 26, {align:'right'});
 
-  // Info motoboy
+  // ── INFO MOTOBOY
   pdf.setFillColor(238,228,248); pdf.roundedRect(14,46,W-28,22,4,4,'F');
-  pdf.setFontSize(12); pdf.setFont('helvetica','bold'); pdf.setTextColor(...purple);
-  pdf.text('Motoboy: '+motoboyInfo.nome,20,55);
-  pdf.setFontSize(9); pdf.setFont('helvetica','normal'); pdf.setTextColor(...gray);
-  if (motoboyInfo.tel) pdf.text('Telefone: '+motoboyInfo.tel,20,63);
+  pdf.setFontSize(12); pdf.setFont('helvetica','bold'); pdf.setTextColor(purple[0],purple[1],purple[2]);
+  pdf.text('Motoboy: '+motoboyInfo.nome, 20, 55);
+  pdf.setFontSize(9); pdf.setFont('helvetica','normal'); pdf.setTextColor(gray[0],gray[1],gray[2]);
+  if (motoboyInfo.tel) pdf.text('Telefone: '+motoboyInfo.tel, 20, 63);
 
-  let curY = 76;
+  var curY = 76;
 
-  // Corridas
-  pdf.setFontSize(10); pdf.setFont('helvetica','bold'); pdf.setTextColor(...purple);
-  pdf.text('🚴 Corridas',14,curY); curY+=4;
+  // ── SEÇÃO 1: CORRIDAS
+  pdf.setFontSize(10); pdf.setFont('helvetica','bold'); pdf.setTextColor(purple[0],purple[1],purple[2]);
+  pdf.text('🚴 Corridas', 14, curY); curY += 4;
+
+  var rowsCorridas = corridas.map(function(p,i){
+    return [
+      String(i+1), '#'+p.codigo, p.plataforma,
+      p.endereco.length>40 ? p.endereco.substring(0,40)+'...' : p.endereco,
+      Number(p.km).toFixed(1)+' km',
+      'R$ '+Number(p.valor).toFixed(2).replace('.',',')
+    ];
+  });
+
   pdf.autoTable({
-    startY:curY,
+    startY: curY,
     head:[['','Pedido','Plataforma','Endereço','KM','Valor']],
-    body: corridas.length>0 ? corridas.map((p,i)=>[String(i+1),'#'+p.codigo,p.plataforma,p.endereco.length>40?p.endereco.substring(0,40)+'...':p.endereco,Number(p.km).toFixed(1)+' km','R$ '+Number(p.valor).toFixed(2).replace('.',',')]) : [['—','—','—','Nenhuma corrida','—','—']],
+    body: rowsCorridas.length>0 ? rowsCorridas : [['—','—','—','Nenhuma corrida','—','—']],
     theme:'grid',
     headStyles:{fillColor:purple,textColor:white,fontStyle:'bold',fontSize:8.5,halign:'center'},
     bodyStyles:{fontSize:8,textColor:[36,15,64]},
     alternateRowStyles:{fillColor:[253,244,251]},
-    columnStyles:{0:{halign:'center',cellWidth:8},1:{halign:'center',cellWidth:22},2:{halign:'center',cellWidth:24},3:{cellWidth:82},4:{halign:'center',cellWidth:16},5:{halign:'right',cellWidth:26,fontStyle:'bold',textColor:green}},
+    columnStyles:{
+      0:{halign:'center',cellWidth:8},1:{halign:'center',cellWidth:22},
+      2:{halign:'center',cellWidth:24},3:{cellWidth:82},
+      4:{halign:'center',cellWidth:16},5:{halign:'right',cellWidth:26,fontStyle:'bold',textColor:green}
+    },
     margin:{left:14,right:14}
   });
-  curY = pdf.lastAutoTable.finalY+8;
+  curY = pdf.lastAutoTable.finalY + 8;
 
-  // Diária
-  if (diarias.length>0) {
-    pdf.setFontSize(10); pdf.setFont('helvetica','bold'); pdf.setTextColor(...purple);
-    pdf.text('💵 Diária',14,curY); curY+=4;
-    pdf.autoTable({startY:curY,head:[['Descrição','Valor']],body:diarias.map(p=>[p.endereco,'R$ '+Number(p.valor).toFixed(2).replace('.',',')]),theme:'grid',headStyles:{fillColor:[59,130,246],textColor:white,fontStyle:'bold',fontSize:8.5},bodyStyles:{fontSize:8.5,textColor:[36,15,64]},columnStyles:{0:{cellWidth:160},1:{halign:'right',cellWidth:18,fontStyle:'bold',textColor:green}},margin:{left:14,right:14}});
-    curY = pdf.lastAutoTable.finalY+8;
+  // ── SEÇÃO 2: DIÁRIA (se houver)
+  if (diarias.length > 0) {
+    pdf.setFontSize(10); pdf.setFont('helvetica','bold'); pdf.setTextColor(purple[0],purple[1],purple[2]);
+    pdf.text('💵 Diária', 14, curY); curY += 4;
+
+    var rowsDiaria = diarias.map(function(p){
+      return [p.endereco, 'R$ '+Number(p.valor).toFixed(2).replace('.',',')];
+    });
+
+    pdf.autoTable({
+      startY: curY,
+      head:[['Descrição','Valor']],
+      body: rowsDiaria,
+      theme:'grid',
+      headStyles:{fillColor:[59,130,246],textColor:white,fontStyle:'bold',fontSize:8.5},
+      bodyStyles:{fontSize:8.5,textColor:[36,15,64]},
+      columnStyles:{
+        0:{cellWidth:160},
+        1:{halign:'right',cellWidth:18,fontStyle:'bold',textColor:green}
+      },
+      margin:{left:14,right:14}
+    });
+    curY = pdf.lastAutoTable.finalY + 8;
   }
 
-  // Adiantamentos
-  if (adiantamentos.length>0) {
-    pdf.setFontSize(10); pdf.setFont('helvetica','bold'); pdf.setTextColor(...purple);
-    pdf.text('💸 Descontos / Adiantamentos',14,curY); curY+=4;
-    pdf.autoTable({startY:curY,head:[['Descrição','Valor']],body:adiantamentos.map(p=>[p.endereco,'- R$ '+Math.abs(p.valor).toFixed(2).replace('.',',')]),theme:'grid',headStyles:{fillColor:red,textColor:white,fontStyle:'bold',fontSize:8.5},bodyStyles:{fontSize:8.5,textColor:[36,15,64]},columnStyles:{0:{cellWidth:160},1:{halign:'right',cellWidth:18,fontStyle:'bold',textColor:red}},margin:{left:14,right:14}});
-    curY = pdf.lastAutoTable.finalY+8;
+  // ── SEÇÃO 3: ADIANTAMENTOS (se houver)
+  if (adiantamentos.length > 0) {
+    pdf.setFontSize(10); pdf.setFont('helvetica','bold'); pdf.setTextColor(purple[0],purple[1],purple[2]);
+    pdf.text('💸 Descontos / Adiantamentos', 14, curY); curY += 4;
+
+    var rowsAdiant = adiantamentos.map(function(p){
+      return [p.endereco, '- R$ '+Math.abs(p.valor).toFixed(2).replace('.',',')];
+    });
+
+    pdf.autoTable({
+      startY: curY,
+      head:[['Descrição','Valor']],
+      body: rowsAdiant,
+      theme:'grid',
+      headStyles:{fillColor:red,textColor:white,fontStyle:'bold',fontSize:8.5},
+      bodyStyles:{fontSize:8.5,textColor:[36,15,64]},
+      columnStyles:{
+        0:{cellWidth:160},
+        1:{halign:'right',cellWidth:18,fontStyle:'bold',textColor:red}
+      },
+      margin:{left:14,right:14}
+    });
+    curY = pdf.lastAutoTable.finalY + 8;
   }
 
-  // Resumo
-  const altR = 16+(diarias.length>0?9:0)+(adiantamentos.length>0?9:0)+22;
-  pdf.setFillColor(238,228,248); pdf.roundedRect(14,curY,W-28,altR,5,5,'F');
-  pdf.setFontSize(10); pdf.setFont('helvetica','bold'); pdf.setTextColor(...purple);
-  pdf.text('Resumo',20,curY+10);
-  let lx=20,rx=W-20,ly=curY+20;
+  // ── RESUMO FINAL
+  var alturaResumo = 16 + (diarias.length>0?9:0) + (adiantamentos.length>0?9:0) + 22;
+  pdf.setFillColor(238,228,248); pdf.roundedRect(14, curY, W-28, alturaResumo, 5,5,'F');
+  pdf.setFontSize(10); pdf.setFont('helvetica','bold'); pdf.setTextColor(purple[0],purple[1],purple[2]);
+  pdf.text('Resumo', 20, curY+10);
+
+  var lx=20, rx=W-20, ly=curY+20;
   pdf.setFontSize(9);
-  pdf.setFont('helvetica','normal'); pdf.setTextColor(...gray); pdf.text('Corridas ('+corridas.length+'):',lx,ly);
-  pdf.setFont('helvetica','bold'); pdf.setTextColor(...green); pdf.text('R$ '+totalCorridas.toFixed(2).replace('.',','),rx,ly,{align:'right'}); ly+=9;
-  if (diarias.length>0) { pdf.setFont('helvetica','normal'); pdf.setTextColor(...gray); pdf.text('Diária:',lx,ly); pdf.setFont('helvetica','bold'); pdf.setTextColor(59,130,246); pdf.text('R$ '+totalDiarias.toFixed(2).replace('.',','),rx,ly,{align:'right'}); ly+=9; }
-  if (adiantamentos.length>0) { pdf.setFont('helvetica','normal'); pdf.setTextColor(...gray); pdf.text('Descontos:',lx,ly); pdf.setFont('helvetica','bold'); pdf.setTextColor(...red); pdf.text('- R$ '+Math.abs(totalAdiant).toFixed(2).replace('.',','),rx,ly,{align:'right'}); ly+=9; }
-  pdf.setDrawColor(...pink); pdf.setLineWidth(0.5); pdf.line(20,ly,W-20,ly); ly+=3;
-  pdf.setFillColor(...pink); pdf.roundedRect(14,ly,W-28,20,4,4,'F');
+
+  pdf.setFont('helvetica','normal'); pdf.setTextColor(gray[0],gray[1],gray[2]);
+  pdf.text('Corridas ('+corridas.length+'):',lx,ly);
+  pdf.setFont('helvetica','bold'); pdf.setTextColor(green[0],green[1],green[2]);
+  pdf.text('R$ '+totalCorridas.toFixed(2).replace('.',','),rx,ly,{align:'right'}); ly+=9;
+
+  if (diarias.length > 0) {
+    pdf.setFont('helvetica','normal'); pdf.setTextColor(gray[0],gray[1],gray[2]);
+    pdf.text('Diária:',lx,ly);
+    pdf.setFont('helvetica','bold'); pdf.setTextColor(59,130,246);
+    pdf.text('R$ '+totalDiarias.toFixed(2).replace('.',','),rx,ly,{align:'right'}); ly+=9;
+  }
+
+  if (adiantamentos.length > 0) {
+    pdf.setFont('helvetica','normal'); pdf.setTextColor(gray[0],gray[1],gray[2]);
+    pdf.text('Descontos:',lx,ly);
+    pdf.setFont('helvetica','bold'); pdf.setTextColor(red[0],red[1],red[2]);
+    pdf.text('- R$ '+Math.abs(totalAdiant).toFixed(2).replace('.',','),rx,ly,{align:'right'}); ly+=9;
+  }
+
+  // Total destaque
+  pdf.setDrawColor(pink[0],pink[1],pink[2]); pdf.setLineWidth(0.5);
+  pdf.line(20,ly,W-20,ly); ly+=3;
+  pdf.setFillColor(pink[0],pink[1],pink[2]); pdf.roundedRect(14,ly,W-28,20,4,4,'F');
   pdf.setFont('helvetica','bold'); pdf.setFontSize(11); pdf.setTextColor(255,255,255);
-  pdf.text('TOTAL DO DIA',lx,ly+13); pdf.setFontSize(15); pdf.text('R$ '+totalGeral.toFixed(2).replace('.',','),rx,ly+13,{align:'right'});
-  const foot=ly+32;
-  pdf.setFontSize(7.5); pdf.setFont('helvetica','normal'); pdf.setTextColor(...gray);
-  pdf.text('Gerado pelo motoboy '+motoboyInfo.nome+' · Bolo de Mi',W/2,foot,{align:'center'});
-  pdf.text('Emitido em: '+new Date().toLocaleString('pt-BR'),W/2,foot+5,{align:'center'});
+  pdf.text('TOTAL DO DIA',lx,ly+13);
+  pdf.setFontSize(15);
+  pdf.text('R$ '+totalGeral.toFixed(2).replace('.',','),rx,ly+13,{align:'right'});
+
+  var foot = ly+32;
+  pdf.setFontSize(7.5); pdf.setFont('helvetica','normal'); pdf.setTextColor(gray[0],gray[1],gray[2]);
+  pdf.text('Gerado pelo motoboy '+motoboyInfo.nome+' · Bolo de Mi', W/2, foot, {align:'center'});
+  pdf.text('Emitido em: '+new Date().toLocaleString('pt-BR'), W/2, foot+5, {align:'center'});
+
   pdf.save('relatorio_'+motoboyInfo.nome.replace(/\s+/g,'_')+'_'+data+'.pdf');
 }
 
-function enviarWhatsAppHoje() {
-  if (!pedidos || pedidos.length === 0) { alert('Nenhum pedido hoje.'); return; }
-  const dataFmt = new Date(dataAtual+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
-  const corridas      = pedidos.filter(p => p.plataforma!=='Diária' && p.plataforma!=='Adiantamento');
-  const diarias       = pedidos.filter(p => p.plataforma==='Diária');
-  const adiantamentos = pedidos.filter(p => p.plataforma==='Adiantamento');
-  const total         = pedidos.reduce((s,p) => s+p.valor, 0);
-
-  let msg = '🎂 *Bolo de Mi — Relatório*\n';
-  msg += '📅 '+dataFmt+'\n';
-  msg += '🛵 Motoboy: *'+motoboyInfo.nome+'*\n\n';
-  if (corridas.length>0) {
-    msg += '📦 *Corridas ('+corridas.length+')*\n';
-    corridas.forEach((p,i) => { msg += (i+1)+'. #'+p.codigo+' — '+p.plataforma+' — R$ '+Number(p.valor).toFixed(2).replace('.',',')+'\n'; });
-    msg += '\n';
-  }
-  if (diarias.length>0) {
-    msg += '💵 *Diária*\n';
-    diarias.forEach(p => { msg += p.endereco+' — R$ '+Number(p.valor).toFixed(2).replace('.',',')+'\n'; });
-    msg += '\n';
-  }
-  if (adiantamentos.length>0) {
-    msg += '💸 *Descontos*\n';
-    adiantamentos.forEach(p => { msg += p.endereco+' — - R$ '+Math.abs(p.valor).toFixed(2).replace('.',',')+'\n'; });
-    msg += '\n';
-  }
-  msg += '💰 *TOTAL: R$ '+total.toFixed(2).replace('.',',')+' *';
-  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+// ── HELPERS ──
+function limparFormPedido() {
+  ['codigo','plataforma','endereco','km','valor'].forEach(function(id){
+    document.getElementById(id).value = '';
+  });
+}
+function limparFormAdiantamento() {
+  document.getElementById('adiant-valor').value = '';
+  document.getElementById('adiant-desc').value  = '';
 }
 
+// ── INIT ──
 verificarLogin();
 </script>
 </body>

@@ -831,6 +831,7 @@ function carregar() {
       html += '<div class="mb-footer"><div class="mb-footer-top">';
       html += '<div class="footer-col"><div class="fc-lbl">Corridas</div><div class="fc-val">'+fmtR(corridas)+'</div></div>';
       html += '<div class="footer-col"><div class="fc-lbl">Diária</div><div class="fc-val">'+fmtR(diariaJaSalva)+'</div></div>';
+      if(adiantMotoboy<0) html += '<div class="footer-col"><div class="fc-lbl">Desconto</div><div class="fc-val red">'+fmtR(adiantMotoboy)+'</div></div>';
       if(adiantJaSalvo>0) html += '<div class="footer-col"><div class="fc-lbl">Adiant. Desc.</div><div class="fc-val red">-'+fmtR(adiantJaSalvo)+'</div></div>';
       html += '<div class="footer-col"><div class="fc-lbl">Dívida Ant.</div><div class="fc-val red">'+fmtR(anterior)+'</div></div>';
       html += '<div class="footer-col"><div class="fc-lbl">Total Final</div><div class="fc-val big">'+fmtR(totalFinal)+'</div></div>';

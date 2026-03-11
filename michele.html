@@ -499,15 +499,17 @@ function fecharModalPagar(){ document.getElementById('modal-pagar').classList.ad
 
 function recalcMP() {
   if(!_pendingPagar) return;
-  var corridas    = _pendingPagar.valorCorridas;
-  var anterior    = _pendingPagar.anterior;
-  var diaria      = parseFloat(document.getElementById('mp-diaria').value) || 0;
-  var adiantamento = parseFloat(document.getElementById('mp-adiantamento').value) || 0;
-  var totalDia    = corridas + diaria;
-  var total       = Math.max(0, totalDia + anterior - adiantamento);
+  var corridas      = _pendingPagar.valorCorridas;
+  var anterior      = _pendingPagar.anterior;
+  var descontoMb    = _pendingPagar.descontoMotoboy || 0; // desconto já lançado pelo motoboy (negativo)
+  var diaria        = parseFloat(document.getElementById('mp-diaria').value) || 0;
+  var adiantamento  = parseFloat(document.getElementById('mp-adiantamento').value) || 0;
+  var totalDia      = corridas + diaria;
+  var total         = Math.max(0, totalDia + anterior + descontoMb - adiantamento);
 
   var html = '<div class="mp-linha"><span>Corridas</span><span>'+fmtR(corridas)+'</span></div>';
   html += '<div class="mp-linha"><span>+ Diária</span><span>'+fmtR(diaria)+'</span></div>';
+  if(descontoMb<0) html += '<div class="mp-linha desconto"><span>− Desconto (lançado pelo motoboy)</span><span>'+fmtR(descontoMb)+'</span></div>';
   if(anterior>0) html += '<div class="mp-linha"><span>+ Dívida anterior</span><span>'+fmtR(anterior)+'</span></div>';
   if(adiantamento>0) html += '<div class="mp-linha desconto"><span>− Adiantamento/Compra</span><span>- '+fmtR(adiantamento)+'</span></div>';
   document.getElementById('mp-resumo').innerHTML = html;
@@ -516,11 +518,12 @@ function recalcMP() {
 
 function confirmarPagamento() {
   if(!_pendingPagar) return;
-  var p           = _pendingPagar;
-  var diaria      = parseFloat(document.getElementById('mp-diaria').value) || 0;
-  var adiantamento = parseFloat(document.getElementById('mp-adiantamento').value) || 0;
-  var totalDia    = p.valorCorridas + diaria;
-  var totalFinal  = Math.max(0, totalDia + p.anterior - adiantamento);
+  var p             = _pendingPagar;
+  var diaria        = parseFloat(document.getElementById('mp-diaria').value) || 0;
+  var adiantamento  = parseFloat(document.getElementById('mp-adiantamento').value) || 0;
+  var descontoMb    = p.descontoMotoboy || 0;
+  var totalDia      = p.valorCorridas + diaria;
+  var totalFinal    = Math.max(0, totalDia + p.anterior + descontoMb - adiantamento);
 
   db.collection('pagamentos').doc(p.motoboyId+'_'+p.dataSel).set({
     status:'pago', data:p.dataSel, motoboyId:p.motoboyId,
@@ -845,7 +848,7 @@ function carregar() {
       } else {
         html += '<div class="fds-title">💳 Pagar e fechar o dia</div>';
         html += '<div class="fds-sub">Confirme a diária e o pagamento.</div>';
-        html += '</div><button class="btn-fechar-dia" onclick="abrirModalPagarComPedidos(\''+id+'\',\''+g.nome.replace(/'/g,"\\'")+'\',\''+tel+'\','+corridas+','+anterior+',\''+dataSel+'\',\''+encodeURIComponent(pedsSerial)+'\')">💰 Pagar e Gerar PDF</button>';
+        html += '</div><button class="btn-fechar-dia" onclick="abrirModalPagarComPedidos(\''+id+'\',\''+g.nome.replace(/'/g,"\\'")+'\',\''+tel+'\','+corridas+','+anterior+',\''+dataSel+'\',\''+encodeURIComponent(pedsSerial)+'\','+adiantMotoboy+')">💰 Pagar e Gerar PDF</button>';
       }
       html += '</div></div></div>';
     });
@@ -855,10 +858,12 @@ function carregar() {
   }).catch(function(e){ console.error(e); cont.innerHTML='<div class="empty-state">Erro ao carregar.</div>'; });
 }
 
-function abrirModalPagarComPedidos(motoboyId, motoboyNome, motoboyTel, valorCorridas, anterior, dataSel, pedsEncoded) {
+function abrirModalPagarComPedidos(motoboyId, motoboyNome, motoboyTel, valorCorridas, anterior, dataSel, pedsEncoded, descontoMotoboy) {
   var pedidos = JSON.parse(decodeURIComponent(pedsEncoded));
   abrirModalPagar(motoboyId, motoboyNome, motoboyTel, valorCorridas, anterior, dataSel);
   _pendingPagar.pedidos = pedidos;
+  _pendingPagar.descontoMotoboy = descontoMotoboy || 0;
+  recalcMP(); // recalcula já com o desconto
 }
 
 function atualizarSummary(mb, ped, total) {

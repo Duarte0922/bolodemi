@@ -153,10 +153,31 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
         <option value="Particular">Particular</option>
       </select>
     </div>
-    <div class="form-group">
+
+    <!-- ✅ CAMPO ENDEREÇO COM AUTOCOMPLETE DE BAIRROS (ACRÉSCIMO) -->
+    <div class="form-group" style="position:relative;">
       <label class="form-label">Endereço de Entrega</label>
-      <input type="text" id="endereco" class="form-input" placeholder="Rua, número, bairro">
+      <input type="text" id="endereco" class="form-input" placeholder="Digite o bairro ou endereço..."
+        autocomplete="off"
+        oninput="filtrarBairros(this.value)"
+        onblur="fecharSugestoes()">
+      <div id="sugestoes-bairro" style="
+        position:absolute;
+        z-index:999;
+        background:#fff;
+        border:1.5px solid #EDD6E8;
+        border-radius:10px;
+        width:100%;
+        max-height:200px;
+        overflow-y:auto;
+        display:none;
+        box-shadow:0 4px 12px rgba(90,45,140,0.15);
+        top:100%;
+        left:0;
+      "></div>
     </div>
+    <!-- FIM DO ACRÉSCIMO -->
+
     <div class="form-group">
       <label class="form-label">KM Rodados</label>
       <input type="number" id="km" class="form-input" placeholder="0.0" step="0.1" oninput="calcularValor()">
@@ -234,18 +255,16 @@ const db = firebase.firestore();
 // ══ ESTADO ══
 let pedidos          = [];
 let motoboyInfo      = null;
-let unsubscribeSnap  = null; // guarda o listener para cancelar ao trocar data
+let unsubscribeSnap  = null;
 const dataHoje       = new Date().toLocaleDateString('en-CA');
 
-// ══ ARMAZENAMENTO (sessionStorage → funciona em qualquer contexto) ══
+// ══ ARMAZENAMENTO ══
 function salvarSessao(nome, tel, id) {
   try {
     sessionStorage.setItem('mb_nome', nome);
     sessionStorage.setItem('mb_tel',  tel);
     sessionStorage.setItem('mb_id',   id);
-  } catch(e) {
-    // fallback: variável global já está definida
-  }
+  } catch(e) {}
 }
 function carregarSessao() {
   try {
@@ -348,9 +367,8 @@ function trocarUsuario() {
   document.getElementById('modal-login').classList.remove('hidden');
 }
 
-// ══ LISTENER FIRESTORE (tempo real) ══
+// ══ LISTENER FIRESTORE ══
 function iniciarListener() {
-  // Cancela listener anterior se existir
   if (unsubscribeSnap) { unsubscribeSnap(); unsubscribeSnap = null; }
 
   const dataSel = document.getElementById('data-selecionada').value;
@@ -430,7 +448,6 @@ async function adicionarPedido() {
       data: dataSel,
       timestamp: new Date().toISOString()
     });
-    // limpa form
     ['codigo','plataforma','endereco','km','valor'].forEach(id => {
       document.getElementById(id).value = '';
     });
@@ -498,7 +515,7 @@ async function adicionarAdiantamento() {
       plataforma: 'Adiantamento',
       endereco: desc,
       km: 0,
-      valor: -valor,   // negativo = desconto
+      valor: -valor,
       motoboyId: motoboyInfo.id,
       motoboyNome: motoboyInfo.nome,
       motoboyTel: motoboyInfo.tel,
@@ -661,6 +678,66 @@ function enviarWhatsAppHoje() {
   msg+='💰 *TOTAL: R$ '+total.toFixed(2).replace('.',',')+' *';
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
+
+// ══ AUTOCOMPLETE DE BAIRROS (ACRÉSCIMO) ══
+const bairrosKm = [
+  { nome: 'Santa Mônica',      km: 0.9 },  // pedidos 5, 10, 23 → média ~0.9
+  { nome: 'Jardim Leblon',     km: 2.5 },  // pedidos 1, 3, 18 → 2.5 km
+  { nome: 'Pampulha',          km: 5.1 },  // pedido 2 → 5.1 km
+  { nome: 'Céu Azul',          km: 2.9 },  // pedido 4 → 2.9 km
+  { nome: 'São João Batista',  km: 2.8 },  // pedidos 6, 9, 20, 21 → média ~2.8
+  { nome: 'Itapoã',            km: 2.8 },  // pedido 7 → 2.8 km
+  { nome: 'Jardim Atlântico',  km: 2.4 },  // pedido 8 → 2.4 km
+  { nome: 'Lagoa',             km: 4.1 },  // pedido 11 → 4.1 km
+  { nome: 'Venda Nova',        km: 3.3 },  // pedido 12 → 3.3 km
+  { nome: 'Santa Amélia',      km: 0.8 },  // pedidos 13, 22 → média ~0.8
+  { nome: 'Planalto',          km: 4.0 },  // pedido 14 → 4.0 km
+  { nome: 'Piratininga',       km: 2.7 },  // pedido 15 → 2.7 km
+  { nome: 'Justinópolis',      km: 5.2 },  // pedido 16 → 5.2 km
+  { nome: 'Ouro Preto',        km: 7.5 },  // pedido 17 → 7.5 km
+  { nome: 'Santa Branca',      km: 2.5 },  // pedido 19 → 2.5 km
+];
+
+function normalizar(str) {
+  return str.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9 ]/g, '');
+}
+
+function filtrarBairros(texto) {
+  const box = document.getElementById('sugestoes-bairro');
+  if (!texto || texto.length < 1) { box.style.display = 'none'; return; }
+  const filtrados = bairrosKm.filter(b =>
+    normalizar(b.nome).includes(normalizar(texto))
+  );
+  if (filtrados.length === 0) { box.style.display = 'none'; return; }
+  box.innerHTML = filtrados.map(b => `
+    <div onclick="selecionarBairro('${b.nome}', ${b.km})"
+      style="padding:10px 14px;cursor:pointer;font-size:0.9rem;color:#240F40;border-bottom:1px solid #EDD6E8;"
+      onmousedown="event.preventDefault()"
+      onmouseover="this.style.background='#FDEAF5'"
+      onmouseout="this.style.background='#fff'">
+      📍 ${b.nome} <span style="color:#9B7AAA;font-size:0.8rem;">(${b.km} km)</span>
+    </div>
+  `).join('');
+  box.style.display = 'block';
+}
+
+function selecionarBairro(nome, km) {
+  document.getElementById('endereco').value = nome;
+  document.getElementById('km').value = km;
+  document.getElementById('sugestoes-bairro').style.display = 'none';
+  calcularValor();
+}
+
+function fecharSugestoes() {
+  setTimeout(() => {
+    const box = document.getElementById('sugestoes-bairro');
+    if (box) box.style.display = 'none';
+  }, 150);
+}
+// ══ FIM DO AUTOCOMPLETE ══
 
 // ══ INIT ══
 verificarLogin();

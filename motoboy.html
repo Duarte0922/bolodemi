@@ -86,8 +86,10 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .btn-login { width: 100%; padding: 14px; background: var(--purple); color: #fff; border: none; border-radius: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 20px; }
 .btn-login:hover { background: #4a2278; }
 
-.hidden { display: none !important; }
+/* badge "novo" na sugestão de bairro */
+.badge-novo { font-size: 0.62rem; background: var(--purple-light); color: var(--purple); border-radius: 6px; padding: 1px 6px; font-weight: 700; margin-left: 6px; vertical-align: middle; }
 
+.hidden { display: none !important; }
 .loading-msg { text-align: center; color: var(--muted); padding: 20px; font-size: 0.9rem; }
 .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -129,7 +131,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
     <button class="btn-trocar" onclick="trocarUsuario()">🔄 Trocar usuário</button>
   </div>
 
-  <!-- STATUS DE CONEXÃO -->
   <div id="status-conexao" class="status-bar">🔄 Conectando ao Firebase...</div>
 
   <div class="date-selector">
@@ -154,29 +155,22 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
       </select>
     </div>
 
-    <!-- ✅ CAMPO ENDEREÇO COM AUTOCOMPLETE DE BAIRROS (ACRÉSCIMO) -->
+    <!-- CAMPO ENDEREÇO COM AUTOCOMPLETE + APRENDIZADO -->
     <div class="form-group" style="position:relative;">
       <label class="form-label">Endereço de Entrega</label>
-      <input type="text" id="endereco" class="form-input" placeholder="Digite o bairro ou endereço..."
+      <input type="text" id="endereco" class="form-input"
+        placeholder="Digite o bairro ou endereço..."
         autocomplete="off"
         oninput="filtrarBairros(this.value)"
         onblur="fecharSugestoes()">
       <div id="sugestoes-bairro" style="
-        position:absolute;
-        z-index:999;
-        background:#fff;
-        border:1.5px solid #EDD6E8;
-        border-radius:10px;
-        width:100%;
-        max-height:200px;
-        overflow-y:auto;
-        display:none;
-        box-shadow:0 4px 12px rgba(90,45,140,0.15);
-        top:100%;
-        left:0;
+        position:absolute; z-index:999; background:#fff;
+        border:1.5px solid #EDD6E8; border-radius:10px;
+        width:100%; max-height:200px; overflow-y:auto;
+        display:none; box-shadow:0 4px 12px rgba(90,45,140,0.15);
+        top:100%; left:0;
       "></div>
     </div>
-    <!-- FIM DO ACRÉSCIMO -->
 
     <div class="form-group">
       <label class="form-label">KM Rodados</label>
@@ -253,18 +247,14 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // ══ ESTADO ══
-let pedidos          = [];
-let motoboyInfo      = null;
-let unsubscribeSnap  = null;
-const dataHoje       = new Date().toLocaleDateString('en-CA');
+let pedidos         = [];
+let motoboyInfo     = null;
+let unsubscribeSnap = null;
+const dataHoje      = new Date().toLocaleDateString('en-CA');
 
 // ══ ARMAZENAMENTO ══
 function salvarSessao(nome, tel, id) {
-  try {
-    sessionStorage.setItem('mb_nome', nome);
-    sessionStorage.setItem('mb_tel',  tel);
-    sessionStorage.setItem('mb_id',   id);
-  } catch(e) {}
+  try { sessionStorage.setItem('mb_nome', nome); sessionStorage.setItem('mb_tel', tel); sessionStorage.setItem('mb_id', id); } catch(e) {}
 }
 function carregarSessao() {
   try {
@@ -275,9 +265,7 @@ function carregarSessao() {
   } catch(e) {}
   return null;
 }
-function limparSessao() {
-  try { sessionStorage.clear(); } catch(e) {}
-}
+function limparSessao() { try { sessionStorage.clear(); } catch(e) {} }
 
 // ══ TABELA DE PREÇOS ══
 const tabelaPrecos = [
@@ -300,67 +288,53 @@ const feriadosNacionais = {
   '2026-09-07':'Independência','2026-10-12':'N. Sra. Aparecida','2026-11-02':'Finados',
   '2026-11-15':'Proclamação da República','2026-11-20':'Consciência Negra','2026-12-25':'Natal'
 };
-
-function ehFeriado(d)     { return feriadosNacionais.hasOwnProperty(d); }
-function ehFimDeSemana(d) { const dow = new Date(d+'T12:00:00').getDay(); return dow===0||dow===6; }
-function getDiaSemana(d)  { return new Date(d+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long'}); }
-
-function calcularDiariaAuto(d) {
-  return (ehFeriado(d) || ehFimDeSemana(d)) ? 95.00 : 80.00;
-}
+function ehFeriado(d)       { return feriadosNacionais.hasOwnProperty(d); }
+function ehFimDeSemana(d)   { const dow = new Date(d+'T12:00:00').getDay(); return dow===0||dow===6; }
+function getDiaSemana(d)    { return new Date(d+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long'}); }
+function calcularDiariaAuto(d) { return (ehFeriado(d)||ehFimDeSemana(d)) ? 95.00 : 80.00; }
 
 function atualizarInfoDiaria() {
-  const dataSel  = document.getElementById('data-selecionada').value;
+  const dataSel   = document.getElementById('data-selecionada').value;
   const valorAuto = calcularDiariaAuto(dataSel);
   const feriado   = feriadosNacionais[dataSel];
   const diaSem    = getDiaSemana(dataSel);
   let texto = '';
-  if (feriado)              texto = `🎉 ${feriado} • Diária automática: R$ ${valorAuto.toFixed(2)}`;
+  if (feriado)                    texto = `🎉 ${feriado} • Diária automática: R$ ${valorAuto.toFixed(2)}`;
   else if (ehFimDeSemana(dataSel)) texto = `📅 ${diaSem} (Fim de semana) • Diária automática: R$ ${valorAuto.toFixed(2)}`;
-  else                      texto = `📅 ${diaSem} • Diária automática: R$ ${valorAuto.toFixed(2)}`;
+  else                             texto = `📅 ${diaSem} • Diária automática: R$ ${valorAuto.toFixed(2)}`;
   document.getElementById('diaria-info-auto').textContent = texto;
 }
 
 // ══ LOGIN ══
 function verificarLogin() {
   const sessao = carregarSessao();
-  if (sessao) {
-    motoboyInfo = sessao;
-    aplicarLogin();
-  } else {
-    document.getElementById('modal-login').classList.remove('hidden');
-  }
+  if (sessao) { motoboyInfo = sessao; aplicarLogin(); }
+  else document.getElementById('modal-login').classList.remove('hidden');
 }
-
 function fazerLogin() {
   const nome = document.getElementById('login-nome').value.trim();
   const tel  = document.getElementById('login-tel').value.trim();
-  if (!nome || !tel) {
-    document.getElementById('login-erro').classList.remove('hidden');
-    return;
-  }
+  if (!nome || !tel) { document.getElementById('login-erro').classList.remove('hidden'); return; }
   document.getElementById('login-erro').classList.add('hidden');
   const id = 'MB_' + tel.replace(/\D/g, '');
   salvarSessao(nome, tel, id);
   motoboyInfo = { nome, tel, id };
   aplicarLogin();
 }
-
 function aplicarLogin() {
   document.getElementById('modal-login').classList.add('hidden');
   document.getElementById('nome-motoboy').textContent = motoboyInfo.nome;
   document.getElementById('tel-motoboy').textContent  = '📱 ' + motoboyInfo.tel;
   document.getElementById('data-selecionada').value   = dataHoje;
   atualizarInfoDiaria();
+  carregarBairros();   // ← carrega lista de bairros do Firestore
   iniciarListener();
 }
-
 function trocarUsuario() {
   if (!confirm('Trocar de usuário? Você precisará se identificar novamente.')) return;
   if (unsubscribeSnap) { unsubscribeSnap(); unsubscribeSnap = null; }
   limparSessao();
-  motoboyInfo = null;
-  pedidos = [];
+  motoboyInfo = null; pedidos = [];
   document.getElementById('pedidos-list').innerHTML = '';
   document.getElementById('empty-state').classList.add('hidden');
   document.getElementById('status-lista').classList.remove('hidden');
@@ -370,56 +344,43 @@ function trocarUsuario() {
 // ══ LISTENER FIRESTORE ══
 function iniciarListener() {
   if (unsubscribeSnap) { unsubscribeSnap(); unsubscribeSnap = null; }
-
-  const dataSel = document.getElementById('data-selecionada').value;
+  const dataSel       = document.getElementById('data-selecionada').value;
   const statusConexao = document.getElementById('status-conexao');
   const statusLista   = document.getElementById('status-lista');
-
-  statusConexao.className = 'status-bar';
-  statusConexao.textContent = '🔄 Conectando...';
-  statusLista.innerHTML = '<span class="spinner"></span>Carregando pedidos...';
+  statusConexao.className   = 'status-bar';
+  statusConexao.textContent  = '🔄 Conectando...';
+  statusLista.innerHTML      = '<span class="spinner"></span>Carregando pedidos...';
   statusLista.classList.remove('hidden');
-
   try {
     unsubscribeSnap = db.collection('pedidos')
       .where('motoboyId', '==', motoboyInfo.id)
       .where('data', '==', dataSel)
       .onSnapshot(function(snapshot) {
         pedidos = [];
-        snapshot.forEach(function(doc) {
-          pedidos.push({ firebaseId: doc.id, ...doc.data() });
-        });
+        snapshot.forEach(function(doc) { pedidos.push({ firebaseId: doc.id, ...doc.data() }); });
         pedidos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-        statusConexao.className = 'status-bar ok';
-        statusConexao.textContent = '✅ Conectado — sincronizando em tempo real';
+        statusConexao.className   = 'status-bar ok';
+        statusConexao.textContent  = '✅ Conectado — sincronizando em tempo real';
         statusLista.classList.add('hidden');
         atualizarLista();
       }, function(error) {
-        console.error('Firestore error:', error);
-        statusConexao.className = 'status-bar erro';
-        statusConexao.textContent = '❌ Erro: ' + error.message;
-        statusLista.innerHTML = '❌ Erro ao carregar. Verifique a conexão.';
+        statusConexao.className   = 'status-bar erro';
+        statusConexao.textContent  = '❌ Erro: ' + error.message;
+        statusLista.innerHTML      = '❌ Erro ao carregar. Verifique a conexão.';
       });
   } catch(e) {
-    statusConexao.className = 'status-bar erro';
-    statusConexao.textContent = '❌ Erro ao iniciar: ' + e.message;
+    statusConexao.className   = 'status-bar erro';
+    statusConexao.textContent  = '❌ Erro ao iniciar: ' + e.message;
   }
 }
-
-function trocarData() {
-  atualizarInfoDiaria();
-  if (motoboyInfo) iniciarListener();
-}
+function trocarData() { atualizarInfoDiaria(); if (motoboyInfo) iniciarListener(); }
 
 // ══ CALCULAR VALOR ══
 function calcularValor() {
   const km = parseFloat(document.getElementById('km').value) || 0;
   if (km <= 0) { document.getElementById('valor').value = ''; return; }
   let valor = 0;
-  for (let f of tabelaPrecos) {
-    if (km <= f.ate) { valor = f.valor; break; }
-  }
+  for (let f of tabelaPrecos) { if (km <= f.ate) { valor = f.valor; break; } }
   document.getElementById('valor').value = valor.toFixed(2);
 }
 
@@ -432,29 +393,24 @@ async function adicionarPedido() {
   const valor      = parseFloat(document.getElementById('valor').value) || 0;
   const dataSel    = document.getElementById('data-selecionada').value;
 
-  if (!codigo || !plataforma || !endereco || valor <= 0) {
-    alert('⚠️ Preencha todos os campos!'); return;
-  }
+  if (!codigo || !plataforma || !endereco || valor <= 0) { alert('⚠️ Preencha todos os campos!'); return; }
 
   const btn = document.getElementById('btn-add-pedido');
   btn.disabled = true; btn.textContent = '⏳ Salvando...';
-
   try {
     await db.collection('pedidos').add({
       codigo, plataforma, endereco, km, valor,
-      motoboyId: motoboyInfo.id,
-      motoboyNome: motoboyInfo.nome,
-      motoboyTel: motoboyInfo.tel,
-      data: dataSel,
-      timestamp: new Date().toISOString()
+      motoboyId: motoboyInfo.id, motoboyNome: motoboyInfo.nome, motoboyTel: motoboyInfo.tel,
+      data: dataSel, timestamp: new Date().toISOString()
     });
-    ['codigo','plataforma','endereco','km','valor'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
+
+    // ── salva bairro automaticamente se for novo ──
+    if (km > 0) await salvarBairroSeNovo(endereco, km);
+
+    ['codigo','plataforma','endereco','km','valor'].forEach(id => { document.getElementById(id).value = ''; });
     alert('✅ Pedido registrado!');
   } catch(e) {
-    alert('❌ Erro ao salvar: ' + e.message);
-    console.error(e);
+    alert('❌ Erro ao salvar: ' + e.message); console.error(e);
   } finally {
     btn.disabled = false; btn.innerHTML = '➕ Adicionar Pedido';
   }
@@ -462,83 +418,56 @@ async function adicionarPedido() {
 
 // ══ ADICIONAR DIÁRIA ══
 async function adicionarDiaria() {
-  const dataSel    = document.getElementById('data-selecionada').value;
-  let valorDiaria  = parseFloat(document.getElementById('diaria-valor').value);
+  const dataSel   = document.getElementById('data-selecionada').value;
+  let valorDiaria = parseFloat(document.getElementById('diaria-valor').value);
   if (!valorDiaria || valorDiaria <= 0) valorDiaria = calcularDiariaAuto(dataSel);
-
   const feriado = feriadosNacionais[dataSel];
   const diaSem  = getDiaSemana(dataSel);
   let desc = `Diária — ${diaSem}`;
   if (feriado) desc += ` (${feriado})`;
-
   const btn = document.getElementById('btn-add-diaria');
   btn.disabled = true; btn.textContent = '⏳ Salvando...';
-
   try {
     await db.collection('pedidos').add({
-      codigo: 'DIARIA-' + Date.now(),
-      plataforma: 'Diária',
-      endereco: desc,
-      km: 0,
-      valor: valorDiaria,
-      motoboyId: motoboyInfo.id,
-      motoboyNome: motoboyInfo.nome,
-      motoboyTel: motoboyInfo.tel,
-      data: dataSel,
-      timestamp: new Date().toISOString()
+      codigo: 'DIARIA-' + Date.now(), plataforma: 'Diária', endereco: desc,
+      km: 0, valor: valorDiaria,
+      motoboyId: motoboyInfo.id, motoboyNome: motoboyInfo.nome, motoboyTel: motoboyInfo.tel,
+      data: dataSel, timestamp: new Date().toISOString()
     });
     document.getElementById('diaria-valor').value = '';
     alert('✅ Diária registrada: R$ ' + valorDiaria.toFixed(2));
-  } catch(e) {
-    alert('❌ Erro ao salvar diária: ' + e.message);
-    console.error(e);
-  } finally {
-    btn.disabled = false; btn.innerHTML = '➕ Adicionar Diária';
-  }
+  } catch(e) { alert('❌ Erro ao salvar diária: ' + e.message); console.error(e); }
+  finally { btn.disabled = false; btn.innerHTML = '➕ Adicionar Diária'; }
 }
 
 // ══ ADICIONAR ADIANTAMENTO ══
 async function adicionarAdiantamento() {
-  const valor  = parseFloat(document.getElementById('adiant-valor').value) || 0;
-  const desc   = document.getElementById('adiant-desc').value.trim();
+  const valor   = parseFloat(document.getElementById('adiant-valor').value) || 0;
+  const desc    = document.getElementById('adiant-desc').value.trim();
   const dataSel = document.getElementById('data-selecionada').value;
-
-  if (valor <= 0)  { alert('⚠️ Informe um valor válido!'); return; }
-  if (!desc)       { alert('⚠️ Informe a descrição!'); return; }
-
+  if (valor <= 0) { alert('⚠️ Informe um valor válido!'); return; }
+  if (!desc)      { alert('⚠️ Informe a descrição!'); return; }
   const btn = document.getElementById('btn-add-adiant');
   btn.disabled = true; btn.textContent = '⏳ Salvando...';
-
   try {
     await db.collection('pedidos').add({
-      codigo: 'ADI-' + Date.now(),
-      plataforma: 'Adiantamento',
-      endereco: desc,
-      km: 0,
-      valor: -valor,
-      motoboyId: motoboyInfo.id,
-      motoboyNome: motoboyInfo.nome,
-      motoboyTel: motoboyInfo.tel,
-      data: dataSel,
-      timestamp: new Date().toISOString()
+      codigo: 'ADI-' + Date.now(), plataforma: 'Adiantamento', endereco: desc,
+      km: 0, valor: -valor,
+      motoboyId: motoboyInfo.id, motoboyNome: motoboyInfo.nome, motoboyTel: motoboyInfo.tel,
+      data: dataSel, timestamp: new Date().toISOString()
     });
     document.getElementById('adiant-valor').value = '';
     document.getElementById('adiant-desc').value  = '';
     alert('✅ Adiantamento registrado!');
-  } catch(e) {
-    alert('❌ Erro ao salvar: ' + e.message);
-    console.error(e);
-  } finally {
-    btn.disabled = false; btn.innerHTML = '➕ Adicionar';
-  }
+  } catch(e) { alert('❌ Erro ao salvar: ' + e.message); console.error(e); }
+  finally { btn.disabled = false; btn.innerHTML = '➕ Adicionar'; }
 }
 
 // ══ DELETAR ══
 async function deletarPedido(id) {
   if (!confirm('🗑️ Excluir este pedido?')) return;
-  try {
-    await db.collection('pedidos').doc(id).delete();
-  } catch(e) { alert('❌ Erro ao excluir: ' + e.message); }
+  try { await db.collection('pedidos').doc(id).delete(); }
+  catch(e) { alert('❌ Erro ao excluir: ' + e.message); }
 }
 
 // ══ ATUALIZAR LISTA ══
@@ -547,38 +476,29 @@ function atualizarLista() {
   const emptyState = document.getElementById('empty-state');
   const totalCard  = document.getElementById('total-card');
   const acoesHoje  = document.getElementById('acoes-hoje');
-
   if (pedidos.length === 0) {
-    emptyState.classList.remove('hidden');
-    lista.innerHTML = '';
-    totalCard.classList.add('hidden');
-    acoesHoje.classList.add('hidden');
-    return;
+    emptyState.classList.remove('hidden'); lista.innerHTML = '';
+    totalCard.classList.add('hidden'); acoesHoje.classList.add('hidden'); return;
   }
-
   emptyState.classList.add('hidden');
-  totalCard.classList.remove('hidden');
-  acoesHoje.classList.remove('hidden');
-
+  totalCard.classList.remove('hidden'); acoesHoje.classList.remove('hidden');
   let html = '', total = 0;
   pedidos.forEach(p => {
     const valorAbs = Math.abs(p.valor).toFixed(2).replace('.', ',');
     const sinal    = p.valor < 0 ? '− R$' : 'R$';
     const neg      = p.valor < 0 ? 'negativo' : '';
-    html += `
-      <div class="pedido-item">
-        <div class="pedido-info">
-          <div class="pedido-codigo">#${p.codigo}</div>
-          <div class="pedido-meta">${p.plataforma} · ${p.endereco}${p.km > 0 ? ` · ${p.km} km` : ''}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div class="pedido-valor ${neg}">${sinal} ${valorAbs}</div>
-          <button class="btn-del" onclick="deletarPedido('${p.firebaseId}')" title="Excluir">🗑️</button>
-        </div>
-      </div>`;
+    html += `<div class="pedido-item">
+      <div class="pedido-info">
+        <div class="pedido-codigo">#${p.codigo}</div>
+        <div class="pedido-meta">${p.plataforma} · ${p.endereco}${p.km > 0 ? ` · ${p.km} km` : ''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="pedido-valor ${neg}">${sinal} ${valorAbs}</div>
+        <button class="btn-del" onclick="deletarPedido('${p.firebaseId}')" title="Excluir">🗑️</button>
+      </div>
+    </div>`;
     total += p.valor;
   });
-
   lista.innerHTML = html;
   document.getElementById('total-valor').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
 }
@@ -587,18 +507,15 @@ function atualizarLista() {
 function gerarPDFHoje() {
   if (!window.jspdf || !window.jspdf.jsPDF) { alert('PDF não carregou, recarregue.'); return; }
   if (!pedidos || pedidos.length === 0)      { alert('Nenhum pedido hoje.'); return; }
-
   const data    = document.getElementById('data-selecionada').value;
   const dataFmt = new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
   const jsPDF   = window.jspdf.jsPDF;
   const pdf     = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
   const W=210, purple=[90,45,140], pink=[217,54,138], green=[31,122,79], red=[192,57,43], gray=[100,80,130], white=[255,255,255];
-
   const corridas      = pedidos.filter(p => p.plataforma!=='Diária' && p.plataforma!=='Adiantamento');
   const diarias       = pedidos.filter(p => p.plataforma==='Diária');
   const adiantamentos = pedidos.filter(p => p.plataforma==='Adiantamento');
   const totalGeral    = pedidos.reduce((s,p) => s+p.valor, 0);
-
   pdf.setFillColor(...purple); pdf.rect(0,0,W,40,'F');
   pdf.setFontSize(22); pdf.setFont('helvetica','bold'); pdf.setTextColor(255,255,255);
   pdf.text('Bolo de Mi',14,17);
@@ -608,55 +525,32 @@ function gerarPDFHoje() {
   pdf.text('Rua Asteca, 2812A - Santa Monica, Belo Horizonte - MG',14,33);
   pdf.setFontSize(8.5); pdf.setTextColor(255,255,255);
   pdf.text(dataFmt,W-14,26,{align:'right'});
-
   pdf.setFillColor(238,228,248); pdf.roundedRect(14,46,W-28,22,4,4,'F');
   pdf.setFontSize(12); pdf.setFont('helvetica','bold'); pdf.setTextColor(...purple);
   pdf.text('Motoboy: '+motoboyInfo.nome,20,55);
   pdf.setFontSize(9); pdf.setFont('helvetica','normal'); pdf.setTextColor(...gray);
   if(motoboyInfo.tel) pdf.text('Telefone: '+motoboyInfo.tel,20,63);
-
   let curY = 76;
   pdf.setFontSize(10); pdf.setFont('helvetica','bold'); pdf.setTextColor(...purple);
   pdf.text('Corridas',14,curY); curY+=4;
-  pdf.autoTable({
-    startY:curY,
-    head:[['','Pedido','Plataforma','Endereço','KM','Valor']],
-    body: corridas.length>0 ? corridas.map((p,i)=>[String(i+1),'#'+p.codigo,p.plataforma,p.endereco.length>40?p.endereco.substring(0,40)+'...':p.endereco,Number(p.km).toFixed(1)+' km','R$ '+Number(p.valor).toFixed(2).replace('.',',')]):[['—','—','—','Nenhuma corrida','—','—']],
-    theme:'grid', headStyles:{fillColor:purple,textColor:white,fontStyle:'bold',fontSize:8.5,halign:'center'},
-    bodyStyles:{fontSize:8,textColor:[36,15,64]}, alternateRowStyles:{fillColor:[253,244,251]},
-    columnStyles:{0:{halign:'center',cellWidth:8},1:{halign:'center',cellWidth:22},2:{halign:'center',cellWidth:24},3:{cellWidth:82},4:{halign:'center',cellWidth:16},5:{halign:'right',cellWidth:26,fontStyle:'bold',textColor:green}},
-    margin:{left:14,right:14}
-  });
+  pdf.autoTable({startY:curY,head:[['','Pedido','Plataforma','Endereço','KM','Valor']],body:corridas.length>0?corridas.map((p,i)=>[String(i+1),'#'+p.codigo,p.plataforma,p.endereco.length>40?p.endereco.substring(0,40)+'...':p.endereco,Number(p.km).toFixed(1)+' km','R$ '+Number(p.valor).toFixed(2).replace('.',',')]):[['—','—','—','Nenhuma corrida','—','—']],theme:'grid',headStyles:{fillColor:purple,textColor:white,fontStyle:'bold',fontSize:8.5,halign:'center'},bodyStyles:{fontSize:8,textColor:[36,15,64]},alternateRowStyles:{fillColor:[253,244,251]},columnStyles:{0:{halign:'center',cellWidth:8},1:{halign:'center',cellWidth:22},2:{halign:'center',cellWidth:24},3:{cellWidth:82},4:{halign:'center',cellWidth:16},5:{halign:'right',cellWidth:26,fontStyle:'bold',textColor:green}},margin:{left:14,right:14}});
   curY = pdf.lastAutoTable.finalY+8;
-
-  if(diarias.length>0) {
-    pdf.setFontSize(10); pdf.setFont('helvetica','bold'); pdf.setTextColor(...purple);
-    pdf.text('Diária',14,curY); curY+=4;
-    pdf.autoTable({startY:curY,head:[['Descrição','Valor']],body:diarias.map(p=>[p.endereco,'R$ '+Number(p.valor).toFixed(2).replace('.',',')]),theme:'grid',headStyles:{fillColor:[59,130,246],textColor:white,fontStyle:'bold',fontSize:8.5},bodyStyles:{fontSize:8.5},columnStyles:{0:{cellWidth:160},1:{halign:'right',cellWidth:18,fontStyle:'bold',textColor:green}},margin:{left:14,right:14}});
-    curY = pdf.lastAutoTable.finalY+8;
-  }
-  if(adiantamentos.length>0) {
-    pdf.setFontSize(10); pdf.setFont('helvetica','bold'); pdf.setTextColor(...purple);
-    pdf.text('Descontos / Adiantamentos',14,curY); curY+=4;
-    pdf.autoTable({startY:curY,head:[['Descrição','Valor']],body:adiantamentos.map(p=>[p.endereco,'- R$ '+Math.abs(p.valor).toFixed(2).replace('.',',')]),theme:'grid',headStyles:{fillColor:red,textColor:white,fontStyle:'bold',fontSize:8.5},bodyStyles:{fontSize:8.5},columnStyles:{0:{cellWidth:160},1:{halign:'right',cellWidth:18,fontStyle:'bold',textColor:red}},margin:{left:14,right:14}});
-    curY = pdf.lastAutoTable.finalY+8;
-  }
-
-  pdf.setFillColor(238,228,248); pdf.roundedRect(14,curY,W-28,36,5,5,'F');
-  pdf.setFontSize(10); pdf.setFont('helvetica','bold'); pdf.setTextColor(...purple);
-  pdf.text('Resumo',20,curY+10);
+  if(diarias.length>0){pdf.setFontSize(10);pdf.setFont('helvetica','bold');pdf.setTextColor(...purple);pdf.text('Diária',14,curY);curY+=4;pdf.autoTable({startY:curY,head:[['Descrição','Valor']],body:diarias.map(p=>[p.endereco,'R$ '+Number(p.valor).toFixed(2).replace('.',',')]),theme:'grid',headStyles:{fillColor:[59,130,246],textColor:white,fontStyle:'bold',fontSize:8.5},bodyStyles:{fontSize:8.5},columnStyles:{0:{cellWidth:160},1:{halign:'right',cellWidth:18,fontStyle:'bold',textColor:green}},margin:{left:14,right:14}});curY=pdf.lastAutoTable.finalY+8;}
+  if(adiantamentos.length>0){pdf.setFontSize(10);pdf.setFont('helvetica','bold');pdf.setTextColor(...purple);pdf.text('Descontos / Adiantamentos',14,curY);curY+=4;pdf.autoTable({startY:curY,head:[['Descrição','Valor']],body:adiantamentos.map(p=>[p.endereco,'- R$ '+Math.abs(p.valor).toFixed(2).replace('.',',')]),theme:'grid',headStyles:{fillColor:red,textColor:white,fontStyle:'bold',fontSize:8.5},bodyStyles:{fontSize:8.5},columnStyles:{0:{cellWidth:160},1:{halign:'right',cellWidth:18,fontStyle:'bold',textColor:red}},margin:{left:14,right:14}});curY=pdf.lastAutoTable.finalY+8;}
+  pdf.setFillColor(238,228,248);pdf.roundedRect(14,curY,W-28,36,5,5,'F');
+  pdf.setFontSize(10);pdf.setFont('helvetica','bold');pdf.setTextColor(...purple);pdf.text('Resumo',20,curY+10);
   let lx=20,rx=W-20,ly=curY+20;
-  pdf.setFontSize(9); pdf.setFont('helvetica','normal'); pdf.setTextColor(...gray);
+  pdf.setFontSize(9);pdf.setFont('helvetica','normal');pdf.setTextColor(...gray);
   pdf.text('Total do dia ('+pedidos.length+' lançamentos):',lx,ly);
-  pdf.setFont('helvetica','bold'); pdf.setTextColor(...green);
-  pdf.text('R$ '+totalGeral.toFixed(2).replace('.',','),rx,ly,{align:'right'}); ly+=3;
-  pdf.setDrawColor(...pink); pdf.setLineWidth(0.5); pdf.line(20,ly,W-20,ly); ly+=3;
-  pdf.setFillColor(...pink); pdf.roundedRect(14,ly,W-28,18,4,4,'F');
-  pdf.setFont('helvetica','bold'); pdf.setFontSize(11); pdf.setTextColor(255,255,255);
-  pdf.text('TOTAL DO DIA',lx,ly+12); pdf.setFontSize(14);
+  pdf.setFont('helvetica','bold');pdf.setTextColor(...green);
+  pdf.text('R$ '+totalGeral.toFixed(2).replace('.',','),rx,ly,{align:'right'});ly+=3;
+  pdf.setDrawColor(...pink);pdf.setLineWidth(0.5);pdf.line(20,ly,W-20,ly);ly+=3;
+  pdf.setFillColor(...pink);pdf.roundedRect(14,ly,W-28,18,4,4,'F');
+  pdf.setFont('helvetica','bold');pdf.setFontSize(11);pdf.setTextColor(255,255,255);
+  pdf.text('TOTAL DO DIA',lx,ly+12);pdf.setFontSize(14);
   pdf.text('R$ '+totalGeral.toFixed(2).replace('.',','),rx,ly+12,{align:'right'});
   const foot=ly+28;
-  pdf.setFontSize(7.5); pdf.setFont('helvetica','normal'); pdf.setTextColor(...gray);
+  pdf.setFontSize(7.5);pdf.setFont('helvetica','normal');pdf.setTextColor(...gray);
   pdf.text('Gerado pelo motoboy '+motoboyInfo.nome+' · Bolo de Mi',W/2,foot,{align:'center'});
   pdf.text('Emitido em: '+new Date().toLocaleString('pt-BR'),W/2,foot+5,{align:'center'});
   pdf.save('relatorio_'+motoboyInfo.nome.replace(/\s+/g,'_')+'_'+data+'.pdf');
@@ -664,80 +558,155 @@ function gerarPDFHoje() {
 
 // ══ WHATSAPP ══
 function enviarWhatsAppHoje() {
-  if(!pedidos || pedidos.length===0) { alert('Nenhum pedido hoje.'); return; }
+  if(!pedidos||pedidos.length===0){alert('Nenhum pedido hoje.');return;}
   const data    = document.getElementById('data-selecionada').value;
   const dataFmt = new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
-  const corridas = pedidos.filter(p => p.plataforma!=='Diária' && p.plataforma!=='Adiantamento');
-  const diarias  = pedidos.filter(p => p.plataforma==='Diária');
-  const adiant   = pedidos.filter(p => p.plataforma==='Adiantamento');
-  const total    = pedidos.reduce((s,p)=>s+p.valor,0);
-  let msg = '🎂 *Bolo de Mi — Relatório*\n📅 '+dataFmt+'\n🛵 Motoboy: *'+motoboyInfo.nome+'*\n\n';
-  if(corridas.length>0) { msg+='📦 *Corridas ('+corridas.length+')*\n'; corridas.forEach((p,i)=>{ msg+=(i+1)+'. #'+p.codigo+' — '+p.plataforma+' — R$ '+Number(p.valor).toFixed(2).replace('.',',')+'\n'; }); msg+='\n'; }
-  if(diarias.length>0)  { msg+='💵 *Diária*\n'; diarias.forEach(p=>{msg+=p.endereco+' — R$ '+Number(p.valor).toFixed(2).replace('.',',')+'\n';}); msg+='\n'; }
-  if(adiant.length>0)   { msg+='💸 *Descontos*\n'; adiant.forEach(p=>{msg+=p.endereco+' — - R$ '+Math.abs(p.valor).toFixed(2).replace('.',',')+'\n';}); msg+='\n'; }
+  const corridas=pedidos.filter(p=>p.plataforma!=='Diária'&&p.plataforma!=='Adiantamento');
+  const diarias=pedidos.filter(p=>p.plataforma==='Diária');
+  const adiant=pedidos.filter(p=>p.plataforma==='Adiantamento');
+  const total=pedidos.reduce((s,p)=>s+p.valor,0);
+  let msg='🎂 *Bolo de Mi — Relatório*\n📅 '+dataFmt+'\n🛵 Motoboy: *'+motoboyInfo.nome+'*\n\n';
+  if(corridas.length>0){msg+='📦 *Corridas ('+corridas.length+')*\n';corridas.forEach((p,i)=>{msg+=(i+1)+'. #'+p.codigo+' — '+p.plataforma+' — R$ '+Number(p.valor).toFixed(2).replace('.',',')+'\n';});msg+='\n';}
+  if(diarias.length>0){msg+='💵 *Diária*\n';diarias.forEach(p=>{msg+=p.endereco+' — R$ '+Number(p.valor).toFixed(2).replace('.',',')+'\n';});msg+='\n';}
+  if(adiant.length>0){msg+='💸 *Descontos*\n';adiant.forEach(p=>{msg+=p.endereco+' — - R$ '+Math.abs(p.valor).toFixed(2).replace('.',',')+'\n';});msg+='\n';}
   msg+='💰 *TOTAL: R$ '+total.toFixed(2).replace('.',',')+' *';
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
-// ══ AUTOCOMPLETE DE BAIRROS (ACRÉSCIMO) ══
-const bairrosKm = [
-  { nome: 'Santa Mônica',      km: 0.9 },  // pedidos 5, 10, 23 → média ~0.9
-  { nome: 'Jardim Leblon',     km: 2.5 },  // pedidos 1, 3, 18 → 2.5 km
-  { nome: 'Pampulha',          km: 5.1 },  // pedido 2 → 5.1 km
-  { nome: 'Céu Azul',          km: 2.9 },  // pedido 4 → 2.9 km
-  { nome: 'São João Batista',  km: 2.8 },  // pedidos 6, 9, 20, 21 → média ~2.8
-  { nome: 'Itapoã',            km: 2.8 },  // pedido 7 → 2.8 km
-  { nome: 'Jardim Atlântico',  km: 2.4 },  // pedido 8 → 2.4 km
-  { nome: 'Lagoa',             km: 4.1 },  // pedido 11 → 4.1 km
-  { nome: 'Venda Nova',        km: 3.3 },  // pedido 12 → 3.3 km
-  { nome: 'Santa Amélia',      km: 0.8 },  // pedidos 13, 22 → média ~0.8
-  { nome: 'Planalto',          km: 4.0 },  // pedido 14 → 4.0 km
-  { nome: 'Piratininga',       km: 2.7 },  // pedido 15 → 2.7 km
-  { nome: 'Justinópolis',      km: 5.2 },  // pedido 16 → 5.2 km
-  { nome: 'Ouro Preto',        km: 7.5 },  // pedido 17 → 7.5 km
-  { nome: 'Santa Branca',      km: 2.5 },  // pedido 19 → 2.5 km
+// ══════════════════════════════════════════════════════════════
+// ══ AUTOCOMPLETE COM APRENDIZADO AUTOMÁTICO DE BAIRROS NOVOS ══
+// ══════════════════════════════════════════════════════════════
+
+// Lista fixa — base inicial (nunca é apagada)
+const bairrosFixos = [
+  { nome: 'Santa Mônica',      km: 0.9 },
+  { nome: 'Jardim Leblon',     km: 2.5 },
+  { nome: 'Pampulha',          km: 5.1 },
+  { nome: 'Céu Azul',          km: 2.9 },
+  { nome: 'São João Batista',  km: 2.8 },
+  { nome: 'Itapoã',            km: 2.8 },
+  { nome: 'Jardim Atlântico',  km: 2.4 },
+  { nome: 'Lagoa',             km: 4.1 },
+  { nome: 'Venda Nova',        km: 3.3 },
+  { nome: 'Santa Amélia',      km: 0.8 },
+  { nome: 'Planalto',          km: 4.0 },
+  { nome: 'Piratininga',       km: 2.7 },
+  { nome: 'Justinópolis',      km: 5.2 },
+  { nome: 'Ouro Preto',        km: 7.5 },
+  { nome: 'Santa Branca',      km: 2.5 },
+  { nome: 'Europa',            km: 4.5 },
+  { nome: 'Trevo',             km: 3.8 },
+  { nome: 'Braunas',           km: 5.0 },
+  { nome: 'Contagem Xangrilá', km: 6.4 },
+  { nome: 'Céu Anil',          km: 4.0 },
+  { nome: 'Leticia',           km: 2.6 },
+  { nome: 'Copacabana',        km: 1.2 },
+  { nome: 'Candelaria',        km: 3.2 },
+  { nome: 'Rio Branco',        km: 2.3 },
+  { nome: 'Minas Caixa',       km: 3.8 },
 ];
 
+// Lista combinada em memória (fixos + aprendidos do Firestore)
+let bairrosDinamicos = [...bairrosFixos];
+
+// Remove acentos e normaliza para comparação
 function normalizar(str) {
-  return str.toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9 ]/g, '');
+  return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'');
 }
 
+// Carrega bairros aprendidos do Firestore e mescla com os fixos
+function carregarBairros() {
+  db.collection('bairros').orderBy('nome').get()
+    .then(function(snap) {
+      const vistos = new Set(bairrosFixos.map(b => normalizar(b.nome)));
+      bairrosDinamicos = [...bairrosFixos];
+
+      snap.forEach(function(doc) {
+        const b = doc.data();
+        if (b.nome && b.km && !vistos.has(normalizar(b.nome))) {
+          bairrosDinamicos.push({ nome: b.nome, km: b.km, novo: true });
+          vistos.add(normalizar(b.nome));
+        }
+      });
+
+      // Ordena tudo alfabeticamente
+      bairrosDinamicos.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    })
+    .catch(function() {
+      bairrosDinamicos = [...bairrosFixos]; // fallback: usa só os fixos
+    });
+}
+
+// Chamado após salvar pedido: verifica se é bairro novo e salva no Firestore
+async function salvarBairroSeNovo(nome, km) {
+  if (!nome || !km) return;
+  const nomeNorm = normalizar(nome);
+  const jaExiste = bairrosDinamicos.some(b => normalizar(b.nome) === nomeNorm);
+  if (jaExiste) return; // já está na lista, não faz nada
+
+  try {
+    const docId = nomeNorm.replace(/\s+/g, '_'); // ex: "sao_paulo"
+    await db.collection('bairros').doc(docId).set({
+      nome: nome,
+      km: km,
+      criadoEm: new Date().toISOString()
+    });
+    // Adiciona imediatamente na lista em memória (sem precisar recarregar)
+    bairrosDinamicos.push({ nome, km, novo: true });
+    bairrosDinamicos.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  } catch(e) {
+    // Silencioso — não interrompe o fluxo principal
+    console.warn('Bairro não pôde ser salvo:', e.message);
+  }
+}
+
+// Filtra sugestões conforme o usuário digita
 function filtrarBairros(texto) {
   const box = document.getElementById('sugestoes-bairro');
   if (!texto || texto.length < 1) { box.style.display = 'none'; return; }
-  const filtrados = bairrosKm.filter(b =>
+
+  const filtrados = bairrosDinamicos.filter(b =>
     normalizar(b.nome).includes(normalizar(texto))
   );
+
   if (filtrados.length === 0) { box.style.display = 'none'; return; }
+
   box.innerHTML = filtrados.map(b => `
-    <div onclick="selecionarBairro('${b.nome}', ${b.km})"
-      style="padding:10px 14px;cursor:pointer;font-size:0.9rem;color:#240F40;border-bottom:1px solid #EDD6E8;"
+    <div
+      onclick="selecionarBairro('${b.nome.replace(/'/g,"\\'")}', ${b.km})"
       onmousedown="event.preventDefault()"
       onmouseover="this.style.background='#FDEAF5'"
-      onmouseout="this.style.background='#fff'">
-      📍 ${b.nome} <span style="color:#9B7AAA;font-size:0.8rem;">(${b.km} km)</span>
+      onmouseout="this.style.background='#fff'"
+      style="padding:10px 14px;cursor:pointer;font-size:0.9rem;color:#240F40;
+             border-bottom:1px solid #EDD6E8;display:flex;align-items:center;
+             justify-content:space-between;background:#fff;">
+      <span>
+        📍 ${b.nome}
+        ${b.novo ? '<span class="badge-novo">novo</span>' : ''}
+      </span>
+      <span style="color:#9B7AAA;font-size:0.8rem;white-space:nowrap;margin-left:8px;">
+        ${b.km} km
+      </span>
     </div>
   `).join('');
   box.style.display = 'block';
 }
 
+// Preenche os campos ao selecionar um bairro
 function selecionarBairro(nome, km) {
   document.getElementById('endereco').value = nome;
-  document.getElementById('km').value = km;
+  document.getElementById('km').value       = km;
   document.getElementById('sugestoes-bairro').style.display = 'none';
   calcularValor();
 }
 
+// Fecha a lista de sugestões com pequeno delay (para o click registrar antes)
 function fecharSugestoes() {
-  setTimeout(() => {
+  setTimeout(function() {
     const box = document.getElementById('sugestoes-bairro');
     if (box) box.style.display = 'none';
   }, 150);
 }
-// ══ FIM DO AUTOCOMPLETE ══
 
 // ══ INIT ══
 verificarLogin();

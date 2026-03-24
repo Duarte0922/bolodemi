@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="Entregas BH"/>
+<title>Entregas BH</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f4f8;color:#1a1a1a;min-height:100vh;}
+.header{background:#1D9E75;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.header h1{font-size:17px;font-weight:700;}
+.hbadge{background:rgba(255,255,255,0.22);border-radius:20px;padding:3px 11px;font-size:12px;font-weight:600;}
+.loc-bar{background:#0F6E56;padding:7px 14px;display:flex;align-items:center;gap:8px;}
+.loc-bar .lt{flex:1;font-size:11px;color:rgba(255,255,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.loc-bar button{background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:inherit;}
+.card{background:#fff;border-radius:16px;margin:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+.card-title{font-size:12px;font-weight:700;color:#1D9E75;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.6px;}
+.field{margin-bottom:9px;}
+.field label{display:block;font-size:11px;color:#666;margin-bottom:3px;font-weight:600;}
+.field input{width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:14px;color:#1a1a1a;background:#fff;outline:none;font-family:inherit;transition:border-color 0.2s;}
+.field input:focus{border-color:#1D9E75;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+/* Campos de endereço em 2 linhas */
+.row-rua{display:flex;gap:8px;}
+.row-rua .f-rua{flex:1;}
+.row-rua .f-num{width:90px;flex-shrink:0;}
+
+.mic-row{display:flex;gap:8px;}
+.addr-wrap{flex:1;position:relative;}
+.mic-btn{width:42px;height:42px;border-radius:50%;background:#1D9E75;border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mic-btn.active{background:#E24B4A;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(226,75,74,0.5);}50%{box-shadow:0 0 0 7px rgba(226,75,74,0);}}
+#mic-status{font-size:11px;color:#888;text-align:center;min-height:18px;padding:2px 0;}
+#mic-status.on{color:#E24B4A;font-weight:600;}
+#mic-status.ok{color:#1D9E75;font-weight:600;}
+#mic-status.err{color:#c0392b;}
+
+.pac-box{background:#fff;border:1.5px solid #1D9E75;border-radius:10px;margin-top:3px;overflow-y:auto;display:none;position:absolute;left:0;right:0;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,0.15);max-height:240px;}
+.pac-item{padding:10px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;display:flex;gap:8px;align-items:flex-start;}
+.pac-item:last-child{border-bottom:none;}
+.pac-item:active{background:#E1F5EE;}
+.pac-main{font-size:13px;font-weight:600;color:#1a1a1a;}
+.pac-sec{font-size:11px;color:#888;margin-top:1px;}
+
+.btn-add{width:100%;background:#1D9E75;color:#fff;border:none;border-radius:12px;padding:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;font-family:inherit;}
+.btn-add:active{background:#0F6E56;}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 12px 10px;}
+.stat{background:#fff;border-radius:12px;padding:9px 8px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.07);}
+.stat .val{font-size:17px;font-weight:700;color:#1D9E75;}
+.stat .lbl{font-size:10px;color:#888;margin-top:1px;}
+
+.nav-big{margin:0 12px 8px;background:#1D9E75;color:#fff;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;width:calc(100% - 24px);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 10px rgba(29,158,117,0.35);}
+.nav-big:active{background:#0F6E56;}
+.nav-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 12px 10px;}
+.nav-sm{border:1.5px solid #e5e7eb;background:#fff;border-radius:12px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;color:#444;text-align:center;font-family:inherit;}
+
+.list-hdr{font-size:11px;font-weight:700;color:#aaa;padding:0 12px 6px;text-transform:uppercase;letter-spacing:0.5px;}
+.item{background:#fff;border-radius:14px;margin:0 12px 7px;box-shadow:0 1px 4px rgba(0,0,0,0.07);overflow:hidden;}
+.item.entregue{opacity:0.5;}
+.item-head{display:flex;align-items:center;gap:8px;padding:11px 12px;}
+.drag-h{color:#ccc;font-size:18px;cursor:grab;flex-shrink:0;}
+.num{width:26px;height:26px;border-radius:50%;background:#1D9E75;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.num.done{background:#9ca3af;}
+.item-info{flex:1;min-width:0;}
+.item-addr{font-size:13px;font-weight:600;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-sub{font-size:11px;color:#888;margin-top:1px;}
+.item-right{display:flex;gap:5px;align-items:center;flex-shrink:0;}
+.btn-ver{background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;}
+.btn-ver.done{background:#9ca3af;}
+.btn-del{background:none;border:none;color:#ddd;font-size:21px;cursor:pointer;line-height:1;padding:0 2px;}
+.btn-del:active{color:#E24B4A;}
+.tags{display:flex;gap:4px;flex-wrap:wrap;padding:0 12px 9px;}
+.tag{font-size:10px;padding:3px 8px;border-radius:8px;font-weight:600;}
+.tag.p{background:#E1F5EE;color:#0F6E56;}
+.tag.c{background:#FAEEDA;color:#633806;}
+.tag.e{background:#f3f4f6;color:#9ca3af;}
+
+.empty{text-align:center;padding:36px 20px;color:#bbb;}
+.empty .icon{font-size:44px;margin-bottom:10px;}
+@keyframes itemIn{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+.item.novo{animation:itemIn 0.25s ease;}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:flex;align-items:flex-end;justify-content:center;}
+.modal-bg.hidden{display:none;}
+.modal{background:#fff;border-radius:22px 22px 0 0;width:100%;max-width:480px;padding-bottom:env(safe-area-inset-bottom,16px);animation:up 0.22s ease;}
+@keyframes up{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.m-pill{width:34px;height:4px;background:#e5e7eb;border-radius:2px;margin:8px auto;}
+.m-head{background:#1D9E75;padding:18px 20px 14px;}
+.m-lbl{font-size:11px;color:rgba(255,255,255,0.75);font-weight:600;}
+.m-num{font-size:30px;font-weight:700;color:#fff;letter-spacing:1px;}
+.m-adr{font-size:12px;color:rgba(255,255,255,0.85);margin-top:3px;line-height:1.4;}
+.m-body{padding:14px 20px;}
+.m-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f3f4f6;}
+.m-row:last-child{border-bottom:none;}
+.m-k{font-size:13px;color:#888;}
+.m-v{font-size:14px;font-weight:600;color:#1a1a1a;text-align:right;max-width:60%;}
+.m-v.pend{color:#BA7517;}
+.m-v.ok{color:#1D9E75;}
+.m-foot{padding:10px 20px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.m-btn{border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+.m-btn.ok{background:#1D9E75;color:#fff;}
+.m-btn.cancel{background:#f3f4f6;color:#444;}
+.pb{padding-bottom:28px;}
+.hint{font-size:10px;color:#aaa;margin-top:3px;text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📦 Entregas BH</h1>
+  <div class="hbadge" id="hdr-badge">0 paradas</div>
+</div>
+
+<div class="loc-bar">
+  <span>📍</span>
+  <span class="lt" id="loc-txt">Aguardando GPS...</span>
+  <button id="loc-btn">Atualizar GPS</button>
+</div>
+
+<div class="card">
+  <div class="card-title">Adicionar Entrega</div>
+
+  <!-- Pedido + Complemento -->
+  <div class="row2">
+    <div class="field">
+      <label>Nº do Pedido</label>
+      <input type="text" id="f-pedido" placeholder="Ex: 6426" inputmode="numeric"/>
+    </div>
+    <div class="field">
+      <label>Apto / Bloco</label>
+      <input type="text" id="f-compl" placeholder="Ex: Bl1 201"/>
+    </div>
+  </div>
+
+  <!-- NOVOS CAMPOS: Plataforma + Tipo + KM -->
+  <div class="row2" style="margin-bottom:10px;">
+    <div class="field">
+      <label>Plataforma</label>
+      <select id="f-plat" style="border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:14px;color:#1a1a1a;background:#fff;outline:none;font-family:inherit;width:100%;">
+        <option value="">Selecione...</option>
+        <option value="iFood">🛵 iFood</option>
+        <option value="99">🟡 99Food</option>
+        <option value="Particular">🏠 Particular</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Tipo do Local</label>
+      <select id="f-tipo" style="border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:14px;color:#1a1a1a;background:#fff;outline:none;font-family:inherit;width:100%;">
+        <option value="">Selecione...</option>
+        <option value="Casa">🏠 Casa</option>
+        <option value="Apartamento">🏢 Apartamento</option>
+        <option value="Loja">🏪 Loja/Comércio</option>
+        <option value="Condomínio">🏘️ Condomínio</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label>KM da Corrida</label>
+    <input type="number" id="f-km" placeholder="Ex: 2.7  (usado no app do motoboy)" step="0.1" inputmode="decimal"
+      style="border:1.5px solid #1D9E75;border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600;color:#1a1a1a;background:#fff;outline:none;font-family:inherit;width:100%;"/>
+    <div id="fb-msg" style="font-size:11px;color:#1D9E75;font-weight:600;margin-top:3px;min-height:16px;"></div>
+  </div>
+
+  <!-- Nome da Rua + Número separados -->
+  <div class="field">
+    <label>Nome da Rua</label>
+    <div class="mic-row">
+      <div class="addr-wrap">
+        <input type="text" id="addr-input" placeholder='Ex: "Erva Mate, Piratininga"' autocomplete="off"/>
+        <div class="pac-box" id="pac-box"></div>
+      </div>
+      <button class="mic-btn" id="mic-btn">🎙️</button>
+    </div>
+    <div class="hint">Fale ou digite só o nome da rua e bairro</div>
+  </div>
+
+  <div class="field">
+    <label>Número da Casa / Ap</label>
+    <input type="text" id="f-numero" placeholder="Ex: 499" inputmode="numeric" style="border-color:#1D9E75;font-size:16px;font-weight:600;"/>
+  </div>
+
+  <div id="mic-status"></div>
+  <button class="btn-add" id="add-btn">+ Adicionar Entrega</button>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="val" id="s-total">0</div><div class="lbl">Total</div></div>
+  <div class="stat"><div class="val" id="s-pend" style="color:#BA7517">0</div><div class="lbl">Pendentes</div></div>
+  <div class="stat"><div class="val" id="s-done" style="color:#1D9E75">0</div><div class="lbl">Entregues</div></div>
+</div>
+
+<button class="nav-big" id="nav-btn">🗺️ Iniciar Rota no Google Maps</button>
+<div class="nav-row">
+  <button class="nav-sm" id="waze-btn">🚗 Abrir no Waze</button>
+  <button class="nav-sm" id="opt-btn">✦ Otimizar ordem</button>
+</div>
+
+<div class="list-hdr" id="list-hdr" style="display:none;">Entregas — arraste ☰ para reordenar</div>
+<div id="list">
+  <div class="empty" id="empty-msg">
+    <div class="icon">📦</div>
+    <p style="font-size:14px;color:#aaa;">Nenhuma entrega ainda</p>
+  </div>
+</div>
+<div class="pb"></div>
+
+<div class="modal-bg hidden" id="modal">
+  <div class="modal">
+    <div class="m-pill"></div>
+    <div class="m-head">
+      <div class="m-lbl">📦 PEDIDO PARA ENTREGAR</div>
+      <div class="m-num" id="m-num">#—</div>
+      <div class="m-adr" id="m-adr"></div>
+    </div>
+    <div class="m-body" id="m-body"></div>
+    <div class="m-foot">
+      <button class="m-btn ok" id="m-ok">✓ Entregue!</button>
+      <button class="m-btn cancel" id="m-fechar">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── FIREBASE (mesmo projeto Bolo de Mi) ─────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyD9JGS6HMTWuj17fne5hOAZ2TOh9o8tyhw",
+  authDomain: "bolo-de-mi.firebaseapp.com",
+  projectId: "bolo-de-mi",
+  storageBucket: "bolo-de-mi.firebasestorage.app",
+  messagingSenderId: "1060789628321",
+  appId: "1:1060789628321:web:fe5a8beb4a305de9772fe0"
+};
+try{ firebase.initializeApp(firebaseConfig); } catch(e){}
+const db = firebase.firestore();
+const dataHoje = new Date().toLocaleDateString('en-CA');
+
+// Tabela de preços igual ao motoboy
+const tabelaPrecos = [
+  {ate:3,valor:3},{ate:7,valor:5},{ate:9,valor:7},
+  {ate:14,valor:11},{ate:18,valor:18},{ate:999,valor:20}
+];
+
+// Bairros fixos (mesmos do motoboy)
+const bairrosFixos = [
+  {nome:'Santa Mônica',km:0.9},{nome:'Jardim Leblon',km:2.5},
+  {nome:'Pampulha',km:5.1},{nome:'Céu Azul',km:2.9},
+  {nome:'São João Batista',km:2.8},{nome:'Itapoã',km:2.8},
+  {nome:'Jardim Atlântico',km:2.4},{nome:'Lagoa',km:4.1},
+  {nome:'Venda Nova',km:3.3},{nome:'Santa Amélia',km:0.8},
+  {nome:'Planalto',km:4.0},{nome:'Piratininga',km:2.7},
+  {nome:'Justinópolis',km:5.2},{nome:'Ouro Preto',km:7.5},
+  {nome:'Santa Branca',km:2.5},{nome:'Europa',km:4.5},
+  {nome:'Trevo',km:3.8},{nome:'Braunas',km:5.0},
+  {nome:'Contagem Xangrilá',km:6.4},{nome:'Céu Anil',km:4.0},
+  {nome:'Leticia',km:2.6},{nome:'Copacabana',km:1.2},
+  {nome:'Candelaria',km:3.2},{nome:'Rio Branco',km:2.3},
+  {nome:'Minas Caixa',km:3.8},
+];
+
+function normalizar(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'');}
+
+// Detecta plataforma pelo tamanho do código
+function detectarPlat(cod){
+  const n=cod.replace(/\D/g,'');
+  if(n.length===4)return'iFood';
+  if(n.length===6)return'99';
+  if(n.length>0)return'Particular';
+  return'';
+}
+
+// Auto-preenche plataforma quando digita o pedido
+document.getElementById('f-pedido').addEventListener('input', function(){
+  const plat = detectarPlat(this.value);
+  if(plat) document.getElementById('f-plat').value = plat;
+});
+
+// Salva pedido no Firebase do motoboy
+async function salvarNoMotoboy(pedido, plat, tipo, bairro, km, compl, numero, addr){
+  if(!km || km<=0) return; // sem km não envia
+  let valor = 0;
+  for(const f of tabelaPrecos){ if(km<=f.ate){ valor=f.valor; break; } }
+  const endFull = addr + (compl?' — '+compl:'') + (tipo?' ['+tipo+']':'');
+  try{
+    await db.collection('pedidos').add({
+      codigo: pedido,
+      plataforma: plat || 'Particular',
+      endereco: endFull,
+      bairro: bairro,
+      km: km,
+      valor: valor,
+      motoboyId: 'LOJA',
+      motoboyNome: 'Loja',
+      motoboyTel: '',
+      data: dataHoje,
+      timestamp: new Date().toISOString(),
+      entregue: false,
+      tipo: tipo
+    });
+    // Salva bairro novo se necessário (para aparecer no autocomplete do motoboy)
+    const norm = normalizar(bairro);
+    const jaExiste = bairrosFixos.some(b=>normalizar(b.nome)===norm);
+    if(!jaExiste && km>0){
+      await db.collection('bairros').doc(norm.replace(/\s+/g,'_')).set(
+        {nome:bairro, km:km, criadoEm:new Date().toISOString()}, {merge:true}
+      );
+    }
+    const msg = document.getElementById('fb-msg');
+    msg.textContent = '✅ Pedido #'+pedido+' enviado para o app do motoboy!';
+    msg.style.color = '#1D9E75';
+    setTimeout(()=>{ msg.textContent=''; }, 4000);
+  }catch(e){
+    const msg = document.getElementById('fb-msg');
+    msg.textContent = '⚠️ Sem internet — pedido salvo só localmente';
+    msg.style.color = '#BA7517';
+    setTimeout(()=>{ msg.textContent=''; }, 4000);
+  }
+}
+
+let routes=[], recognition=null, isListening=false, openId=null;
+let selLat=null, selLng=null, selRua=null, searchTimer=null;
+let myLat=null, myLng=null, dragSrc=null;
+
+const input  = document.getElementById('addr-input');
+const pacBox = document.getElementById('pac-box');
+const micBtn = document.getElementById('mic-btn');
+const micSt  = document.getElementById('mic-status');
+const listEl = document.getElementById('list');
+const modal  = document.getElementById('modal');
+
+function save(){try{localStorage.setItem('ebh3',JSON.stringify(routes));}catch(e){}}
+function load(){try{const d=localStorage.getItem('ebh3');if(d)routes=JSON.parse(d);}catch(e){}}
+function setSt(msg,cls){micSt.textContent=msg;micSt.className=cls||'';}
+
+// ── GPS ──────────────────────────────────────────────────
+function pegaGPS(){
+  const lt=document.getElementById('loc-txt');
+  lt.textContent='Buscando GPS...';
+  if(!navigator.geolocation){lt.textContent='GPS indisponível';return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    myLat=pos.coords.latitude; myLng=pos.coords.longitude;
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${myLat}&lon=${myLng}&format=json&accept-language=pt-BR`,
+      {headers:{'User-Agent':'AppEntregas/1.0'}})
+      .then(r=>r.json()).then(d=>{
+        const rua=d.address.road||'';
+        const bairro=d.address.suburb||d.address.neighbourhood||'';
+        lt.textContent='✓ '+rua+(bairro?' - '+bairro:'');
+      }).catch(()=>{lt.textContent=`GPS OK: ${myLat.toFixed(5)}, ${myLng.toFixed(5)}`;});
+  },()=>{
+    document.getElementById('loc-txt').textContent='⚠️ Permita o GPS no Chrome';
+  },{enableHighAccuracy:true,timeout:12000});
+}
+pegaGPS();
+document.getElementById('loc-btn').addEventListener('click',pegaGPS);
+
+// ── BUSCA SOMENTE A RUA (sem número) ────────────────────
+// Assim o mapa acha a rua certa e NÓS colocamos o número correto
+function buscarRua(q, cb){
+  const query = q + ', Belo Horizonte, MG, Brasil';
+  fetch('https://nominatim.openstreetmap.org/search?' +
+    'q=' + encodeURIComponent(query) +
+    '&format=json&addressdetails=1&limit=7&countrycodes=br&accept-language=pt-BR',
+    {headers:{'User-Agent':'AppEntregas/1.0'}})
+    .then(r=>r.json())
+    .then(data=>{
+      if(!data)return cb([]);
+      // Filtra MG e ordena: ruas primeiro (type=residential/street)
+      const mg = data.filter(p=>{
+        const st=(p.address.state||'').toLowerCase();
+        return st.includes('minas');
+      });
+      // Deduplicar ruas iguais (pega só 1 por nome de rua)
+      const vistas = new Set();
+      const unicas = (mg.length?mg:data).filter(p=>{
+        const rua = p.address.road||p.display_name.split(',')[0];
+        if(vistas.has(rua))return false;
+        vistas.add(rua);return true;
+      });
+      cb(unicas.slice(0,6));
+    }).catch(()=>cb([]));
+}
+
+function mostrar(data){
+  if(!data||!data.length){pacBox.style.display='none';return;}
+  pacBox.innerHTML=data.map(p=>{
+    const rua    = p.address.road||p.address.pedestrian||p.display_name.split(',')[0]||'';
+    const bairro = p.address.suburb||p.address.neighbourhood||p.address.quarter||'';
+    const cidade = p.address.city||p.address.town||'Belo Horizonte';
+    const sec    = [bairro,cidade].filter(Boolean).join(', ');
+    return `<div class="pac-item"
+      data-lat="${p.lat}" data-lng="${p.lon}" data-rua="${rua}">
+      <span>📍</span>
+      <div>
+        <div class="pac-main">${rua}</div>
+        <div class="pac-sec">${sec}</div>
+      </div>
+    </div>`;
+  }).join('');
+  pacBox.style.display='block';
+}
+
+input.addEventListener('input',()=>{
+  selLat=null;selLng=null;selRua=null;
+  clearTimeout(searchTimer);
+  const q=input.value.trim();
+  if(q.length<3){pacBox.style.display='none';return;}
+  searchTimer=setTimeout(()=>buscarRua(q,mostrar),400);
+});
+
+pacBox.addEventListener('click',e=>{
+  const it=e.target.closest('.pac-item');if(!it)return;
+  selLat=parseFloat(it.dataset.lat);
+  selLng=parseFloat(it.dataset.lng);
+  selRua=it.dataset.rua;
+  input.value=selRua;
+  pacBox.style.display='none';
+  // Foca no campo de número
+  document.getElementById('f-numero').focus();
+  setSt('✓ Rua selecionada! Agora informe o número.','ok');
+});
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.addr-wrap')&&e.target!==micBtn)pacBox.style.display='none';
+});
+
+// ── ADICIONAR ────────────────────────────────────────────
+function addRoute(rua, numero, lat, lng){
+  const pedido = document.getElementById('f-pedido').value.trim()||'—';
+  const compl  = document.getElementById('f-compl').value.trim()||'';
+  const plat   = document.getElementById('f-plat').value||'';
+  const tipo   = document.getElementById('f-tipo').value||'';
+  const km     = parseFloat(document.getElementById('f-km').value)||0;
+  // Extrai bairro da rua selecionada (última parte do endereço)
+  const bairro = selRua ? (document.querySelector('#pac-box .pac-item.selecionado')?.dataset?.bairro || rua) : rua;
+
+  // Monta endereço completo COM o número digitado pelo usuário
+  const addr   = numero ? `${rua}, ${numero}, Belo Horizonte` : `${rua}, Belo Horizonte`;
+
+  routes.push({addr, addrMaps: addr, lat, lng, pedido, compl, numero, plat, tipo, km, id:Date.now()+Math.random(), entregue:false, novo:true});
+
+  // Envia para o Firebase do motoboy (se tiver km preenchido)
+  if(km>0) salvarNoMotoboy(pedido, plat, tipo, rua, km, compl, numero, addr);
+
+  document.getElementById('f-pedido').value='';
+  document.getElementById('f-compl').value='';
+  document.getElementById('f-numero').value='';
+  document.getElementById('f-plat').value='';
+  document.getElementById('f-tipo').value='';
+  document.getElementById('f-km').value='';
+  input.value=''; selLat=null; selLng=null; selRua=null;
+  pacBox.style.display='none';
+  setSt('✓ Entrega adicionada!','ok');
+  setTimeout(()=>setSt(''),2000);
+  save(); render(); stats();
+  setTimeout(()=>{routes.forEach(r=>r.novo=false);},400);
+  setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),150);
+}
+
+document.getElementById('add-btn').addEventListener('click',()=>{
+  const ruaVal   = input.value.trim();
+  const numeroVal= document.getElementById('f-numero').value.trim();
+
+  if(!ruaVal){alert('Informe o nome da rua!');return;}
+  if(!numeroVal){
+    if(!confirm('Continuar sem número?'))return;
+  }
+
+  if(selLat&&selLng&&selRua){
+    addRoute(selRua, numeroVal, selLat, selLng);
+    return;
+  }
+
+  // Busca a rua se não selecionou da lista
+  setSt('🔍 Buscando rua em BH...','');
+  buscarRua(ruaVal, data=>{
+    if(data&&data.length){
+      const p=data[0];
+      const rua=p.address.road||p.address.pedestrian||ruaVal;
+      addRoute(rua, numeroVal, parseFloat(p.lat), parseFloat(p.lon));
+    }else{
+      // Usa o texto digitado mesmo
+      addRoute(ruaVal, numeroVal, myLat||-19.92, myLng||-43.94);
+    }
+  });
+});
+
+input.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){e.preventDefault();document.getElementById('f-numero').focus();}
+});
+document.getElementById('f-numero').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){e.preventDefault();document.getElementById('add-btn').click();}
+});
+
+// ── RENDER ───────────────────────────────────────────────
+function render(){
+  const hdr=document.getElementById('list-hdr');
+  const empty=document.getElementById('empty-msg');
+  if(!routes.length){
+    listEl.innerHTML='';listEl.appendChild(empty);empty.style.display='block';
+    hdr.style.display='none';
+    document.getElementById('hdr-badge').textContent='0 paradas';return;
+  }
+  empty.style.display='none';hdr.style.display='block';
+  listEl.innerHTML=routes.map((r,i)=>{
+    const lbl=r.entregue?'✓':(i+1);
+    // Mostra rua + número na lista
+    const displayAddr = r.numero
+      ? r.addr.split(',').slice(0,2).join(',')
+      : r.addr.split(',')[0];
+    return `<div class="item${r.entregue?' entregue':''}${r.novo?' novo':''}" draggable="true" data-id="${r.id}">
+      <div class="item-head">
+        <span class="drag-h">☰</span>
+        <div class="num${r.entregue?' done':''}">${lbl}</div>
+        <div class="item-info">
+          <div class="item-addr">${displayAddr}</div>
+          <div class="item-sub">Pedido <strong>#${r.pedido}</strong>${r.compl?' · '+r.compl:''}</div>
+        </div>
+        <div class="item-right">
+          <button class="btn-ver${r.entregue?' done':''}" data-open="${r.id}">Ver</button>
+          <button class="btn-del" data-del="${r.id}">×</button>
+        </div>
+      </div>
+      <div class="tags">
+        <span class="tag p">📦 #${r.pedido}</span>
+        ${r.tipo?`<span class="tag c">${r.tipo}</span>`:''}
+        ${r.numero?`<span class="tag p">Nº ${r.numero}</span>`:''}
+        ${r.compl?`<span class="tag c">${r.compl}</span>`:''}
+        ${r.plat?`<span class="tag p">${r.plat}</span>`:''}
+        ${r.km?`<span class="tag p">${r.km}km</span>`:''}
+        ${r.entregue?'<span class="tag e">✓ Entregue</span>':''}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('hdr-badge').textContent=`${routes.length} parada${routes.length!==1?'s':''}`;
+  dragSetup();
+}
+
+listEl.addEventListener('click',e=>{
+  const del=e.target.closest('[data-del]');
+  if(del){if(!confirm('Remover?'))return;routes=routes.filter(r=>r.id!==parseFloat(del.dataset.del));save();render();stats();return;}
+  const op=e.target.closest('[data-open]');
+  if(op)abreModal(parseFloat(op.dataset.open));
+});
+
+// ── DRAG ─────────────────────────────────────────────────
+function dragSetup(){
+  const items=listEl.querySelectorAll('.item[draggable]');
+  items.forEach(it=>{
+    it.addEventListener('dragstart',()=>{dragSrc=it;setTimeout(()=>it.style.opacity='0.4',0);});
+    it.addEventListener('dragend',()=>{it.style.opacity='';items.forEach(i=>i.style.outline='');});
+    it.addEventListener('dragover',e=>{e.preventDefault();it.style.outline='2px solid #1D9E75';});
+    it.addEventListener('dragleave',()=>it.style.outline='');
+    it.addEventListener('drop',e=>{
+      e.preventDefault();it.style.outline='';
+      if(dragSrc===it)return;
+      const si=routes.findIndex(r=>r.id===parseFloat(dragSrc.dataset.id));
+      const di=routes.findIndex(r=>r.id===parseFloat(it.dataset.id));
+      if(si<0||di<0)return;
+      const tmp=routes[si];routes[si]=routes[di];routes[di]=tmp;
+      save();render();stats();
+    });
+    it.addEventListener('touchstart',e=>{dragSrc=it;},{passive:true});
+    it.addEventListener('touchmove',e=>{
+      e.preventDefault();
+      items.forEach(i=>i.style.outline='');
+      const t=e.touches[0];
+      const els=document.elementsFromPoint(t.clientX,t.clientY);
+      const tgt=els.find(el=>el.classList&&el.classList.contains('item')&&el!==it);
+      if(tgt)tgt.style.outline='2px solid #1D9E75';
+    },{passive:false});
+    it.addEventListener('touchend',e=>{
+      items.forEach(i=>i.style.outline='');
+      const t=e.changedTouches[0];
+      const els=document.elementsFromPoint(t.clientX,t.clientY);
+      const tgt=els.find(el=>el.classList&&el.classList.contains('item')&&el!==it);
+      if(tgt&&dragSrc){
+        const si=routes.findIndex(r=>r.id===parseFloat(dragSrc.dataset.id));
+        const di=routes.findIndex(r=>r.id===parseFloat(tgt.dataset.id));
+        if(si>=0&&di>=0){const tmp=routes[si];routes[si]=routes[di];routes[di]=tmp;save();render();stats();}
+      }
+    });
+  });
+}
+
+// ── MODAL ────────────────────────────────────────────────
+function abreModal(id){
+  const r=routes.find(x=>x.id===id);if(!r)return;
+  openId=id;
+  document.getElementById('m-num').textContent='#'+r.pedido;
+  document.getElementById('m-adr').textContent=r.addr;
+  document.getElementById('m-body').innerHTML=`
+    ${r.tipo?`<div class="m-row"><span class="m-k">Tipo</span><span class="m-v">${r.tipo}</span></div>`:''}
+    ${r.numero?`<div class="m-row"><span class="m-k">Número</span><span class="m-v">🏠 ${r.numero}</span></div>`:''}
+    ${r.compl?`<div class="m-row"><span class="m-k">Apto/Bloco</span><span class="m-v" style="font-size:18px;font-weight:800;">${r.compl}</span></div>`:''}
+    ${r.plat?`<div class="m-row"><span class="m-k">Plataforma</span><span class="m-v">${r.plat}</span></div>`:''}
+    ${r.km?`<div class="m-row"><span class="m-k">KM</span><span class="m-v">${r.km} km</span></div>`:''}
+    <div class="m-row"><span class="m-k">Status</span><span class="m-v ${r.entregue?'ok':'pend'}">${r.entregue?'✓ Entregue':'⏳ Pendente'}</span></div>
+    <div class="m-row"><span class="m-k">Ordem</span><span class="m-v">${routes.indexOf(r)+1}ª parada</span></div>`;
+  modal.classList.remove('hidden');
+}
+document.getElementById('m-ok').addEventListener('click',()=>{
+  const r=routes.find(x=>x.id===openId);
+  if(r){r.entregue=true;save();render();stats();}
+  modal.classList.add('hidden');
+  setSt('✓ Entregue! 🎉','ok');setTimeout(()=>setSt(''),3000);
+});
+document.getElementById('m-fechar').addEventListener('click',()=>modal.classList.add('hidden'));
+modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.add('hidden');});
+
+// ── STATS ────────────────────────────────────────────────
+function stats(){
+  document.getElementById('s-total').textContent=routes.length;
+  document.getElementById('s-pend').textContent=routes.filter(r=>!r.entregue).length;
+  document.getElementById('s-done').textContent=routes.filter(r=>r.entregue).length;
+}
+
+// ── OTIMIZAR ─────────────────────────────────────────────
+document.getElementById('opt-btn').addEventListener('click',()=>{
+  if(routes.length<2){alert('Adicione pelo menos 2 paradas!');return;}
+  const oLat=myLat||routes[0].lat, oLng=myLng||routes[0].lng;
+  const rem=[...routes];const sorted=[];let cur={lat:oLat,lng:oLng};
+  while(rem.length){
+    let best=null,bestD=Infinity;
+    rem.forEach(r=>{const d=Math.hypot(r.lat-cur.lat,r.lng-cur.lng);if(d<bestD){bestD=d;best=r;}});
+    sorted.push(best);rem.splice(rem.indexOf(best),1);cur=best;
+  }
+  routes=sorted;save();render();stats();
+  setSt('✦ Ordem otimizada!','ok');setTimeout(()=>setSt(''),3000);
+});
+
+// ── NAVEGAR — envia endereço por NOME (não coordenada) ───
+// Assim o Google Maps usa o endereço exato que você digitou
+document.getElementById('nav-btn').addEventListener('click',()=>{
+  const pend=routes.filter(r=>!r.entregue);
+  if(!pend.length){alert('Nenhuma entrega pendente!');return;}
+  if(!myLat){alert('Aguarde o GPS!\nVeja a barra verde no topo.');pegaGPS();return;}
+
+  // Origem = coordenadas GPS do celular
+  const origem = myLat+','+myLng;
+
+  // Destino = último endereço por nome (Maps vai resolver o número correto)
+  const destino = encodeURIComponent(pend[pend.length-1].addr);
+
+  // Waypoints = endereços do meio por nome
+  const wps = pend.slice(0,-1).map(r=>encodeURIComponent(r.addr)).join('|');
+
+  const url = 'https://www.google.com/maps/dir/?api=1'
+    + '&origin=' + origem
+    + '&destination=' + destino
+    + (wps ? '&waypoints=' + encodeURIComponent(pend.slice(0,-1).map(r=>r.addr).join('|')) : '')
+    + '&travelmode=driving';
+
+  window.open(url,'_blank');
+});
+
+document.getElementById('waze-btn').addEventListener('click',()=>{
+  const pend=routes.filter(r=>!r.entregue);
+  if(!pend.length){alert('Nenhuma entrega pendente!');return;}
+  window.open(`https://waze.com/ul?ll=${pend[0].lat}%2C${pend[0].lng}&navigate=yes`,'_blank');
+});
+
+// ── MICROFONE ─────────────────────────────────────────────
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SR){
+  recognition=new SR();
+  recognition.lang='pt-BR';recognition.interimResults=false;recognition.continuous=false;
+  recognition.onstart=()=>{isListening=true;micBtn.classList.add('active');micBtn.textContent='⏹️';setSt('🎙️ Fale o nome da rua e bairro...','on');};
+  recognition.onend=()=>{isListening=false;micBtn.classList.remove('active');micBtn.textContent='🎙️';if(micSt.className==='on')setSt('');};
+  recognition.onresult=e=>{
+    let t=e.results[0][0].transcript;
+    // Remove números da fala (o número vai no campo separado)
+    // Ex: "Erva Mate 499 Piratininga" → "Erva Mate Piratininga" + coloca 499 no campo número
+    const numMatch=t.match(/\b(\d+)\b/);
+    if(numMatch){
+      document.getElementById('f-numero').value=numMatch[1];
+      t=t.replace(/\b\d+\b/g,'').replace(/\s+/g,' ').trim();
+    }
+    input.value=t; selLat=null; selLng=null; selRua=null;
+    setSt('🔍 Buscando "'+t+'" em BH...','');
+    buscarRua(t, data=>{
+      if(data&&data.length){
+        mostrar(data);
+        setSt('✓ Toque na rua correta abaixo','ok');
+      }else{
+        setSt('Não encontrado. Tente falar o bairro também.','err');
+      }
+    });
+  };
+  recognition.onerror=e=>{
+    const m={'not-allowed':'⚠️ Permita o microfone no Chrome','no-speech':'Nenhuma fala.','network':'Erro de rede.'};
+    setSt(m[e.error]||'Erro no microfone.','err');
+    isListening=false;micBtn.classList.remove('active');micBtn.textContent='🎙️';
+  };
+  micBtn.addEventListener('click',()=>{
+    if(isListening)recognition.stop();
+    else try{recognition.start();}catch(ex){setSt('Toque novamente','err');}
+  });
+}else{
+  micBtn.disabled=true;micBtn.style.opacity='0.4';
+  setSt('Use o Chrome para microfone');
+}
+
+load();render();stats();
+
+// Força sempre a versão mais recente (evita cache do GitHub)
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(regs=>{
+    regs.forEach(r=>r.unregister());
+  });
+}
+// Se a página foi carregada do cache, recarrega silenciosamente em background
+// e avisa o usuário apenas se houver versão nova
+if(window.performance && performance.navigation.type === 2){
+  // Veio do cache de navegação — força reload
+  window.location.reload(true);
+}
+</script>
+</body>
+</html>

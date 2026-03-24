@@ -306,8 +306,13 @@ function preencherKmPorBairro(bairro){
   });
   if(found){
     document.getElementById('f-km').value = found.km;
-    setFbMsg('📍 '+found.km+' km — '+found.nome, '#1D9E75');
-    setTimeout(()=>setFbMsg('',''), 3500);
+    setFbMsg('📍 '+found.km+' km detectado — '+found.nome, '#1D9E75');
+    setTimeout(()=>setFbMsg('',''), 4000);
+  } else {
+    // Bairro não está na lista — avisa para digitar manualmente
+    document.getElementById('f-km').value = '';
+    setFbMsg('⚠️ Bairro "'+bairro+'" não cadastrado — digite o KM manualmente!', '#E24B4A');
+    document.getElementById('f-km').focus();
   }
 }
 
@@ -521,9 +526,23 @@ function addRoute(rua, numero, lat, lng, bairro){
 document.getElementById('add-btn').addEventListener('click',()=>{
   const ruaVal    = input.value.trim();
   const numeroVal = document.getElementById('f-numero').value.trim();
+  const kmVal     = parseFloat(document.getElementById('f-km').value)||0;
 
-  if(!ruaVal){alert('Informe o nome da rua!');return;}
-  if(!numeroVal){ if(!confirm('Continuar sem número?')) return; }
+  if(!ruaVal){
+    alert('⚠️ Informe o nome da rua!');
+    return;
+  }
+  if(!numeroVal){
+    if(!confirm('Continuar sem número?')) return;
+  }
+  // KM é obrigatório para enviar ao motoboy
+  if(kmVal<=0){
+    alert('⚠️ Informe o KM da corrida!\n\nO KM é necessário para criar o pedido no app do motoboy.\n\nSe o bairro não foi detectado automaticamente, digite o valor manualmente no campo "KM da Corrida".');
+    document.getElementById('f-km').focus();
+    document.getElementById('f-km').style.borderColor='#E24B4A';
+    setTimeout(()=>{ document.getElementById('f-km').style.borderColor='#1D9E75'; },3000);
+    return;
+  }
 
   if(selLat && selLng && selRua){
     addRoute(selRua, numeroVal, selLat, selLng, selBairro);

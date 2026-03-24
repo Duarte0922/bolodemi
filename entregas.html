@@ -126,6 +126,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <button id="loc-btn">Atualizar GPS</button>
 </div>
 
+<!-- BARRA DO MOTOBOY -->
+<div id="mb-bar" style="background:#0a5c45;padding:7px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="configurarMotoboy()">
+  <span style="font-size:13px;">🛵</span>
+  <span id="mb-txt" style="flex:1;font-size:11px;color:rgba(255,255,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Toque para configurar o motoboy</span>
+  <span style="font-size:10px;color:rgba(255,255,255,0.6);">✎</span>
+</div>
+
 <div class="card">
   <div class="card-title">Adicionar Entrega</div>
 
@@ -268,6 +275,36 @@ const bairrosFixos = [
 
 function normalizar(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'');}
 
+// ── PREENCHE KM PELO BAIRRO (igual ao motoboy) ────────────
+// Busca primeiro nos bairrosFixos, depois no Firestore
+function preencherKmPorBairro(bairro){
+  if(!bairro) return;
+  const norm = normalizar(bairro);
+  // 1) tenta na lista fixa
+  const found = bairrosFixos.find(b=>normalizar(b.nome)===norm || normalizar(bairro).includes(normalizar(b.nome)) || normalizar(b.nome).includes(norm));
+  if(found){
+    document.getElementById('f-km').value = found.km;
+    const msg=document.getElementById('fb-msg');
+    msg.textContent='📍 KM preenchido: '+found.km+' km ('+found.nome+')';
+    msg.style.color='#1D9E75';
+    setTimeout(()=>{ msg.textContent=''; },3500);
+    return;
+  }
+  // 2) tenta no Firestore (bairros aprendidos)
+  db.collection('bairros').get().then(snap=>{
+    snap.forEach(doc=>{
+      const b=doc.data();
+      if(b.nome && normalizar(b.nome).includes(norm)){
+        document.getElementById('f-km').value = b.km;
+        const msg=document.getElementById('fb-msg');
+        msg.textContent='📍 KM preenchido: '+b.km+' km ('+b.nome+')';
+        msg.style.color='#1D9E75';
+        setTimeout(()=>{ msg.textContent=''; },3500);
+      }
+    });
+  }).catch(()=>{});
+}
+
 // Detecta plataforma pelo tamanho do código
 function detectarPlat(cod){
   const n=cod.replace(/\D/g,'');
@@ -284,11 +321,20 @@ document.getElementById('f-pedido').addEventListener('input', function(){
 });
 
 // Salva pedido no Firebase do motoboy
+// Busca todos os motoboys cadastrados e cria um pedido para cada um que estiver ativo hoje
+// (ou usa o motoboyId já salvo no localStorage do app Entregas)
 async function salvarNoMotoboy(pedido, plat, tipo, bairro, km, compl, numero, addr){
   if(!km || km<=0) return; // sem km não envia
   let valor = 0;
   for(const f of tabelaPrecos){ if(km<=f.ate){ valor=f.valor; break; } }
   const endFull = addr + (compl?' — '+compl:'') + (tipo?' ['+tipo+']':'');
+  const dataHj  = new Date().toLocaleDateString('en-CA');
+
+  // Pega motoboyId salvo (ou usa LOJA como fallback)
+  let mbId   = localStorage.getItem('ebh_mb_id')   || 'LOJA';
+  let mbNome = localStorage.getItem('ebh_mb_nome')  || 'Loja';
+  let mbTel  = localStorage.getItem('ebh_mb_tel')   || '';
+
   try{
     await db.collection('pedidos').add({
       codigo: pedido,
@@ -297,15 +343,15 @@ async function salvarNoMotoboy(pedido, plat, tipo, bairro, km, compl, numero, ad
       bairro: bairro,
       km: km,
       valor: valor,
-      motoboyId: 'LOJA',
-      motoboyNome: 'Loja',
-      motoboyTel: '',
-      data: dataHoje,
+      motoboyId: mbId,
+      motoboyNome: mbNome,
+      motoboyTel: mbTel,
+      data: dataHj,
       timestamp: new Date().toISOString(),
       entregue: false,
       tipo: tipo
     });
-    // Salva bairro novo se necessário (para aparecer no autocomplete do motoboy)
+    // Salva bairro novo se necessário
     const norm = normalizar(bairro);
     const jaExiste = bairrosFixos.some(b=>normalizar(b.nome)===norm);
     if(!jaExiste && km>0){
@@ -314,9 +360,9 @@ async function salvarNoMotoboy(pedido, plat, tipo, bairro, km, compl, numero, ad
       );
     }
     const msg = document.getElementById('fb-msg');
-    msg.textContent = '✅ Pedido #'+pedido+' enviado para o app do motoboy!';
+    msg.textContent = '✅ Pedido #'+pedido+' criado para '+mbNome+' • R$ '+valor.toFixed(2).replace('.',',');
     msg.style.color = '#1D9E75';
-    setTimeout(()=>{ msg.textContent=''; }, 4000);
+    setTimeout(()=>{ msg.textContent=''; }, 5000);
   }catch(e){
     const msg = document.getElementById('fb-msg');
     msg.textContent = '⚠️ Sem internet — pedido salvo só localmente';
@@ -421,10 +467,12 @@ pacBox.addEventListener('click',e=>{
   selLng=parseFloat(it.dataset.lng);
   selRua=it.dataset.rua;
   input.value=selRua;
+  // Tenta preencher KM pelo bairro exibido no item clicado
+  const bairroEl=it.querySelector('.pac-sec');
+  if(bairroEl){const bt=bairroEl.textContent.split(',')[0].trim();if(bt)preencherKmPorBairro(bt);}
   pacBox.style.display='none';
-  // Foca no campo de número
   document.getElementById('f-numero').focus();
-  setSt('✓ Rua selecionada! Agora informe o número.','ok');
+  setSt('✓ Rua selecionada! KM preenchido automaticamente.','ok');
 });
 
 document.addEventListener('click',e=>{
@@ -432,14 +480,13 @@ document.addEventListener('click',e=>{
 });
 
 // ── ADICIONAR ────────────────────────────────────────────
-function addRoute(rua, numero, lat, lng){
+function addRoute(rua, numero, lat, lng, bairroDetectado){
   const pedido = document.getElementById('f-pedido').value.trim()||'—';
   const compl  = document.getElementById('f-compl').value.trim()||'';
   const plat   = document.getElementById('f-plat').value||'';
   const tipo   = document.getElementById('f-tipo').value||'';
   const km     = parseFloat(document.getElementById('f-km').value)||0;
-  // Extrai bairro da rua selecionada (última parte do endereço)
-  const bairro = selRua ? (document.querySelector('#pac-box .pac-item.selecionado')?.dataset?.bairro || rua) : rua;
+  const bairro = bairroDetectado || rua;
 
   // Monta endereço completo COM o número digitado pelo usuário
   const addr   = numero ? `${rua}, ${numero}, Belo Horizonte` : `${rua}, Belo Horizonte`;
@@ -447,7 +494,7 @@ function addRoute(rua, numero, lat, lng){
   routes.push({addr, addrMaps: addr, lat, lng, pedido, compl, numero, plat, tipo, km, id:Date.now()+Math.random(), entregue:false, novo:true});
 
   // Envia para o Firebase do motoboy (se tiver km preenchido)
-  if(km>0) salvarNoMotoboy(pedido, plat, tipo, rua, km, compl, numero, addr);
+  if(km>0) salvarNoMotoboy(pedido, plat, tipo, bairro, km, compl, numero, addr);
 
   document.getElementById('f-pedido').value='';
   document.getElementById('f-compl').value='';
@@ -474,7 +521,10 @@ document.getElementById('add-btn').addEventListener('click',()=>{
   }
 
   if(selLat&&selLng&&selRua){
-    addRoute(selRua, numeroVal, selLat, selLng);
+    // Extrai bairro do pac-box (primeiro item visível)
+    const pacItem=pacBox.querySelector('.pac-item');
+    const bairroSel=pacItem?pacItem.querySelector('.pac-sec')?.textContent?.split(',')[0]?.trim()||selRua:selRua;
+    addRoute(selRua, numeroVal, selLat, selLng, bairroSel);
     return;
   }
 
@@ -484,10 +534,11 @@ document.getElementById('add-btn').addEventListener('click',()=>{
     if(data&&data.length){
       const p=data[0];
       const rua=p.address.road||p.address.pedestrian||ruaVal;
-      addRoute(rua, numeroVal, parseFloat(p.lat), parseFloat(p.lon));
+      const bairro=p.address.suburb||p.address.neighbourhood||p.address.quarter||ruaVal;
+      addRoute(rua, numeroVal, parseFloat(p.lat), parseFloat(p.lon), bairro);
     }else{
       // Usa o texto digitado mesmo
-      addRoute(ruaVal, numeroVal, myLat||-19.92, myLng||-43.94);
+      addRoute(ruaVal, numeroVal, myLat||-19.92, myLng||-43.94, ruaVal);
     }
   });
 });
@@ -676,8 +727,7 @@ if(SR){
   recognition.onend=()=>{isListening=false;micBtn.classList.remove('active');micBtn.textContent='🎙️';if(micSt.className==='on')setSt('');};
   recognition.onresult=e=>{
     let t=e.results[0][0].transcript;
-    // Remove números da fala (o número vai no campo separado)
-    // Ex: "Erva Mate 499 Piratininga" → "Erva Mate Piratininga" + coloca 499 no campo número
+    // Extrai número da fala → coloca no campo número
     const numMatch=t.match(/\b(\d+)\b/);
     if(numMatch){
       document.getElementById('f-numero').value=numMatch[1];
@@ -687,8 +737,19 @@ if(SR){
     setSt('🔍 Buscando "'+t+'" em BH...','');
     buscarRua(t, data=>{
       if(data&&data.length){
+        // AUTO-SELECIONA o primeiro resultado (resolve o problema do microfone)
+        const p=data[0];
+        const rua=p.address.road||p.address.pedestrian||p.display_name.split(',')[0]||t;
+        const bairro=p.address.suburb||p.address.neighbourhood||p.address.quarter||'';
+        selLat=parseFloat(p.lat);
+        selLng=parseFloat(p.lon);
+        selRua=rua;
+        input.value=rua;
+        // Preenche KM automaticamente pelo bairro detectado
+        if(bairro) preencherKmPorBairro(bairro);
+        // Mostra lista para confirmar ou trocar
         mostrar(data);
-        setSt('✓ Toque na rua correta abaixo','ok');
+        setSt('✓ "'+rua+'" selecionada! Confirme ou toque em outra opção.','ok');
       }else{
         setSt('Não encontrado. Tente falar o bairro também.','err');
       }
@@ -708,7 +769,37 @@ if(SR){
   setSt('Use o Chrome para microfone');
 }
 
+// ── CONFIGURAR MOTOBOY ────────────────────────────────────
+function configurarMotoboy(){
+  const tel = prompt('📱 Telefone do motoboy (com DDD):\nEx: 31999998888\n\nEste telefone deve ser o mesmo cadastrado no app do motoboy.', localStorage.getItem('ebh_mb_tel')||'');
+  if(tel===null) return;
+  const telLimpo = tel.replace(/\D/g,'');
+  if(!telLimpo){ alert('Telefone inválido!'); return; }
+  const nome = prompt('👤 Nome do motoboy:', localStorage.getItem('ebh_mb_nome')||'') || 'Motoboy';
+  const mbId = 'MB_'+telLimpo;
+  localStorage.setItem('ebh_mb_id',  mbId);
+  localStorage.setItem('ebh_mb_nome',nome);
+  localStorage.setItem('ebh_mb_tel', telLimpo);
+  atualizarBarraMotoboy();
+  const msg=document.getElementById('fb-msg');
+  msg.textContent='✅ Motoboy configurado: '+nome;
+  msg.style.color='#1D9E75';
+  setTimeout(()=>{msg.textContent='';},3000);
+}
+function atualizarBarraMotoboy(){
+  const nome = localStorage.getItem('ebh_mb_nome');
+  const tel  = localStorage.getItem('ebh_mb_tel');
+  const txt  = document.getElementById('mb-txt');
+  if(nome && tel){
+    txt.textContent = '🛵 '+nome+' · ('+tel.replace(/(\d{2})(\d{5})(\d{4})/,'$1) $2-$3')+') — pedidos serão criados para este motoboy';
+  } else {
+    txt.textContent = '⚠️ Toque aqui para configurar o motoboy (obrigatório para criar pedidos)';
+    txt.style.color = '#FFD580';
+  }
+}
+
 load();render();stats();
+atualizarBarraMotoboy();
 
 // Força sempre a versão mais recente (evita cache do GitHub)
 if('serviceWorker' in navigator){

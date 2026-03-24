@@ -25,13 +25,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .card-title{font-size:12px;font-weight:700;color:#1D9E75;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.6px;}
 .field{margin-bottom:9px;}
 .field label{display:block;font-size:11px;color:#666;margin-bottom:3px;font-weight:600;}
-.field input{width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:14px;color:#1a1a1a;background:#fff;outline:none;font-family:inherit;transition:border-color 0.2s;}
-.field input:focus{border-color:#1D9E75;}
+.field input,.field select{width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:14px;color:#1a1a1a;background:#fff;outline:none;font-family:inherit;transition:border-color 0.2s;}
+.field input:focus,.field select:focus{border-color:#1D9E75;}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-/* Campos de endereço em 2 linhas */
-.row-rua{display:flex;gap:8px;}
-.row-rua .f-rua{flex:1;}
-.row-rua .f-num{width:90px;flex-shrink:0;}
 
 .mic-row{display:flex;gap:8px;}
 .addr-wrap{flex:1;position:relative;}
@@ -52,6 +48,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 .btn-add{width:100%;background:#1D9E75;color:#fff;border:none;border-radius:12px;padding:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;font-family:inherit;}
 .btn-add:active{background:#0F6E56;}
+.fb-msg{font-size:11px;font-weight:600;margin-top:3px;min-height:16px;text-align:center;}
 
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 12px 10px;}
 .stat{background:#fff;border-radius:12px;padding:9px 8px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.07);}
@@ -126,13 +123,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <button id="loc-btn">Atualizar GPS</button>
 </div>
 
-<!-- BARRA DO MOTOBOY -->
-<div id="mb-bar" style="background:#0a5c45;padding:7px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="configurarMotoboy()">
-  <span style="font-size:13px;">🛵</span>
-  <span id="mb-txt" style="flex:1;font-size:11px;color:rgba(255,255,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Toque para configurar o motoboy</span>
-  <span style="font-size:10px;color:rgba(255,255,255,0.6);">✎</span>
-</div>
-
 <div class="card">
   <div class="card-title">Adicionar Entrega</div>
 
@@ -148,11 +138,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 
-  <!-- NOVOS CAMPOS: Plataforma + Tipo + KM -->
-  <div class="row2" style="margin-bottom:10px;">
+  <!-- Plataforma + Tipo -->
+  <div class="row2" style="margin-bottom:4px;">
     <div class="field">
       <label>Plataforma</label>
-      <select id="f-plat" style="border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:14px;color:#1a1a1a;background:#fff;outline:none;font-family:inherit;width:100%;">
+      <select id="f-plat">
         <option value="">Selecione...</option>
         <option value="iFood">🛵 iFood</option>
         <option value="99">🟡 99Food</option>
@@ -161,7 +151,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="field">
       <label>Tipo do Local</label>
-      <select id="f-tipo" style="border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:14px;color:#1a1a1a;background:#fff;outline:none;font-family:inherit;width:100%;">
+      <select id="f-tipo">
         <option value="">Selecione...</option>
         <option value="Casa">🏠 Casa</option>
         <option value="Apartamento">🏢 Apartamento</option>
@@ -170,29 +160,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </select>
     </div>
   </div>
+
+  <!-- KM -->
   <div class="field">
     <label>KM da Corrida</label>
-    <input type="number" id="f-km" placeholder="Ex: 2.7  (usado no app do motoboy)" step="0.1" inputmode="decimal"
-      style="border:1.5px solid #1D9E75;border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600;color:#1a1a1a;background:#fff;outline:none;font-family:inherit;width:100%;"/>
-    <div id="fb-msg" style="font-size:11px;color:#1D9E75;font-weight:600;margin-top:3px;min-height:16px;"></div>
+    <input type="number" id="f-km" placeholder="Preenchido automático pelo bairro" step="0.1" inputmode="decimal"
+      style="border-color:#1D9E75;font-weight:600;"/>
+    <div id="fb-msg" class="fb-msg" style="color:#1D9E75;"></div>
   </div>
 
-  <!-- Nome da Rua + Número separados -->
+  <!-- Nome da Rua + Microfone -->
   <div class="field">
     <label>Nome da Rua</label>
     <div class="mic-row">
       <div class="addr-wrap">
-        <input type="text" id="addr-input" placeholder='Ex: "Erva Mate, Piratininga"' autocomplete="off"/>
+        <input type="text" id="addr-input" placeholder='Digite ou fale a rua e bairro' autocomplete="off"/>
         <div class="pac-box" id="pac-box"></div>
       </div>
-      <button class="mic-btn" id="mic-btn">🎙️</button>
+      <button class="mic-btn" id="mic-btn" title="Falar endereço">🎙️</button>
     </div>
-    <div class="hint">Fale ou digite só o nome da rua e bairro</div>
+    <div class="hint">Fale ou digite o nome da rua e o bairro</div>
   </div>
 
+  <!-- Número -->
   <div class="field">
     <label>Número da Casa / Ap</label>
-    <input type="text" id="f-numero" placeholder="Ex: 499" inputmode="numeric" style="border-color:#1D9E75;font-size:16px;font-weight:600;"/>
+    <input type="text" id="f-numero" placeholder="Ex: 499" inputmode="numeric"
+      style="border-color:#1D9E75;font-size:16px;font-weight:600;"/>
   </div>
 
   <div id="mic-status"></div>
@@ -237,7 +231,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <script>
-// ── FIREBASE (mesmo projeto Bolo de Mi) ─────────────────
+// ══════════════════════════════════════════════
+// DADOS DO LUCIANO — motoboyId igual ao app motoboy
+// O app motoboy gera o ID como 'MB_' + telefone sem formatação
+// ══════════════════════════════════════════════
+const MB_ID   = 'MB_31993058415';
+const MB_NOME = 'LUCIANO';
+const MB_TEL  = '31993058415';
+
+// ── FIREBASE ─────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyD9JGS6HMTWuj17fne5hOAZ2TOh9o8tyhw",
   authDomain: "bolo-de-mi.firebaseapp.com",
@@ -248,15 +250,14 @@ const firebaseConfig = {
 };
 try{ firebase.initializeApp(firebaseConfig); } catch(e){}
 const db = firebase.firestore();
-const dataHoje = new Date().toLocaleDateString('en-CA');
 
-// Tabela de preços igual ao motoboy
+// ── TABELA DE PREÇOS (igual ao motoboy) ──────
 const tabelaPrecos = [
   {ate:3,valor:3},{ate:7,valor:5},{ate:9,valor:7},
   {ate:14,valor:11},{ate:18,valor:18},{ate:999,valor:20}
 ];
 
-// Bairros fixos (mesmos do motoboy)
+// ── BAIRROS (igual ao motoboy) ───────────────
 const bairrosFixos = [
   {nome:'Santa Mônica',km:0.9},{nome:'Jardim Leblon',km:2.5},
   {nome:'Pampulha',km:5.1},{nome:'Céu Azul',km:2.9},
@@ -272,107 +273,112 @@ const bairrosFixos = [
   {nome:'Candelaria',km:3.2},{nome:'Rio Branco',km:2.3},
   {nome:'Minas Caixa',km:3.8},
 ];
+// Lista dinâmica — começa com os fixos e adiciona do Firestore
+let bairrosDinamicos = [...bairrosFixos];
 
-function normalizar(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'');}
+function normalizar(s){
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'');
+}
 
-// ── PREENCHE KM PELO BAIRRO (igual ao motoboy) ────────────
-// Busca primeiro nos bairrosFixos, depois no Firestore
-function preencherKmPorBairro(bairro){
-  if(!bairro) return;
-  const norm = normalizar(bairro);
-  // 1) tenta na lista fixa
-  const found = bairrosFixos.find(b=>normalizar(b.nome)===norm || normalizar(bairro).includes(normalizar(b.nome)) || normalizar(b.nome).includes(norm));
-  if(found){
-    document.getElementById('f-km').value = found.km;
-    const msg=document.getElementById('fb-msg');
-    msg.textContent='📍 KM preenchido: '+found.km+' km ('+found.nome+')';
-    msg.style.color='#1D9E75';
-    setTimeout(()=>{ msg.textContent=''; },3500);
-    return;
-  }
-  // 2) tenta no Firestore (bairros aprendidos)
+// Carrega bairros aprendidos do Firestore (mesmo que o motoboy usa)
+function carregarBairros(){
   db.collection('bairros').get().then(snap=>{
+    const vistos = new Set(bairrosFixos.map(b=>normalizar(b.nome)));
+    bairrosDinamicos = [...bairrosFixos];
     snap.forEach(doc=>{
       const b=doc.data();
-      if(b.nome && normalizar(b.nome).includes(norm)){
-        document.getElementById('f-km').value = b.km;
-        const msg=document.getElementById('fb-msg');
-        msg.textContent='📍 KM preenchido: '+b.km+' km ('+b.nome+')';
-        msg.style.color='#1D9E75';
-        setTimeout(()=>{ msg.textContent=''; },3500);
+      if(b.nome && b.km && !vistos.has(normalizar(b.nome))){
+        bairrosDinamicos.push({nome:b.nome, km:b.km});
+        vistos.add(normalizar(b.nome));
       }
     });
   }).catch(()=>{});
+}
+carregarBairros();
+
+// Preenche o campo KM pelo bairro detectado
+function preencherKmPorBairro(bairro){
+  if(!bairro) return;
+  const norm = normalizar(bairro);
+  const found = bairrosDinamicos.find(b=>{
+    const bn = normalizar(b.nome);
+    return bn===norm || norm.includes(bn) || bn.includes(norm);
+  });
+  if(found){
+    document.getElementById('f-km').value = found.km;
+    setFbMsg('📍 '+found.km+' km — '+found.nome, '#1D9E75');
+    setTimeout(()=>setFbMsg('',''), 3500);
+  }
+}
+
+function setFbMsg(txt, cor){
+  const el=document.getElementById('fb-msg');
+  el.textContent=txt; el.style.color=cor||'#1D9E75';
 }
 
 // Detecta plataforma pelo tamanho do código
 function detectarPlat(cod){
   const n=cod.replace(/\D/g,'');
-  if(n.length===4)return'iFood';
-  if(n.length===6)return'99';
-  if(n.length>0)return'Particular';
-  return'';
+  if(n.length===4) return 'iFood';
+  if(n.length===6) return '99';
+  if(n.length>0)   return 'Particular';
+  return '';
 }
-
-// Auto-preenche plataforma quando digita o pedido
-document.getElementById('f-pedido').addEventListener('input', function(){
-  const plat = detectarPlat(this.value);
-  if(plat) document.getElementById('f-plat').value = plat;
+document.getElementById('f-pedido').addEventListener('input',function(){
+  const plat=detectarPlat(this.value);
+  if(plat) document.getElementById('f-plat').value=plat;
 });
 
-// Salva pedido no Firebase do motoboy
-// Busca todos os motoboys cadastrados e cria um pedido para cada um que estiver ativo hoje
-// (ou usa o motoboyId já salvo no localStorage do app Entregas)
-async function salvarNoMotoboy(pedido, plat, tipo, bairro, km, compl, numero, addr){
-  if(!km || km<=0) return; // sem km não envia
-  let valor = 0;
-  for(const f of tabelaPrecos){ if(km<=f.ate){ valor=f.valor; break; } }
-  const endFull = addr + (compl?' — '+compl:'') + (tipo?' ['+tipo+']':'');
-  const dataHj  = new Date().toLocaleDateString('en-CA');
+// ── SALVAR NO MOTOBOY (com dados do Luciano) ─
+// Isso faz o pedido aparecer no app do motoboy exatamente
+// como se o Luciano tivesse adicionado lá manualmente.
+async function salvarNoMotoboy(pedido, plat, bairro, km, compl, tipo, addr){
+  if(!km || km<=0) return;
 
-  // Pega motoboyId salvo (ou usa LOJA como fallback)
-  let mbId   = localStorage.getItem('ebh_mb_id')   || 'LOJA';
-  let mbNome = localStorage.getItem('ebh_mb_nome')  || 'Loja';
-  let mbTel  = localStorage.getItem('ebh_mb_tel')   || '';
+  let valor=0;
+  for(const f of tabelaPrecos){ if(km<=f.ate){ valor=f.valor; break; } }
+
+  const endFull = addr + (compl?' — '+compl:'') + (tipo?' ['+tipo+']':'');
+  const dataHoje = new Date().toLocaleDateString('en-CA');
 
   try{
     await db.collection('pedidos').add({
-      codigo: pedido,
+      codigo:     pedido,
       plataforma: plat || 'Particular',
-      endereco: endFull,
-      bairro: bairro,
-      km: km,
-      valor: valor,
-      motoboyId: mbId,
-      motoboyNome: mbNome,
-      motoboyTel: mbTel,
-      data: dataHj,
-      timestamp: new Date().toISOString(),
-      entregue: false,
-      tipo: tipo
+      endereco:   endFull,
+      bairro:     bairro,
+      km:         km,
+      valor:      valor,
+      motoboyId:  MB_ID,
+      motoboyNome:MB_NOME,
+      motoboyTel: MB_TEL,
+      data:       dataHoje,
+      timestamp:  new Date().toISOString(),
+      entregue:   false,
+      tipo:       tipo
     });
-    // Salva bairro novo se necessário
-    const norm = normalizar(bairro);
-    const jaExiste = bairrosFixos.some(b=>normalizar(b.nome)===norm);
+
+    // Aprende bairro novo (igual ao motoboy faz)
+    const norm=normalizar(bairro);
+    const jaExiste=bairrosDinamicos.some(b=>normalizar(b.nome)===norm);
     if(!jaExiste && km>0){
       await db.collection('bairros').doc(norm.replace(/\s+/g,'_')).set(
-        {nome:bairro, km:km, criadoEm:new Date().toISOString()}, {merge:true}
+        {nome:bairro, km:km, criadoEm:new Date().toISOString()},{merge:true}
       );
+      bairrosDinamicos.push({nome:bairro, km:km});
     }
-    const msg = document.getElementById('fb-msg');
-    msg.textContent = '✅ Pedido #'+pedido+' criado para '+mbNome+' • R$ '+valor.toFixed(2).replace('.',',');
-    msg.style.color = '#1D9E75';
-    setTimeout(()=>{ msg.textContent=''; }, 5000);
-  }catch(e){
-    const msg = document.getElementById('fb-msg');
-    msg.textContent = '⚠️ Sem internet — pedido salvo só localmente';
-    msg.style.color = '#BA7517';
-    setTimeout(()=>{ msg.textContent=''; }, 4000);
+
+    setFbMsg('✅ Pedido #'+pedido+' salvo no app do motoboy! R$ '+valor.toFixed(2).replace('.',','), '#1D9E75');
+    setTimeout(()=>setFbMsg('',''),5000);
+  } catch(e){
+    setFbMsg('⚠️ Sem internet — só salvo localmente','#BA7517');
+    setTimeout(()=>setFbMsg('',''),4000);
   }
 }
 
+// ── ESTADO ───────────────────────────────────
 let routes=[], recognition=null, isListening=false, openId=null;
-let selLat=null, selLng=null, selRua=null, searchTimer=null;
+let selLat=null, selLng=null, selRua=null, selBairro=null, searchTimer=null;
 let myLat=null, myLng=null, dragSrc=null;
 
 const input  = document.getElementById('addr-input');
@@ -386,7 +392,7 @@ function save(){try{localStorage.setItem('ebh3',JSON.stringify(routes));}catch(e
 function load(){try{const d=localStorage.getItem('ebh3');if(d)routes=JSON.parse(d);}catch(e){}}
 function setSt(msg,cls){micSt.textContent=msg;micSt.className=cls||'';}
 
-// ── GPS ──────────────────────────────────────────────────
+// ── GPS ──────────────────────────────────────
 function pegaGPS(){
   const lt=document.getElementById('loc-txt');
   lt.textContent='Buscando GPS...';
@@ -399,7 +405,7 @@ function pegaGPS(){
         const rua=d.address.road||'';
         const bairro=d.address.suburb||d.address.neighbourhood||'';
         lt.textContent='✓ '+rua+(bairro?' - '+bairro:'');
-      }).catch(()=>{lt.textContent=`GPS OK: ${myLat.toFixed(5)}, ${myLng.toFixed(5)}`;});
+      }).catch(()=>{ lt.textContent=`GPS OK: ${myLat.toFixed(5)}, ${myLng.toFixed(5)}`; });
   },()=>{
     document.getElementById('loc-txt').textContent='⚠️ Permita o GPS no Chrome';
   },{enableHighAccuracy:true,timeout:12000});
@@ -407,28 +413,22 @@ function pegaGPS(){
 pegaGPS();
 document.getElementById('loc-btn').addEventListener('click',pegaGPS);
 
-// ── BUSCA SOMENTE A RUA (sem número) ────────────────────
-// Assim o mapa acha a rua certa e NÓS colocamos o número correto
+// ── BUSCA RUA ────────────────────────────────
 function buscarRua(q, cb){
-  const query = q + ', Belo Horizonte, MG, Brasil';
-  fetch('https://nominatim.openstreetmap.org/search?' +
-    'q=' + encodeURIComponent(query) +
+  const query = q+', Belo Horizonte, MG, Brasil';
+  fetch('https://nominatim.openstreetmap.org/search?'+
+    'q='+encodeURIComponent(query)+
     '&format=json&addressdetails=1&limit=7&countrycodes=br&accept-language=pt-BR',
     {headers:{'User-Agent':'AppEntregas/1.0'}})
     .then(r=>r.json())
     .then(data=>{
-      if(!data)return cb([]);
-      // Filtra MG e ordena: ruas primeiro (type=residential/street)
-      const mg = data.filter(p=>{
-        const st=(p.address.state||'').toLowerCase();
-        return st.includes('minas');
-      });
-      // Deduplicar ruas iguais (pega só 1 por nome de rua)
-      const vistas = new Set();
-      const unicas = (mg.length?mg:data).filter(p=>{
-        const rua = p.address.road||p.display_name.split(',')[0];
-        if(vistas.has(rua))return false;
-        vistas.add(rua);return true;
+      if(!data) return cb([]);
+      const mg=data.filter(p=>(p.address.state||'').toLowerCase().includes('minas'));
+      const vistas=new Set();
+      const unicas=(mg.length?mg:data).filter(p=>{
+        const rua=p.address.road||p.display_name.split(',')[0];
+        if(vistas.has(rua)) return false;
+        vistas.add(rua); return true;
       });
       cb(unicas.slice(0,6));
     }).catch(()=>cb([]));
@@ -442,7 +442,7 @@ function mostrar(data){
     const cidade = p.address.city||p.address.town||'Belo Horizonte';
     const sec    = [bairro,cidade].filter(Boolean).join(', ');
     return `<div class="pac-item"
-      data-lat="${p.lat}" data-lng="${p.lon}" data-rua="${rua}">
+      data-lat="${p.lat}" data-lng="${p.lon}" data-rua="${rua}" data-bairro="${bairro}">
       <span>📍</span>
       <div>
         <div class="pac-main">${rua}</div>
@@ -453,56 +453,63 @@ function mostrar(data){
   pacBox.style.display='block';
 }
 
+// Digitação manual — busca enquanto digita
 input.addEventListener('input',()=>{
-  selLat=null;selLng=null;selRua=null;
+  selLat=null; selLng=null; selRua=null; selBairro=null;
   clearTimeout(searchTimer);
   const q=input.value.trim();
   if(q.length<3){pacBox.style.display='none';return;}
   searchTimer=setTimeout(()=>buscarRua(q,mostrar),400);
 });
 
+// Clique na lista de sugestões
 pacBox.addEventListener('click',e=>{
-  const it=e.target.closest('.pac-item');if(!it)return;
-  selLat=parseFloat(it.dataset.lat);
-  selLng=parseFloat(it.dataset.lng);
-  selRua=it.dataset.rua;
-  input.value=selRua;
-  // Tenta preencher KM pelo bairro exibido no item clicado
-  const bairroEl=it.querySelector('.pac-sec');
-  if(bairroEl){const bt=bairroEl.textContent.split(',')[0].trim();if(bt)preencherKmPorBairro(bt);}
+  const it=e.target.closest('.pac-item');
+  if(!it) return;
+  selLat    = parseFloat(it.dataset.lat);
+  selLng    = parseFloat(it.dataset.lng);
+  selRua    = it.dataset.rua;
+  selBairro = it.dataset.bairro;
+  input.value = selRua;
   pacBox.style.display='none';
+  // Preenche KM automaticamente pelo bairro
+  if(selBairro) preencherKmPorBairro(selBairro);
   document.getElementById('f-numero').focus();
-  setSt('✓ Rua selecionada! KM preenchido automaticamente.','ok');
+  setSt('✓ Rua selecionada! Informe o número.','ok');
 });
 
 document.addEventListener('click',e=>{
-  if(!e.target.closest('.addr-wrap')&&e.target!==micBtn)pacBox.style.display='none';
+  if(!e.target.closest('.addr-wrap')&&e.target!==micBtn) pacBox.style.display='none';
 });
 
-// ── ADICIONAR ────────────────────────────────────────────
-function addRoute(rua, numero, lat, lng, bairroDetectado){
+// ── ADICIONAR ────────────────────────────────
+function addRoute(rua, numero, lat, lng, bairro){
   const pedido = document.getElementById('f-pedido').value.trim()||'—';
   const compl  = document.getElementById('f-compl').value.trim()||'';
   const plat   = document.getElementById('f-plat').value||'';
   const tipo   = document.getElementById('f-tipo').value||'';
   const km     = parseFloat(document.getElementById('f-km').value)||0;
-  const bairro = bairroDetectado || rua;
-
-  // Monta endereço completo COM o número digitado pelo usuário
   const addr   = numero ? `${rua}, ${numero}, Belo Horizonte` : `${rua}, Belo Horizonte`;
 
-  routes.push({addr, addrMaps: addr, lat, lng, pedido, compl, numero, plat, tipo, km, id:Date.now()+Math.random(), entregue:false, novo:true});
+  // 1) Salva na lista local de rotas (para o GPS)
+  routes.push({
+    addr, addrMaps:addr, lat, lng,
+    pedido, compl, numero, plat, tipo, km,
+    id: Date.now()+Math.random(), entregue:false, novo:true
+  });
 
-  // Envia para o Firebase do motoboy (se tiver km preenchido)
-  if(km>0) salvarNoMotoboy(pedido, plat, tipo, bairro, km, compl, numero, addr);
+  // 2) Envia para o app do motoboy (com dados do Luciano)
+  if(km>0) salvarNoMotoboy(pedido, plat, bairro||rua, km, compl, tipo, addr);
 
+  // Limpa campos
   document.getElementById('f-pedido').value='';
   document.getElementById('f-compl').value='';
   document.getElementById('f-numero').value='';
   document.getElementById('f-plat').value='';
   document.getElementById('f-tipo').value='';
   document.getElementById('f-km').value='';
-  input.value=''; selLat=null; selLng=null; selRua=null;
+  input.value='';
+  selLat=null; selLng=null; selRua=null; selBairro=null;
   pacBox.style.display='none';
   setSt('✓ Entrega adicionada!','ok');
   setTimeout(()=>setSt(''),2000);
@@ -512,32 +519,26 @@ function addRoute(rua, numero, lat, lng, bairroDetectado){
 }
 
 document.getElementById('add-btn').addEventListener('click',()=>{
-  const ruaVal   = input.value.trim();
-  const numeroVal= document.getElementById('f-numero').value.trim();
+  const ruaVal    = input.value.trim();
+  const numeroVal = document.getElementById('f-numero').value.trim();
 
   if(!ruaVal){alert('Informe o nome da rua!');return;}
-  if(!numeroVal){
-    if(!confirm('Continuar sem número?'))return;
-  }
+  if(!numeroVal){ if(!confirm('Continuar sem número?')) return; }
 
-  if(selLat&&selLng&&selRua){
-    // Extrai bairro do pac-box (primeiro item visível)
-    const pacItem=pacBox.querySelector('.pac-item');
-    const bairroSel=pacItem?pacItem.querySelector('.pac-sec')?.textContent?.split(',')[0]?.trim()||selRua:selRua;
-    addRoute(selRua, numeroVal, selLat, selLng, bairroSel);
+  if(selLat && selLng && selRua){
+    addRoute(selRua, numeroVal, selLat, selLng, selBairro);
     return;
   }
 
-  // Busca a rua se não selecionou da lista
+  // Se não selecionou da lista, busca automático
   setSt('🔍 Buscando rua em BH...','');
   buscarRua(ruaVal, data=>{
     if(data&&data.length){
       const p=data[0];
-      const rua=p.address.road||p.address.pedestrian||ruaVal;
-      const bairro=p.address.suburb||p.address.neighbourhood||p.address.quarter||ruaVal;
+      const rua    = p.address.road||p.address.pedestrian||ruaVal;
+      const bairro = p.address.suburb||p.address.neighbourhood||p.address.quarter||ruaVal;
       addRoute(rua, numeroVal, parseFloat(p.lat), parseFloat(p.lon), bairro);
-    }else{
-      // Usa o texto digitado mesmo
+    } else {
       addRoute(ruaVal, numeroVal, myLat||-19.92, myLng||-43.94, ruaVal);
     }
   });
@@ -550,20 +551,98 @@ document.getElementById('f-numero').addEventListener('keydown',e=>{
   if(e.key==='Enter'){e.preventDefault();document.getElementById('add-btn').click();}
 });
 
-// ── RENDER ───────────────────────────────────────────────
+// ── MICROFONE ────────────────────────────────
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SR){
+  recognition=new SR();
+  recognition.lang='pt-BR';
+  recognition.interimResults=false;
+  recognition.continuous=false;
+
+  recognition.onstart=()=>{
+    isListening=true;
+    micBtn.classList.add('active');
+    micBtn.textContent='⏹️';
+    setSt('🎙️ Fale a rua e o bairro...','on');
+  };
+  recognition.onend=()=>{
+    isListening=false;
+    micBtn.classList.remove('active');
+    micBtn.textContent='🎙️';
+    if(micSt.className==='on') setSt('');
+  };
+  recognition.onresult=e=>{
+    let t=e.results[0][0].transcript.trim();
+
+    // Extrai número da fala e coloca no campo número
+    const numMatch=t.match(/\b(\d+)\b/);
+    if(numMatch){
+      document.getElementById('f-numero').value=numMatch[1];
+      t=t.replace(/\b\d+\b/g,'').replace(/\s+/g,' ').trim();
+    }
+
+    input.value=t;
+    selLat=null; selLng=null; selRua=null; selBairro=null;
+    setSt('🔍 Buscando "'+t+'" em BH...','');
+
+    buscarRua(t, data=>{
+      if(data&&data.length){
+        // AUTO-SELECIONA o primeiro resultado para o endereço ficar registrado
+        const p     = data[0];
+        const rua   = p.address.road||p.address.pedestrian||p.display_name.split(',')[0]||t;
+        const bairro= p.address.suburb||p.address.neighbourhood||p.address.quarter||'';
+
+        selLat    = parseFloat(p.lat);
+        selLng    = parseFloat(p.lon);
+        selRua    = rua;
+        selBairro = bairro;
+        input.value = rua;
+
+        // Preenche KM automaticamente
+        if(bairro) preencherKmPorBairro(bairro);
+
+        // Mostra lista para confirmar ou trocar
+        mostrar(data);
+        setSt('✓ "'+rua+'" — confirme ou escolha outra','ok');
+      } else {
+        setSt('Não encontrado. Tente falar o bairro também.','err');
+      }
+    });
+  };
+  recognition.onerror=e=>{
+    const m={
+      'not-allowed':'⚠️ Permita o microfone nas configurações do Chrome',
+      'no-speech':'Nenhuma fala detectada.',
+      'network':'Erro de rede.'
+    };
+    setSt(m[e.error]||'Erro no microfone.','err');
+    isListening=false;
+    micBtn.classList.remove('active');
+    micBtn.textContent='🎙️';
+  };
+  micBtn.addEventListener('click',()=>{
+    if(isListening) recognition.stop();
+    else try{ recognition.start(); } catch(ex){ setSt('Toque novamente','err'); }
+  });
+} else {
+  micBtn.disabled=true;
+  micBtn.style.opacity='0.4';
+  setSt('Use o Chrome para usar o microfone');
+}
+
+// ── RENDER ───────────────────────────────────
 function render(){
-  const hdr=document.getElementById('list-hdr');
-  const empty=document.getElementById('empty-msg');
+  const hdr   = document.getElementById('list-hdr');
+  const empty = document.getElementById('empty-msg');
   if(!routes.length){
-    listEl.innerHTML='';listEl.appendChild(empty);empty.style.display='block';
+    listEl.innerHTML=''; listEl.appendChild(empty); empty.style.display='block';
     hdr.style.display='none';
-    document.getElementById('hdr-badge').textContent='0 paradas';return;
+    document.getElementById('hdr-badge').textContent='0 paradas'; return;
   }
-  empty.style.display='none';hdr.style.display='block';
+  empty.style.display='none'; hdr.style.display='block';
   listEl.innerHTML=routes.map((r,i)=>{
     const lbl=r.entregue?'✓':(i+1);
-    // Mostra rua + número na lista
-    const displayAddr = r.numero
+    const displayAddr=r.numero
       ? r.addr.split(',').slice(0,2).join(',')
       : r.addr.split(',')[0];
     return `<div class="item${r.entregue?' entregue':''}${r.novo?' novo':''}" draggable="true" data-id="${r.id}">
@@ -598,10 +677,10 @@ listEl.addEventListener('click',e=>{
   const del=e.target.closest('[data-del]');
   if(del){if(!confirm('Remover?'))return;routes=routes.filter(r=>r.id!==parseFloat(del.dataset.del));save();render();stats();return;}
   const op=e.target.closest('[data-open]');
-  if(op)abreModal(parseFloat(op.dataset.open));
+  if(op) abreModal(parseFloat(op.dataset.open));
 });
 
-// ── DRAG ─────────────────────────────────────────────────
+// ── DRAG ─────────────────────────────────────
 function dragSetup(){
   const items=listEl.querySelectorAll('.item[draggable]');
   items.forEach(it=>{
@@ -625,7 +704,7 @@ function dragSetup(){
       const t=e.touches[0];
       const els=document.elementsFromPoint(t.clientX,t.clientY);
       const tgt=els.find(el=>el.classList&&el.classList.contains('item')&&el!==it);
-      if(tgt)tgt.style.outline='2px solid #1D9E75';
+      if(tgt) tgt.style.outline='2px solid #1D9E75';
     },{passive:false});
     it.addEventListener('touchend',e=>{
       items.forEach(i=>i.style.outline='');
@@ -641,9 +720,9 @@ function dragSetup(){
   });
 }
 
-// ── MODAL ────────────────────────────────────────────────
+// ── MODAL ────────────────────────────────────
 function abreModal(id){
-  const r=routes.find(x=>x.id===id);if(!r)return;
+  const r=routes.find(x=>x.id===id); if(!r) return;
   openId=id;
   document.getElementById('m-num').textContent='#'+r.pedido;
   document.getElementById('m-adr').textContent=r.addr;
@@ -661,156 +740,63 @@ document.getElementById('m-ok').addEventListener('click',()=>{
   const r=routes.find(x=>x.id===openId);
   if(r){r.entregue=true;save();render();stats();}
   modal.classList.add('hidden');
-  setSt('✓ Entregue! 🎉','ok');setTimeout(()=>setSt(''),3000);
+  setSt('✓ Entregue! 🎉','ok'); setTimeout(()=>setSt(''),3000);
 });
 document.getElementById('m-fechar').addEventListener('click',()=>modal.classList.add('hidden'));
 modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.add('hidden');});
 
-// ── STATS ────────────────────────────────────────────────
+// ── STATS ─────────────────────────────────────
 function stats(){
   document.getElementById('s-total').textContent=routes.length;
   document.getElementById('s-pend').textContent=routes.filter(r=>!r.entregue).length;
   document.getElementById('s-done').textContent=routes.filter(r=>r.entregue).length;
 }
 
-// ── OTIMIZAR ─────────────────────────────────────────────
+// ── OTIMIZAR ──────────────────────────────────
 document.getElementById('opt-btn').addEventListener('click',()=>{
   if(routes.length<2){alert('Adicione pelo menos 2 paradas!');return;}
   const oLat=myLat||routes[0].lat, oLng=myLng||routes[0].lng;
-  const rem=[...routes];const sorted=[];let cur={lat:oLat,lng:oLng};
+  const rem=[...routes]; const sorted=[]; let cur={lat:oLat,lng:oLng};
   while(rem.length){
-    let best=null,bestD=Infinity;
+    let best=null, bestD=Infinity;
     rem.forEach(r=>{const d=Math.hypot(r.lat-cur.lat,r.lng-cur.lng);if(d<bestD){bestD=d;best=r;}});
-    sorted.push(best);rem.splice(rem.indexOf(best),1);cur=best;
+    sorted.push(best); rem.splice(rem.indexOf(best),1); cur=best;
   }
-  routes=sorted;save();render();stats();
-  setSt('✦ Ordem otimizada!','ok');setTimeout(()=>setSt(''),3000);
+  routes=sorted; save(); render(); stats();
+  setSt('✦ Ordem otimizada!','ok'); setTimeout(()=>setSt(''),3000);
 });
 
-// ── NAVEGAR — envia endereço por NOME (não coordenada) ───
-// Assim o Google Maps usa o endereço exato que você digitou
+// ── GOOGLE MAPS ───────────────────────────────
 document.getElementById('nav-btn').addEventListener('click',()=>{
   const pend=routes.filter(r=>!r.entregue);
   if(!pend.length){alert('Nenhuma entrega pendente!');return;}
   if(!myLat){alert('Aguarde o GPS!\nVeja a barra verde no topo.');pegaGPS();return;}
-
-  // Origem = coordenadas GPS do celular
-  const origem = myLat+','+myLng;
-
-  // Destino = último endereço por nome (Maps vai resolver o número correto)
+  const origem  = myLat+','+myLng;
   const destino = encodeURIComponent(pend[pend.length-1].addr);
-
-  // Waypoints = endereços do meio por nome
-  const wps = pend.slice(0,-1).map(r=>encodeURIComponent(r.addr)).join('|');
-
+  const wps     = pend.slice(0,-1).map(r=>r.addr).join('|');
   const url = 'https://www.google.com/maps/dir/?api=1'
-    + '&origin=' + origem
-    + '&destination=' + destino
-    + (wps ? '&waypoints=' + encodeURIComponent(pend.slice(0,-1).map(r=>r.addr).join('|')) : '')
-    + '&travelmode=driving';
-
+    +'&origin='+origem
+    +'&destination='+destino
+    +(wps?'&waypoints='+encodeURIComponent(wps):'')
+    +'&travelmode=driving';
   window.open(url,'_blank');
 });
 
+// ── WAZE ──────────────────────────────────────
 document.getElementById('waze-btn').addEventListener('click',()=>{
   const pend=routes.filter(r=>!r.entregue);
   if(!pend.length){alert('Nenhuma entrega pendente!');return;}
   window.open(`https://waze.com/ul?ll=${pend[0].lat}%2C${pend[0].lng}&navigate=yes`,'_blank');
 });
 
-// ── MICROFONE ─────────────────────────────────────────────
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(SR){
-  recognition=new SR();
-  recognition.lang='pt-BR';recognition.interimResults=false;recognition.continuous=false;
-  recognition.onstart=()=>{isListening=true;micBtn.classList.add('active');micBtn.textContent='⏹️';setSt('🎙️ Fale o nome da rua e bairro...','on');};
-  recognition.onend=()=>{isListening=false;micBtn.classList.remove('active');micBtn.textContent='🎙️';if(micSt.className==='on')setSt('');};
-  recognition.onresult=e=>{
-    let t=e.results[0][0].transcript;
-    // Extrai número da fala → coloca no campo número
-    const numMatch=t.match(/\b(\d+)\b/);
-    if(numMatch){
-      document.getElementById('f-numero').value=numMatch[1];
-      t=t.replace(/\b\d+\b/g,'').replace(/\s+/g,' ').trim();
-    }
-    input.value=t; selLat=null; selLng=null; selRua=null;
-    setSt('🔍 Buscando "'+t+'" em BH...','');
-    buscarRua(t, data=>{
-      if(data&&data.length){
-        // AUTO-SELECIONA o primeiro resultado (resolve o problema do microfone)
-        const p=data[0];
-        const rua=p.address.road||p.address.pedestrian||p.display_name.split(',')[0]||t;
-        const bairro=p.address.suburb||p.address.neighbourhood||p.address.quarter||'';
-        selLat=parseFloat(p.lat);
-        selLng=parseFloat(p.lon);
-        selRua=rua;
-        input.value=rua;
-        // Preenche KM automaticamente pelo bairro detectado
-        if(bairro) preencherKmPorBairro(bairro);
-        // Mostra lista para confirmar ou trocar
-        mostrar(data);
-        setSt('✓ "'+rua+'" selecionada! Confirme ou toque em outra opção.','ok');
-      }else{
-        setSt('Não encontrado. Tente falar o bairro também.','err');
-      }
-    });
-  };
-  recognition.onerror=e=>{
-    const m={'not-allowed':'⚠️ Permita o microfone no Chrome','no-speech':'Nenhuma fala.','network':'Erro de rede.'};
-    setSt(m[e.error]||'Erro no microfone.','err');
-    isListening=false;micBtn.classList.remove('active');micBtn.textContent='🎙️';
-  };
-  micBtn.addEventListener('click',()=>{
-    if(isListening)recognition.stop();
-    else try{recognition.start();}catch(ex){setSt('Toque novamente','err');}
-  });
-}else{
-  micBtn.disabled=true;micBtn.style.opacity='0.4';
-  setSt('Use o Chrome para microfone');
-}
+// ── INIT ──────────────────────────────────────
+load(); render(); stats();
 
-// ── CONFIGURAR MOTOBOY ────────────────────────────────────
-function configurarMotoboy(){
-  const tel = prompt('📱 Telefone do motoboy (com DDD):\nEx: 31999998888\n\nEste telefone deve ser o mesmo cadastrado no app do motoboy.', localStorage.getItem('ebh_mb_tel')||'');
-  if(tel===null) return;
-  const telLimpo = tel.replace(/\D/g,'');
-  if(!telLimpo){ alert('Telefone inválido!'); return; }
-  const nome = prompt('👤 Nome do motoboy:', localStorage.getItem('ebh_mb_nome')||'') || 'Motoboy';
-  const mbId = 'MB_'+telLimpo;
-  localStorage.setItem('ebh_mb_id',  mbId);
-  localStorage.setItem('ebh_mb_nome',nome);
-  localStorage.setItem('ebh_mb_tel', telLimpo);
-  atualizarBarraMotoboy();
-  const msg=document.getElementById('fb-msg');
-  msg.textContent='✅ Motoboy configurado: '+nome;
-  msg.style.color='#1D9E75';
-  setTimeout(()=>{msg.textContent='';},3000);
-}
-function atualizarBarraMotoboy(){
-  const nome = localStorage.getItem('ebh_mb_nome');
-  const tel  = localStorage.getItem('ebh_mb_tel');
-  const txt  = document.getElementById('mb-txt');
-  if(nome && tel){
-    txt.textContent = '🛵 '+nome+' · ('+tel.replace(/(\d{2})(\d{5})(\d{4})/,'$1) $2-$3')+') — pedidos serão criados para este motoboy';
-  } else {
-    txt.textContent = '⚠️ Toque aqui para configurar o motoboy (obrigatório para criar pedidos)';
-    txt.style.color = '#FFD580';
-  }
-}
-
-load();render();stats();
-atualizarBarraMotoboy();
-
-// Força sempre a versão mais recente (evita cache do GitHub)
+// Evita cache antigo
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.getRegistrations().then(regs=>{
-    regs.forEach(r=>r.unregister());
-  });
+  navigator.serviceWorker.getRegistrations().then(regs=>{ regs.forEach(r=>r.unregister()); });
 }
-// Se a página foi carregada do cache, recarrega silenciosamente em background
-// e avisa o usuário apenas se houver versão nova
-if(window.performance && performance.navigation.type === 2){
-  // Veio do cache de navegação — força reload
+if(window.performance && performance.navigation.type===2){
   window.location.reload(true);
 }
 </script>

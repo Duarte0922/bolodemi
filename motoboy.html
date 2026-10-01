@@ -607,7 +607,10 @@ function enviarWhatsAppHoje() {
   if(diarias.length>0){msg+='💵 *Diária*\n';diarias.forEach(p=>{msg+=p.endereco+' — R$ '+Number(p.valor).toFixed(2).replace('.',',')+'\n';});msg+='\n';}
   if(adiant.length>0){msg+='💸 *Descontos*\n';adiant.forEach(p=>{msg+=p.endereco+' — - R$ '+Math.abs(p.valor).toFixed(2).replace('.',',')+'\n';});msg+='\n';}
   msg+='💰 *TOTAL: R$ '+total.toFixed(2).replace('.',',')+' *';
-  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+  if (navigator.share) {
+  navigator.share({ text: msg }).catch(function(){});
+} else {
+  window.location.href = 'https://wa.me/?text=' + encodeURIComponent(msg);
 }
 
 // ══════════════════════════════════════════════════════════════

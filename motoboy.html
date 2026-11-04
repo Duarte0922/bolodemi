@@ -267,35 +267,42 @@ function carregarSessao() {
   return null;
 }
 function limparSessao() { try { sessionStorage.clear(); } catch(e) {} }
-
 // ══════════════════════════════════════════════
-// ✏️ ALTERAÇÃO 2: TABELA DE PREÇOS ATUALIZADA
-// 0 a 3,9 km     → R$ 3,00
-// 4 a 7,9 km     → R$ 5,00
-// 8 a 10 km      → R$ 7,00
-// 10,1 a 15 km   → R$ 11,00
+// ✏️ NOVA TABELA DE PREÇOS (Atualizada)
+// 0 a 4 km       → R$ 5,00
+// 4,1 a 10 km    → R$ 7,00
+// 10,1 a 15 km   → R$ 11,00 (mantido do anterior, ajuste se necessário)
 // Acima de 15 km → R$ 15,00 + R$ 1,00 por km extra
 // ══════════════════════════════════════════════
 const tabelaPrecos = [
-  { ate: 3.9, valor: 3  },
-  { ate: 7.9, valor: 5  },
-  { ate: 10,  valor: 7  },
-  { ate: 15,  valor: 11 }
+  { ate: 4.0,  valor: 5  },
+  { ate: 10.0, valor: 7  },
+  { ate: 15.0, valor: 11 }
 ];
 
 function calcularValor() {
   const km = parseFloat(document.getElementById('km').value) || 0;
-  if (km <= 0) { document.getElementById('valor').value = ''; return; }
+  
+  if (km <= 0) { 
+    document.getElementById('valor').value = ''; 
+    return; 
+  }
 
   let valor = 0;
+  
   if (km > 15) {
     // Acima de 15 km: R$ 15,00 + R$ 1,00 por km extra (arredonda para cima)
     valor = 15 + Math.ceil(km - 15);
   } else {
+    // Percorre a tabela até encontrar a faixa correta
     for (const f of tabelaPrecos) {
-      if (km <= f.ate + 0.0001) { valor = f.valor; break; }
+      if (km <= f.ate + 0.0001) { 
+        valor = f.valor; 
+        break; 
+      }
     }
   }
+  
   document.getElementById('valor').value = valor.toFixed(2);
 }
 

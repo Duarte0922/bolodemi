@@ -266,18 +266,22 @@ function carregarSessao() {
   } catch(e) {}
   return null;
 }
-function limparSessao() { try { sessionStorage.clear(); } catch(e) {} }
+function limparSessao() { 
+  try { sessionStorage.clear(); } catch(e) {} 
+}
+
 // ══════════════════════════════════════════════
 // ✏️ NOVA TABELA DE PREÇOS (Atualizada)
-// 0 a 4 km       → R$ 5,00
-// 4,1 a 10 km    → R$ 7,00
-// 10,1 a 15 km   → R$ 11,00 (mantido do anterior, ajuste se necessário)
-// Acima de 15 km → R$ 15,00 + R$ 1,00 por km extra
+// 0 a 5 km       → R$ 5,00
+// 6 a 8 km       → R$ 7,00
+// 9 a 15 km      → R$ 11,00
+// Acima de 15 km → R$ 15,00 + R$ 1,00 por km extra (mantido, ajuste se necessário)
 // ══════════════════════════════════════════════
+
 const tabelaPrecos = [
-  { ate: 4.0,  valor: 5  },
-  { ate: 10.0, valor: 7  },
-  { ate: 15.0, valor: 11 }
+  { ate: 5,  valor: 5 },
+  { ate: 8,  valor: 7 },
+  { ate: 15, valor: 11 }
 ];
 
 function calcularValor() {
@@ -290,13 +294,18 @@ function calcularValor() {
 
   let valor = 0;
   
-  if (km > 15) {
-    // Acima de 15 km: R$ 15,00 + R$ 1,00 por km extra (arredonda para cima)
-    valor = 15 + Math.ceil(km - 15);
+  // Arredonda para cima para definir a faixa (ex: 5.1 km vira 6, entrando na faixa de 6 a 8)
+  // DICA: Se quiser que 5.9 km ainda seja R$ 5,00, troque "Math.ceil(km)" por apenas "km"
+  const kmFaixa = Math.ceil(km);
+  
+  if (kmFaixa > 15) {
+    // Acima de 15 km: R$ 15,00 + R$ 1,00 por km extra
+    // (Ajuste o valor base "15" se a regra para >15km também tiver mudado)
+    valor = 15 + (kmFaixa - 15);
   } else {
     // Percorre a tabela até encontrar a faixa correta
     for (const f of tabelaPrecos) {
-      if (km <= f.ate + 0.0001) { 
+      if (kmFaixa <= f.ate) { 
         valor = f.valor; 
         break; 
       }
